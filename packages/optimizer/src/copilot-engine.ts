@@ -241,21 +241,26 @@ export class TacticalCopilotEngine {
       'base f': 'BASE_BATHINDA',
     };
 
+    const foundBases: { index: number; baseId: string }[] = [];
     for (const [key, baseId] of Object.entries(FULL_BASES)) {
-      if (new RegExp(`\\b${key}\\b`, 'i').test(lower)) {
-        slots.baseId = baseId;
-        break;
+      const idx = lower.search(new RegExp(`\\b${key}\\b`, 'i'));
+      if (idx !== -1) {
+        foundBases.push({ index: idx, baseId });
       }
     }
-    if (!slots.baseId) {
-      for (const [key, baseId] of Object.entries(ALIAS_BASES)) {
-        if (new RegExp(`\\b${key}\\b`, 'i').test(lower)) {
-          slots.baseId = baseId;
-          break;
-        }
+    for (const [key, baseId] of Object.entries(ALIAS_BASES)) {
+      const idx = lower.search(new RegExp(`\\b${key}\\b`, 'i'));
+      if (idx !== -1) {
+        foundBases.push({ index: idx, baseId });
       }
     }
-    if (!slots.baseId) {
+    if (foundBases.length > 0) {
+      foundBases.sort((a, b) => a.index - b.index);
+      slots.baseId = foundBases[0].baseId;
+      if (foundBases.length > 1) {
+        slots.secondBaseId = foundBases[1].baseId;
+      }
+    } else {
       for (const token of tokens) {
         for (const [key, baseId] of Object.entries(FULL_BASES)) {
           if (similarity(token, key) >= 0.8) {
@@ -334,8 +339,8 @@ export class TacticalCopilotEngine {
       slots.threatSector = `SECTOR_${sectorMatch[1].toUpperCase()}`;
     }
 
-    // Quantities (e.g. "2 Su-30s", "4 aircraft")
-    const countMatch = lower.match(/\b(\d+)\s*(su-30|aircraft|fighters|jets|tails)/i);
+    // Quantities (e.g. "2 Su-30s", "4 aircraft", "2 strike aircraft")
+    const countMatch = lower.match(/\b(\d+)\s*(?:[a-z0-9-]+\s+)?(su-30|aircraft|fighters|jets|tails|airframes)/i);
     if (countMatch) {
       slots.count = parseInt(countMatch[1], 10);
     }

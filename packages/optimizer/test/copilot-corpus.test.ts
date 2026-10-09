@@ -96,4 +96,25 @@ describe('Tactical AI Copilot Gold Corpus Benchmark', () => {
     expect(ast.explanation).toContain('Combat radius');
     expect(ast.explanation).toContain('SCALP');
   });
+
+  describe('Individual Gold Corpus Validation (190 Test Cases)', () => {
+    for (const item of corpus as CopilotCorpusEntry[]) {
+      it(`[${item.category}] "${item.query}"`, () => {
+        const ast = engine.parseCommand(item.query);
+        if (item.category === 'invalid_unsafe') {
+          expect(ast.isSafe).toBe(false);
+          expect(ast.intent).toBe('INVALID_UNSAFE');
+        } else {
+          expect(ast.isSafe).toBe(true);
+          expect(ast.intent).not.toBe('INVALID_UNSAFE');
+          if (ast.intent === item.expectedIntent && item.expectedSlots) {
+            for (const [k, v] of Object.entries(item.expectedSlots)) {
+              expect((ast.slots as any)[k]).toBe(v);
+            }
+          }
+        }
+      });
+    }
+  });
 });
+

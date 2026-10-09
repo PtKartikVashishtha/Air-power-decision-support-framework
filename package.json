@@ -7,6 +7,7 @@
     "build": "pnpm --recursive build",
     "test": "vitest run",
     "test:watch": "vitest",
+    "e2e": "node scripts/verify-layout-overflow.js",
     "benchmark": "tsx benchmarks/run-benchmark.ts",
     "demo": "pnpm --filter @air-power/api dev",
     "stop": "powershell -Command \"Stop-Process -Id (Get-NetTCPConnection -LocalPort 3001,3002 -State Listen -ErrorAction SilentlyContinue).OwningProcess -Force -ErrorAction SilentlyContinue\"",

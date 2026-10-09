@@ -53,14 +53,22 @@ export class DataFusionEngine {
     const decayConstant = Math.LN2 / HALF_LIFE_MINUTES;
 
     return threats.map((threat) => {
-      // Calculate age in minutes from last update
-      const lastUpdateMs = new Date(threat.lastUpdatedAt).getTime();
-      const nowMs = Date.now();
-      const ageMinutes = Math.max(0, (nowMs - lastUpdateMs) / 60000);
+      let ageMinutes = 0;
+      if (threat.lastUpdatedAt) {
+        const lastUpdateMs = new Date(threat.lastUpdatedAt).getTime();
+        const nowMs = Date.now();
+        if (!isNaN(lastUpdateMs)) {
+          ageMinutes = Math.max(0, (nowMs - lastUpdateMs) / 60000);
+        }
+      }
+      if (currentSimTimeMinutes > 0) {
+        ageMinutes = Math.max(ageMinutes, currentSimTimeMinutes % 360);
+      }
 
+      // Bayesian exponential decay formula: C(t) = C0 * exp(-lambda * t)
       const decayedConfidence = Math.max(
         15,
-        Math.round(threat.confidence * Math.exp(-decayConstant * (ageMinutes / 5)))
+        Math.round(threat.confidence * Math.exp(-decayConstant * ageMinutes))
       );
 
       return {
