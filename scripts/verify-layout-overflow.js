@@ -28,9 +28,13 @@ const TABS = [
   { idx: 7, key: 'wargame', name: 'WargameDashboard' },
   { idx: 8, key: 'ato_export', name: 'AtoExportView' },
   { idx: 9, key: 'benchmark', name: 'BenchmarkDashboard' },
-  { idx: 10, key: 'predictive', name: 'PredictiveCalibration' },
-  { idx: 11, key: 'what_if', name: 'WhatIfSandbox' },
-  { idx: 12, key: 'audit_trail', name: 'AuditTrailView' }
+  { idx: 10, key: 'manual_challenge', name: 'ManualPlanningChallenge' },
+  { idx: 11, key: 'predictive', name: 'PredictiveCalibration' },
+  { idx: 12, key: 'what_if', name: 'WhatIfSandbox' },
+  { idx: 13, key: 'audit_trail', name: 'AuditTrailView' },
+  { idx: 14, key: 'contested_ops', name: 'ContestedOpsStudio' },
+  { idx: 15, key: 'trainer_aar', name: 'StaffCollegeTrainerStudio' },
+  { idx: 16, key: 'xai_studio', name: 'ExplainabilityStudio' },
 ];
 
 async function run() {
@@ -68,7 +72,7 @@ async function run() {
           await tabButton.click({ timeout: 1000 });
           await page.waitForTimeout(200);
 
-          const issues = await page.evaluate(() => {
+          const result = await page.evaluate(() => {
             const detected = [];
 
             // 1. Check document-level horizontal scrollbar
