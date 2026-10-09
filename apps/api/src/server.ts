@@ -15,6 +15,8 @@ import {
   TacticalCopilotEngine,
   IndependentPlanVerifier,
   ThreatAwareRoutePlanner,
+  MultiObjectiveParetoEngine,
+  RobustStochasticPlanner,
 } from '@air-power/optimizer';
 import {
   generateAtoMilitaryText,
@@ -677,7 +679,38 @@ fastify.post('/api/routes/compare', async (request) => {
   return comparison;
 });
 
-// 15. SSE Live Stream for UI
+// 15. Multi-Objective Pareto Frontier Engine
+const paretoEngine = new MultiObjectiveParetoEngine();
+
+fastify.get('/api/solver/pareto', async () => {
+  const pic = stateStore.getFusedPicture();
+  return paretoEngine.generateParetoFrontier(
+    pic.bases,
+    pic.aircraft,
+    pic.pilots,
+    pic.munitionStocks,
+    pic.targetRequests,
+    pic.threats
+  );
+});
+
+// 16. Robust & Stochastic Two-Stage Plan Evaluation
+const robustPlanner = new RobustStochasticPlanner();
+
+fastify.get('/api/solver/robust', async () => {
+  const pic = stateStore.getFusedPicture();
+  return robustPlanner.evaluateRobustPlan(
+    pic.bases,
+    pic.aircraft,
+    pic.pilots,
+    pic.munitionStocks,
+    pic.targetRequests,
+    pic.threats,
+    8
+  );
+});
+
+// 17. SSE Live Stream for UI
 fastify.get('/api/stream', (request, reply) => {
   reply.raw.setHeader('Content-Type', 'text/event-stream');
   reply.raw.setHeader('Cache-Control', 'no-cache');

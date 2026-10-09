@@ -9,3 +9,7 @@ export * from './copilot-engine';
 export * from './highs-milp-solver';
 export * from './terrain-elevation';
 export * from './route-planner';
+export * from './bandit-operator-selector';
+export * from './matheuristic-lns';
+export * from './pareto-engine';
+export * from './robust-stochastic-planner';
