@@ -10,6 +10,7 @@
     "e2e": "node scripts/verify-layout-overflow.js",
     "benchmark": "tsx benchmarks/run-benchmark.ts",
     "demo": "pnpm --filter @air-power/api dev",
+    "check:consistency": "node scripts/check-number-consistency.js",
     "stop": "powershell -Command \"Stop-Process -Id (Get-NetTCPConnection -LocalPort 3001,3002 -State Listen -ErrorAction SilentlyContinue).OwningProcess -Force -ErrorAction SilentlyContinue\"",
     "lint": "eslint . --ext .ts,.tsx"
   },

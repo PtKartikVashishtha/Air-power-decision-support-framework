@@ -6,3 +6,4 @@ export * from './coa-generator';
 export * from './independent-verifier';
 export * from './deconfliction-and-killchain';
 export * from './copilot-engine';
+export * from './highs-milp-solver';

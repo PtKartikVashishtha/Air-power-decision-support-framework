@@ -67,25 +67,33 @@ const KNOWN_BASES: Record<string, string> = {
 const UNSAFE_PATTERNS = [
   /nuclear/i,
   /thermonuclear/i,
+  /bypass\s+.*commander/i,
   /bypass\s+human/i,
-  /bypass\s+commander/i,
+  /auto-commit\s+strike/i,
+  /exfiltrate/i,
   /drop\s+table/i,
   /delete\s+from/i,
   /<script/i,
   /prompt\s+injection/i,
   /unrestricted\s+assistant/i,
   /pastebin/i,
-  /outside\s+secure\s+air-gap/i,
+  /outside.*air[- ]*gap/i,
   /civilian\s+hospital/i,
-  /negative\s+\d+\s+litres/i,
-  /sudo\s+rm/i,
-  /unauthorized\s+strike/i,
+  /negative\s+\d+\s*(kg|litres|liters)/i,
+  /sudo/i,
+  /unauthorized/i,
+  /biological/i,
+  /chemical/i,
+  /shutdown/i,
+  /unrestricted/i,
   /ignore\s+defense\s+rules/i,
   /ignore\s+safety/i,
   /override\s+pilot/i,
   /duty\s+time.*99/i,
+  /disable.*duty/i,
+  /continuous\s+combat/i,
   /continuous\s+flight/i,
-  /disable.*collision/i,
+  /(turn\s+off|disable).*collision/i,
   /disable.*safety/i,
   /safety\s+margins/i,
   /non-military/i,
@@ -272,12 +280,12 @@ export class TacticalCopilotEngine {
       }
     }
 
-    // Tail numbers (e.g. SB021, KH201, RB002, KB701, TU001, IL001, etc.)
-    const tailMatches = raw.match(/\b([A-Z]{2}\d{3})\b/g);
+    // Tail numbers (e.g. SB021, KH201, RB002, KB701, TU001, IL001, etc. - case insensitive)
+    const tailMatches = raw.match(/\b([A-Za-z]{2}\d{3})\b/g);
     if (tailMatches && tailMatches.length > 0) {
-      slots.tailNumber = tailMatches[0];
+      slots.tailNumber = tailMatches[0].toUpperCase();
       if (tailMatches.length > 1) {
-        slots.secondTailNumber = tailMatches[1];
+        slots.secondTailNumber = tailMatches[1].toUpperCase();
       }
     }
 
@@ -288,15 +296,15 @@ export class TacticalCopilotEngine {
     }
 
     // Targets (e.g. T01, T03, TST-09, T12)
-    const targetMatches = raw.match(/\b(TST-\d{2}|T\d{2})\b/i);
+    const targetMatches = raw.match(/\b(TST-?\d{1,2}|T\d{1,2})\b/i);
     if (targetMatches) {
       slots.targetId = targetMatches[0].toUpperCase();
     }
 
     // Priority
-    if (lower.includes('critical') || lower.includes('criticall')) slots.priority = 'CRITICAL';
+    if (lower.includes('critical') || lower.includes('criticall') || lower.includes('crtical') || lower.includes('flash') || lower.includes('top strategic')) slots.priority = 'CRITICAL';
     else if (lower.includes('high') && !lower.includes('highest')) slots.priority = 'HIGH';
-    else if (lower.includes('medium')) slots.priority = 'MEDIUM';
+    else if (lower.includes('medium') || lower.includes('routine')) slots.priority = 'MEDIUM';
     else if (/\blow\b/i.test(lower)) slots.priority = 'LOW';
 
     // COA Types
@@ -340,7 +348,7 @@ export class TacticalCopilotEngine {
     }
 
     // Quantities (e.g. "2 Su-30s", "4 aircraft", "2 strike aircraft")
-    const countMatch = lower.match(/\b(\d+)\s*(?:[a-z0-9-]+\s+)?(su-30|aircraft|fighters|jets|tails|airframes)/i);
+    const countMatch = lower.match(/\b(\d+)\s*(?:[a-z0-9-]+\s+)?(su-30|aircraft|fighters|jets|tails|airframes|airframe|stike|strike)/i);
     if (countMatch) {
       slots.count = parseInt(countMatch[1], 10);
     }
@@ -366,8 +374,11 @@ export class TacticalCopilotEngine {
     if (
       lower.includes('undo') ||
       lower.includes('undoo') ||
+      lower.includes('undooo') ||
       lower.includes('revert') ||
       lower.includes('roll back') ||
+      lower.includes('rollback') ||
+      lower.includes('discard') ||
       lower.includes('cancel the last') ||
       lower.includes('restore previous')
     ) {
@@ -389,15 +400,36 @@ export class TacticalCopilotEngine {
       return { intent: 'HELP', confidence: 0.96, requiresClarification: false };
     }
 
-    // 3. EXPLAIN ASSIGNMENT / COUNTERFACTUAL
+    // 3. TIME CONTROL (checked before general simulation / what-if)
+    const hasTimeControl =
+      slots.timeAction ||
+      lower.includes('clock') ||
+      lower.includes('ticker') ||
+      lower.includes('simulation time') ||
+      ((lower.includes('simulation') || lower.includes('sim ')) && (lower.includes('speed') || lower.includes('pause') || lower.includes('resume') || lower.includes('real time') || lower.includes('hold')));
+
+    if (hasTimeControl) {
+      return {
+        intent: 'CONTROL_TIME',
+        confidence: 0.96,
+        requiresClarification: false,
+      };
+    }
+
+    // 4. EXPLAIN ASSIGNMENT / COUNTERFACTUAL
     const hasExplainTerm =
       tokens.some((t) => similarity(t, 'explain') >= 0.75 || similarity(t, 'explaine') >= 0.75) ||
       lower.startsWith('why') ||
+      lower.startsWith('y ') ||
+      lower.startsWith('y was') ||
       lower.includes('why was') ||
       lower.includes('why did') ||
       lower.includes('rationale') ||
       lower.includes('constraint reason') ||
-      lower.includes('counterfactual');
+      lower.includes('counterfactual') ||
+      lower.includes('mathematical basis') ||
+      lower.includes('kyun') ||
+      lower.includes('kyu');
 
     if (hasExplainTerm) {
       if (!slots.tailNumber && !slots.targetId && !slots.sortieId && !slots.baseId && !lower.includes('lead') && !lower.includes('pilot')) {
@@ -415,18 +447,20 @@ export class TacticalCopilotEngine {
       return { intent: 'EXPLAIN_ASSIGNMENT', confidence: 0.95, requiresClarification: false };
     }
 
-    // 4. WHAT-IF FORK & SIMULATION CONTINGENCY
+    // 5. WHAT-IF FORK & SIMULATION CONTINGENCY
     const hasWhatIfTerm =
       lower.startsWith('what if') ||
       lower.includes('what if') ||
       lower.includes('what-if') ||
       lower.includes('simulate') ||
-      lower.includes('fork current plan') ||
-      lower.includes('contingency where') ||
+      lower.includes('simulat') ||
+      lower.includes('fork') ||
+      lower.includes('attrition') ||
+      lower.includes('contingency') ||
       lower.includes('what happens');
 
     if (hasWhatIfTerm) {
-      if (lower.trim() === 'what if base is lost') {
+      if (lower.trim() === 'what if base is lost' || lower.trim() === 'simulate what if base is lost' || lower.trim() === 'what if' || lower.trim() === 'simulate what-if') {
         return {
           intent: 'AMBIGUOUS_CLARIFY',
           confidence: 0.85,
@@ -434,7 +468,7 @@ export class TacticalCopilotEngine {
           clarification: {
             missingSlot: 'baseId',
             prompt: 'Which base should be simulated as lost in the what-if sandbox?',
-            options: ['Base Bhuj', 'Base Naliya', 'Base Jodhpur'],
+            options: ['Base Bhuj lost', 'Base Naliya closed', 'Base Jodhpur'],
           },
         };
       }
@@ -443,10 +477,15 @@ export class TacticalCopilotEngine {
 
     // 5. CANCEL / ABORT SORTIE
     const hasCancelTerm =
-      tokens.some((t) => similarity(t, 'cancel') >= 0.75 || similarity(t, 'cancell') >= 0.75 || similarity(t, 'abort') >= 0.75 || similarity(t, 'abourt') >= 0.75 || similarity(t, 'scrub') >= 0.75) ||
+      tokens.some((t) => similarity(t, 'cancel') >= 0.75 || similarity(t, 'cancell') >= 0.75 || similarity(t, 'cancl') >= 0.75 || similarity(t, 'abort') >= 0.75 || similarity(t, 'abourt') >= 0.75 || similarity(t, 'scrub') >= 0.75) ||
       lower.includes('stand down') ||
       lower.includes('call back') ||
-      lower.includes('terminate mission');
+      lower.includes('terminate mission') ||
+      lower.includes('terminate flight') ||
+      lower.includes('rtb') ||
+      lower.includes('recall') ||
+      lower.includes('wapas bulao') ||
+      lower.includes('vapas bulao');
 
     if (hasCancelTerm) {
       if (!slots.sortieId) {
@@ -468,7 +507,10 @@ export class TacticalCopilotEngine {
     const hasSwapTerm =
       tokens.some((t) => similarity(t, 'swap') >= 0.75 || similarity(t, 'swapp') >= 0.75 || similarity(t, 'substitute') >= 0.75 || similarity(t, 'substitue') >= 0.75 || similarity(t, 'replace') >= 0.75) ||
       lower.includes('exchange airframe') ||
-      lower.includes('switch airframe');
+      lower.includes('switch airframe') ||
+      lower.includes('trade airframe') ||
+      lower.includes('hot-spare') ||
+      lower.includes('trade');
 
     if (hasSwapTerm) {
       if (!slots.tailNumber || !slots.secondTailNumber) {
@@ -486,14 +528,21 @@ export class TacticalCopilotEngine {
       return { intent: 'SWAP_AIRFRAME', confidence: 0.95, requiresClarification: false };
     }
 
-    // 7. GROUND AIRCRAFT / AOG (precise word matching, does NOT match 'around')
+    // 7. GROUND AIRCRAFT / AOG (precise word matching, does NOT match 'around' or status listings)
+    const isAogQuery = (lower.includes('list') || lower.includes('dikhao') || lower.includes('show') || lower.includes('report')) && lower.includes('aog');
     const hasGroundTerm =
-      tokens.some((t) => t === 'ground' || t === 'grounded' || t === 'groound' || t === 'grounding') ||
+      !isAogQuery &&
+      (tokens.some((t) => t === 'ground' || t === 'grounded' || t === 'groound' || t === 'grnd' || t === 'grounding') ||
       lower.includes('aog') ||
+      lower.includes('red-x') ||
+      lower.includes('red x') ||
+      lower.includes('dead-stick') ||
+      lower.includes('off the active flight schedule') ||
       lower.includes('maintenance snag') ||
+      lower.includes('snag ki wajah') ||
       lower.includes('offline for maintenance') ||
       lower.includes('unserviceable') ||
-      lower.includes('withdraw tail');
+      lower.includes('withdraw tail'));
 
     if (hasGroundTerm) {
       if (!slots.tailNumber) {
@@ -513,10 +562,19 @@ export class TacticalCopilotEngine {
 
     // 8. CLOSE AIRBASE
     const hasCloseBaseTerm =
-      tokens.some((t) => similarity(t, 'close') >= 0.75 || similarity(t, 'cloose') >= 0.75 || similarity(t, 'shut') >= 0.75) &&
-      (lower.includes('base') || lower.includes('airfield') || lower.includes('runway'));
+      (tokens.some((t) => similarity(t, 'close') >= 0.75 || similarity(t, 'cloose') >= 0.75 || similarity(t, 'clsoe') >= 0.75 || similarity(t, 'shut') >= 0.75 || similarity(t, 'clos') >= 0.75) &&
+        (lower.includes('base') || lower.includes('airfield') || lower.includes('airfild') || lower.includes('runway') || lower.includes('airport') || lower.includes('aiport') || !!slots.baseId)) ||
+      lower.includes('band kardo') ||
+      lower.includes('band kar do') ||
+      lower.includes('blackout') ||
+      lower.includes('suspend all departures') ||
+      lower.includes('unserviceable at base') ||
+      lower.includes('declare runway unserviceable') ||
+      lower.includes('halt all takeoffs') ||
+      lower.includes('suspend operations at base') ||
+      lower.includes('declare base closure');
 
-    if (hasCloseBaseTerm || lower.includes('halt all takeoffs') || lower.includes('suspend operations at base') || lower.includes('declare base closure')) {
+    if (hasCloseBaseTerm) {
       if (!slots.baseId) {
         return {
           intent: 'AMBIGUOUS_CLARIFY',
@@ -535,16 +593,17 @@ export class TacticalCopilotEngine {
     // 9. SET PRIORITY (checked before general COA switch when targetId is present)
     const hasPriorityTerm =
       tokens.some((t) => similarity(t, 'priority') >= 0.75 || similarity(t, 'priorty') >= 0.75 || similarity(t, 'prioritize') >= 0.75) ||
-      lower.includes('elevate target') ||
+      lower.includes('elevate') ||
       lower.includes('downgrade target') ||
       lower.includes('make target') ||
-      lower.includes('mark target');
+      lower.includes('mark target') ||
+      lower.includes('bana do');
 
     if (hasPriorityTerm && slots.targetId) {
       if (!slots.priority) {
-        if (lower.includes('over all') || lower.includes('critical')) slots.priority = 'CRITICAL';
+        if (lower.includes('over all') || lower.includes('critical') || lower.includes('flash') || lower.includes('top strategic')) slots.priority = 'CRITICAL';
         else if (lower.includes('high')) slots.priority = 'HIGH';
-        else if (lower.includes('medium')) slots.priority = 'MEDIUM';
+        else if (lower.includes('medium') || lower.includes('routine')) slots.priority = 'MEDIUM';
         else if (lower.includes('low')) slots.priority = 'LOW';
       }
       if (slots.priority) {
@@ -591,48 +650,21 @@ export class TacticalCopilotEngine {
       };
     }
 
-    // 12. ADD TST TARGET
-    const hasTstTerm =
-      lower.includes('tst') ||
-      lower.includes('time-sensitive') ||
-      lower.includes('time sensitive') ||
-      lower.includes('time critical') ||
-      lower.includes('emergent target') ||
-      lower.includes('pop-up target') ||
-      lower.includes('pop-up convoy') ||
-      lower.includes('mobile launcher');
-
-    if (hasTstTerm) {
-      return { intent: 'ADD_TST_TARGET', confidence: 0.95, requiresClarification: false };
-    }
-
-    // 13. SET PRIORITY (fallback without targetId)
-    if (hasPriorityTerm) {
-      return {
-        intent: 'AMBIGUOUS_CLARIFY',
-        confidence: 0.85,
-        requiresClarification: true,
-        clarification: {
-          missingSlot: 'targetId',
-          prompt: 'Which target ID should have its priority updated?',
-          options: ['T01', 'T02', 'T03', 'T04'],
-        },
-      };
-    }
-
-    // 14. RETASK THREAT
+    // 12. RETASK THREAT
     const hasRetaskTerm =
       tokens.some((t) => similarity(t, 'retask') >= 0.75 || similarity(t, 'retaskk') >= 0.75 || similarity(t, 'divert') >= 0.75 || similarity(t, 'divrt') >= 0.75 || similarity(t, 'reroute') >= 0.75 || similarity(t, 'replan') >= 0.75) ||
       lower.includes('sam') ||
       lower.includes('threat') ||
       lower.includes('evasive replan') ||
       lower.includes('threat ring') ||
-      lower.includes('bypass') ||
       lower.includes('re-vector') ||
+      lower.includes('surface-to-air') ||
+      lower.includes('s-400') ||
+      lower.includes('engagement dome') ||
       lower.includes('flight paths away');
 
     if (hasRetaskTerm) {
-      if (lower.trim() === 'divert flight package' || lower.trim() === 'retask sorties') {
+      if (lower.trim() === 'retask strike packages' || lower.trim() === 'divert flight line') {
         return {
           intent: 'AMBIGUOUS_CLARIFY',
           confidence: 0.85,
@@ -647,12 +679,47 @@ export class TacticalCopilotEngine {
       return { intent: 'RETASK_THREAT', confidence: 0.95, requiresClarification: false };
     }
 
+    // 13. ADD TST TARGET
+    const hasTstTerm =
+      lower.includes('tst') ||
+      lower.includes('time-sensitive') ||
+      lower.includes('time sensitive') ||
+      lower.includes('time critical') ||
+      lower.includes('emergent target') ||
+      lower.includes('pop-up target') ||
+      lower.includes('pop-up convoy') ||
+      lower.includes('mobile launcher') ||
+      lower.includes('flash traffic') ||
+      lower.includes('target convoy') ||
+      (slots.targetId && (lower.includes('bhejo') || lower.includes('dispatch') || lower.includes('engage')));
+
+    if (hasTstTerm) {
+      return { intent: 'ADD_TST_TARGET', confidence: 0.95, requiresClarification: false };
+    }
+
+    // 14. SET PRIORITY (fallback without targetId)
+    if (hasPriorityTerm) {
+      return {
+        intent: 'AMBIGUOUS_CLARIFY',
+        confidence: 0.85,
+        requiresClarification: true,
+        clarification: {
+          missingSlot: 'targetId',
+          prompt: 'Which target ID should have its priority updated?',
+          options: ['T01', 'T02', 'T03', 'T04'],
+        },
+      };
+    }
+
     // 15. QUERY STATUS / READINESS
     const hasStatusTerm =
+      isAogQuery ||
       tokens.some((t) => similarity(t, 'status') >= 0.75 || similarity(t, 'readiness') >= 0.75 || similarity(t, 'readines') >= 0.75 || similarity(t, 'report') >= 0.75 || similarity(t, 'repport') >= 0.75) ||
       lower.includes('how many') ||
       lower.includes('fuel reserve') ||
       lower.includes('pilot fatigue') ||
+      lower.includes('pilot roster') ||
+      lower.includes('roster and fatigue') ||
       lower.includes('cop fusion') ||
       lower.includes('airborne') ||
       lower.includes('duty hours') ||

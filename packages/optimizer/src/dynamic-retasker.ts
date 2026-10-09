@@ -173,13 +173,30 @@ export class DynamicRetaskingEngine {
       }
     }
 
-    // 5. Compute Stability Index based on proportion of preserved sorties
+    // 5. Compute Stability Index & Granular Disruption Metrics
     const totalSorties = Math.max(1, originalPlan.sorties.length);
     const cancelledCount = changes.filter((c) => c.changeType === 'CANCELLED').length;
     const reroutedCount = changes.filter((c) => c.changeType === 'REROUTED').length;
-    // Rerouted sorties incur half the disruption penalty of outright cancellations
+    const addedCount = changes.filter((c) => c.changeType === 'ADDED').length;
+
+    // Operational stability formula (preservation ratio of existing committed sorties)
     const disruption = (cancelledCount + 0.5 * reroutedCount) / totalSorties;
     const stabilityIndex = Math.max(20, Math.min(100, Math.round((1 - disruption) * 100)));
+
+    // Legacy formula for full audit disclosure (penalized newly added sorties as changes)
+    const legacyAffected = changes.length;
+    const legacyStabilityIndex = Math.max(
+      20,
+      Math.min(100, Math.round(100 - (legacyAffected / totalSorties) * 40))
+    );
+
+    // Granular disruption indicators
+    const preservedSortiesPercent = Math.max(
+      0,
+      Math.min(100, Math.round(((totalSorties - cancelledCount) / totalSorties) * 100))
+    );
+    const tailCrewSwapCount = reroutedCount;
+    const hammingDistanceSorties = cancelledCount + reroutedCount + addedCount;
 
     // 6. Recalculate KPIs for the updated plan
     const coveredTgtSet = new Set<string>();
@@ -230,14 +247,16 @@ export class DynamicRetaskingEngine {
 ### TACTICAL RETASKING ACTION REPORT // ${inject.type}
 **Trigger Event**: ${inject.title}  
 **Time of Retask**: H+${Math.floor(currentSimTimeMinutes)}m  
-**Stability Index**: **${stabilityIndex}%** (Minimal operational disruption)
+**Operational Stability Index**: **${stabilityIndex}%** (Preserved Sorties: ${preservedSortiesPercent}%)  
+**Legacy Audit Metric**: ${legacyStabilityIndex}% (Raw change-count sensitivity)  
+**Plan Hamming Distance**: ${hammingDistanceSorties} discrete sortie shifts (Swaps: ${tailCrewSwapCount})
 
 #### Key Decisions Taken:
 1. **Frozen Zone Respect**: ${frozenSorties.length} committed sorties were held static without flight disruption.
 2. **Resource Adjustments**:
-   - **${changes.filter((c) => c.changeType === 'ADDED').length}** Sorties Added (Immediate strike coverage established).
-   - **${changes.filter((c) => c.changeType === 'REROUTED').length}** Sorties Rerouted (Threat envelope bypassed / hot-spare substitution).
-   - **${changes.filter((c) => c.changeType === 'CANCELLED').length}** Sorties Stood Down / Diverted.
+   - **${addedCount}** Sorties Added (Immediate strike coverage established).
+   - **${reroutedCount}** Sorties Rerouted (Threat envelope bypassed / hot-spare substitution).
+   - **${cancelledCount}** Sorties Stood Down / Diverted.
 3. **Strategic Net Impact**:
    - Target Coverage: **${updatedPlan.kpis.priorityCoveragePercent}%** (vs Original **${originalPlan.kpis.priorityCoveragePercent}%**).
    - Expected Mission Risk: **${updatedPlan.kpis.totalExpectedLossScore}** (Mitigated).
@@ -253,6 +272,10 @@ export class DynamicRetaskingEngine {
       updatedPlanId: updatedPlan.id,
       timestamp: new Date().toISOString(),
       stabilityIndex,
+      legacyStabilityIndex,
+      preservedSortiesPercent,
+      tailCrewSwapCount,
+      hammingDistanceSorties,
       changes,
       commanderBriefMarkdown,
     };

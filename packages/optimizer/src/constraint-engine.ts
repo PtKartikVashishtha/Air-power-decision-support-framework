@@ -95,7 +95,8 @@ export class TacticalConstraintEngine {
     }
 
     // 5. Munitions Compatibility & Stock Availability
-    for (const load of sortie.munitionLoadout) {
+    const loadout = sortie.munitionLoadout || (sortie as any).assignedMunitions || [];
+    for (const load of loadout) {
       const munSpec = MUNITION_CATALOG.find((m) => m.id === load.munitionId);
       if (!munSpec) {
         hardViolations.push(`Munition ${load.munitionId} not recognized in catalog.`);

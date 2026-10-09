@@ -328,7 +328,11 @@ export const RetaskingDiffReportSchema = z.object({
   originalPlanId: z.string(),
   updatedPlanId: z.string(),
   timestamp: z.string(),
-  stabilityIndex: z.number().min(0).max(100), // 100 = zero disturbance, lower = heavy shift
+  stabilityIndex: z.number().min(0).max(100), // Operational stability index (100 = zero disturbance)
+  legacyStabilityIndex: z.number().min(0).max(100).optional(), // Pre-audit legacy formula for full audit transparency
+  preservedSortiesPercent: z.number().min(0).max(100).optional(), // Fraction of committed sorties unchanged
+  tailCrewSwapCount: z.number().nonnegative().optional(), // In-place hot-spare airframe/crew swaps
+  hammingDistanceSorties: z.number().nonnegative().optional(), // Discrete plan assignment vector distance
   changes: z.array(SortieDiffItemSchema),
   commanderBriefMarkdown: z.string(),
 });

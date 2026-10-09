@@ -202,7 +202,8 @@ export class IndependentPlanVerifier {
       }
 
       // C10: Munition compatibility and base stock non-negativity
-      for (const mLoad of sortie.munitionLoadout) {
+      const mLoadout = sortie.munitionLoadout || (sortie as any).assignedMunitions || [];
+      for (const mLoad of mLoadout) {
         const munSpec = MUNITION_CATALOG.find((m) => m.id === mLoad.munitionId);
         if (!munSpec) {
           violations.push(`[C10] Unknown munition ID ${mLoad.munitionId}.`);

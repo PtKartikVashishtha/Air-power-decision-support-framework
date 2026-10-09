@@ -97,6 +97,7 @@ async function run() {
 
             // 3. Check for elements spilling past viewport or unhandled horizontal overflow
             const main = document.querySelector('main');
+            const dismissed = [];
             if (main) {
               const elements = main.querySelectorAll('*');
               elements.forEach((el) => {
@@ -110,21 +111,47 @@ async function run() {
                   style.overflow === 'scroll' ||
                   style.textOverflow === 'ellipsis';
 
-                // Real unintended spill
-                if (!isManaged && el.clientWidth > 0 && el.scrollWidth > el.clientWidth + 16) {
-                  detected.push({
-                    type: 'ELEMENT_HORIZONTAL_SPILL',
-                    tag: el.tagName,
-                    class: (el.className || '').toString().slice(0, 40),
-                    overflowPx: el.scrollWidth - el.clientWidth,
-                    snippet: (el.textContent || '').trim().slice(0, 30)
-                  });
+                if (el.clientWidth > 0 && el.scrollWidth > el.clientWidth) {
+                  const spill = el.scrollWidth - el.clientWidth;
+                  if (isManaged) {
+                    dismissed.push({
+                      tag: el.tagName,
+                      class: (el.className || '').toString().slice(0, 50),
+                      spillPx: spill,
+                      reason: `Legitimate CSS managed scrolling/clipping (${style.overflowX || style.overflow})`,
+                      snippet: (el.textContent || '').trim().slice(0, 30),
+                    });
+                  } else if (spill <= 4) {
+                    dismissed.push({
+                      tag: el.tagName,
+                      class: (el.className || '').toString().slice(0, 50),
+                      spillPx: spill,
+                      reason: 'Sub-pixel rendering tolerance (<= 4px)',
+                      snippet: (el.textContent || '').trim().slice(0, 30),
+                    });
+                  } else {
+                    // Real unintended spill
+                    detected.push({
+                      type: 'ELEMENT_HORIZONTAL_SPILL',
+                      tag: el.tagName,
+                      class: (el.className || '').toString().slice(0, 40),
+                      overflowPx: spill,
+                      snippet: (el.textContent || '').trim().slice(0, 30),
+                    });
+                  }
                 }
               });
             }
 
-            return detected;
+            return { detected, dismissed };
           });
+
+          const issues = result.detected || [];
+          const dismissedItems = result.dismissed || [];
+          if (dismissedItems.length > 0 && zoom === 1.0 && vp.name === '1920x1080') {
+            const dismissedLogPath = path.join(REPORT_DIR, `dismissed_${tab.key}.json`);
+            fs.writeFileSync(dismissedLogPath, JSON.stringify(dismissedItems.slice(0, 20), null, 2));
+          }
 
           if (issues.length > 0) {
             allFindings.push({
