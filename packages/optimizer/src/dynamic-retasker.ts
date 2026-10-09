@@ -82,11 +82,12 @@ export class DynamicRetaskingEngine {
     for (const s of flexibleSorties) {
       if (aogTail && s.aircraftTail === aogTail) {
         // Airframe is grounded: attempt spare substitution at same base
+        const originalAc = modifiedAircraft.find((a) => a.tailNumber === s.aircraftTail);
         const candidateSpare = modifiedAircraft.find(
           (a) =>
             a.status === 'FMC' &&
-            a.homeBaseId === s.originBaseId &&
-            a.model === s.aircraftModel &&
+            a.baseId === s.originBaseId &&
+            (!originalAc || a.model === originalAc.model) &&
             !usedTails.has(a.tailNumber)
         );
 
@@ -136,7 +137,7 @@ export class DynamicRetaskingEngine {
     // 4. If inject is NEW_HIGH_VALUE_TST, solve an emergency package for it using reserve assets
     if (inject.type === 'NEW_HIGH_VALUE_TST') {
       const tstTarget = modifiedTargets.find(
-        (t) => t.category === 'TIME_SENSITIVE' || t.priority >= 90
+        (t) => t.isTimeSensitive || t.category === 'TIME_SENSITIVE_TARGET_CONVOY' || t.priority >= 90
       );
       if (tstTarget) {
         const availableSpareAircraft = modifiedAircraft.filter(
@@ -204,8 +205,8 @@ export class DynamicRetaskingEngine {
     let totalFuel = 0;
     for (const s of survivingSorties) {
       coveredTgtSet.add(s.targetRequestId);
-      totalRisk += s.threatExposureRisk;
-      totalFuel += s.fuelRequiredKg;
+      totalRisk += s.expectedRiskScore;
+      totalFuel += s.fuelPlannedKg;
     }
 
     let coveredPrioSum = 0;

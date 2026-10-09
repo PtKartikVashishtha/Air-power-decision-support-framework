@@ -7,3 +7,5 @@ export * from './independent-verifier';
 export * from './deconfliction-and-killchain';
 export * from './copilot-engine';
 export * from './highs-milp-solver';
+export * from './terrain-elevation';
+export * from './route-planner';

@@ -531,7 +531,7 @@ export class PackageGreedyLocalSearchBaseline {
         trialSorties.push({
           ...s,
           targetRequestId: unassigned.id,
-          threatExposureRisk: risk,
+          expectedRiskScore: risk,
         });
       }
 
@@ -566,8 +566,8 @@ export class PackageGreedyLocalSearchBaseline {
     let totalFuel = 0;
     let totalRisk = 0;
     for (const s of bestSorties) {
-      totalFuel += s.fuelRequiredKg;
-      totalRisk += s.threatExposureRisk;
+      totalFuel += s.fuelPlannedKg;
+      totalRisk += s.expectedRiskScore;
     }
 
     const verification = this.verifier.verifyPlan(

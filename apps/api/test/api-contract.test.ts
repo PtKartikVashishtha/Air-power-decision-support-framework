@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { generateSyntheticScenario } from '@air-power/sim';
-import { AlnsTacticalOptimizer } from '@air-power/optimizer';
+import { AlnsTacticalOptimizer, ThreatAwareRoutePlanner } from '@air-power/optimizer';
 
 describe('Fastify API Contract & Schema Invariant Tests', () => {
   const scenario = generateSyntheticScenario(42);
@@ -60,5 +60,20 @@ describe('Fastify API Contract & Schema Invariant Tests', () => {
     expect(models.has('Mirage Class')).toBe(true);
     expect(models.has('IL-78 Tanker Class')).toBe(true);
     expect(models.has('Netra AEW&C Class')).toBe(true);
+  });
+
+  it('Route planner produces valid route A vs route B comparison contract', () => {
+    const planner = new ThreatAwareRoutePlanner();
+    const origin = scenario.bases[0].location;
+    const target = scenario.targetRequests[0].location;
+
+    const comp = planner.planAndCompareRoutes(origin, target, scenario.threats, 'RAFALE_CLASS');
+    expect(comp.routeA.totalDistanceKm).toBeGreaterThan(50);
+    expect(comp.routeB.totalDistanceKm).toBeGreaterThan(50);
+    expect(comp.fuelDeltaKg).toBeTypeOf('number');
+    expect(comp.timeDeltaMinutes).toBeTypeOf('number');
+    expect(comp.riskReductionPercent).toBeGreaterThanOrEqual(0);
+    expect(comp.routeB.waypoints.length).toBeGreaterThan(2);
+    expect(comp.routeB.elevationProfile.length).toBeGreaterThan(10);
   });
 });

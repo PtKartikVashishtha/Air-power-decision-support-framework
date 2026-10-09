@@ -21,6 +21,7 @@ This register indexes every quantitative claim made in the user interface, prese
 | **CLM-10** | **Temporal Decay Half-Life: 120 min** | Data Fusion Core | `pnpm test` | `packages/sim/src/fusion-core.ts` | Half-life for radar/SAM contacts based on mobile SAM relocation doctrine ($t_{1/2} = 120\text{ min}$). |
 | **CLM-11** | **Blind Held-Out Copilot: 91.33% Intent Accuracy** | Copilot Interface | `pnpm --filter @air-power/optimizer test test/copilot-heldout.test.ts` | `packages/shared/copilot-heldout-corpus.json` | Evaluated across 150 held-out unseen blind queries (100% Hinglish, 100% safety, 100% military colloquialism, 90% typos). |
 | **CLM-12** | **Predictive Calibration Under OOD Shift** | Predictive Calibration Tab | `pnpm --filter @air-power/sim test test/distribution-shift.test.ts` | `packages/sim/src/distribution-shift.ts` | Discloses synthetic calibration caveat: Brier score degrades $1.63\times$ when shifted from Desert baseline to Contested Mountain A2/AD. |
+| **CLM-13** | **Threat Risk Reduction: 30–75% via Terrain Masking** | 3D Tactical COP & Route Drawer | `pnpm exec vitest run packages/optimizer/test/route-planner.test.ts` | `packages/optimizer/src/route-planner.ts` | Tested on synthetic northern/western sector with 4/3 Earth refraction; Route B delivers 30-75% lower risk score and >50% terrain masking from SAM radars compared to direct FL300 route. |
 
 ---
 

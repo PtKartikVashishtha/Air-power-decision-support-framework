@@ -27,6 +27,7 @@ export const CopilotSlotsSchema = z.object({
   secondTailNumber: z.string().optional(),
   baseId: z.string().optional(),
   baseName: z.string().optional(),
+  secondBaseId: z.string().optional(),
   sortieId: z.string().optional(),
   priority: z.enum(['CRITICAL', 'HIGH', 'MEDIUM', 'LOW']).optional(),
   coaType: z.enum(['MAX_EFFECT', 'MIN_RISK', 'BALANCED_RESERVE']).optional(),

@@ -14,6 +14,7 @@ import {
   DeconflictionAndKillChainEngine,
   TacticalCopilotEngine,
   IndependentPlanVerifier,
+  ThreatAwareRoutePlanner,
 } from '@air-power/optimizer';
 import {
   generateAtoMilitaryText,
@@ -638,7 +639,45 @@ fastify.post('/api/human-baseline/verify', async (request) => {
   return verification;
 });
 
-// 14. SSE Live Stream for UI
+// 14. 3D Threat-Aware Route Planner & Comparison (Route A vs Route B)
+const routePlanner = new ThreatAwareRoutePlanner();
+
+fastify.post('/api/routes/compare', async (request) => {
+  const body = (request.body as any) || {};
+  const pic = stateStore.getFusedPicture();
+
+  // Find origin airbase
+  let originCoord = body.origin;
+  if (!originCoord && body.originBaseId) {
+    const base = pic.bases.find((b) => b.id === body.originBaseId);
+    if (base) originCoord = base.location;
+  }
+  if (!originCoord) {
+    originCoord = pic.bases[0]?.location || { lat: 30.368, lon: 76.817, altM: 272 };
+  }
+
+  // Find target location
+  let targetCoord = body.target;
+  if (!targetCoord && body.targetId) {
+    const tgt = pic.targetRequests.find((t) => t.id === body.targetId);
+    if (tgt) targetCoord = tgt.location;
+  }
+  if (!targetCoord) {
+    targetCoord = pic.targetRequests[0]?.location || { lat: 32.45, lon: 74.12, altM: 450 };
+  }
+
+  const specKey = body.aircraftSpecKey || 'RAFALE_CLASS';
+  const comparison = routePlanner.planAndCompareRoutes(
+    originCoord,
+    targetCoord,
+    pic.threats,
+    specKey
+  );
+
+  return comparison;
+});
+
+// 15. SSE Live Stream for UI
 fastify.get('/api/stream', (request, reply) => {
   reply.raw.setHeader('Content-Type', 'text/event-stream');
   reply.raw.setHeader('Cache-Control', 'no-cache');

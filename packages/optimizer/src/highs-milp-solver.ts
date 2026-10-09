@@ -1,4 +1,3 @@
-import highs from 'highs';
 import {
   Airbase,
   Aircraft,
@@ -11,6 +10,19 @@ import {
   PlanCOA,
   Sortie,
 } from '@air-power/shared';
+
+let highsModuleLoader: any = null;
+async function loadHighsModule(): Promise<any> {
+  if (!highsModuleLoader) {
+    if (typeof window !== 'undefined') {
+      throw new Error('HiGHS MILP solver is only supported in Node.js / Server runtime');
+    }
+    const pkg = 'highs';
+    const mod = await import(/* webpackIgnore: true */ pkg);
+    highsModuleLoader = (mod as any).default || mod;
+  }
+  return highsModuleLoader;
+}
 
 export interface MilpSolutionResult {
   status: 'Optimal' | 'Feasible' | 'Infeasible' | 'TimeLimit' | 'Error';
@@ -35,7 +47,8 @@ export class HighsMilpSolver {
 
   private async getHighs() {
     if (!this.highsInstance) {
-      this.highsInstance = await highs();
+      const loader = await loadHighsModule();
+      this.highsInstance = await loader();
     }
     return this.highsInstance;
   }
@@ -104,9 +117,9 @@ export class HighsMilpSolver {
           let isCompatible = false;
           if (role === 'STRIKE' && (plane.roles.includes('OMNIROLE_STRIKE') || plane.roles.includes('DEEP_PENETRATION_STRIKE'))) {
             isCompatible = true;
-          } else if (role === 'SEAD' && (plane.roles.includes('AIR_DEFENCE_SEAD') || plane.roles.includes('OMNIROLE_STRIKE'))) {
+          } else if (role === 'SEAD' && (plane.roles.includes('SEAD_DEAD') || plane.roles.includes('OMNIROLE_STRIKE'))) {
             isCompatible = true;
-          } else if (role === 'ESCORT' && (plane.roles.includes('AIR_SUPERIORITY_CAP') || plane.roles.includes('OMNIROLE_STRIKE'))) {
+          } else if (role === 'ESCORT' && (plane.roles.includes('AIR_SUPERIORITY') || plane.roles.includes('OMNIROLE_STRIKE'))) {
             isCompatible = true;
           }
 
@@ -221,16 +234,17 @@ export class HighsMilpSolver {
             targetRequestId: meta.target.id,
             role: meta.role as any,
             aircraftTail: meta.airframe.tailNumber,
-            aircraftModel: meta.airframe.model,
             pilotId: 'MILP-PLT',
             originBaseId: meta.airframe.baseId,
             recoveryBaseId: meta.airframe.baseId,
             depTimeMinutes: Math.max(0, tot - flightMin),
+            totMinutes: tot,
             recoveryTimeMinutes: tot + flightMin,
             status: 'SCHEDULED',
-            assignedMunitions: [],
-            threatExposureRisk: meta.risk,
-            fuelRequiredKg: meta.fuel,
+            munitionLoadout: [],
+            routeWaypoints: [meta.target.location, meta.target.location],
+            expectedRiskScore: meta.risk,
+            fuelPlannedKg: meta.fuel,
             isFrozen: false,
           });
         }
