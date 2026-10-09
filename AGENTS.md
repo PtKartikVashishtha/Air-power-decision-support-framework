@@ -10,4 +10,6 @@
 8. **Visual Excellence**: The UI must look like an elite defense command center (dark glassmorphism, precise military typography, crisp tactical symbology, responsive animations).
 9. **Zero Unsubstantiated Claims**: Every number or claim in UI/docs must trace to `docs/CLAIMS_REGISTER.md` with an exact reproducible command. Never use "proven" for empirical results; state "verified by independent checker on N plans / M seeds".
 10. **Commitment to Baseline Rigour**: Never use strawman baselines; present credible human-heuristic models, state assumptions with sensitivity analysis, and acknowledge limitations honestly.
+11. **Never Ship a UI Panel Without Passing the Overflow Detector**: Every view must pass automated Playwright overflow sweeps across 5 viewports (1280x720 to 2560x1440) and zoom levels up to 150% with zero unmanaged overflow defects (`scripts/verify-layout-overflow.js`).
+12. **Never Claim an Algorithm Result Without a Logged Experiment**: Every performance, coverage, or stability metric must be supported by an executable benchmark (`pnpm run benchmark`, `pnpm test`) logging empirical seeds, 95% confidence intervals, and hypothesis test p-values to `docs/` and `benchmarks/results/`.
 

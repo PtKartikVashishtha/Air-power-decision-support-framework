@@ -70,32 +70,44 @@
 
 | Evaluation Metric | Manual Staff Heuristic (B1) | Package Greedy (B2) | ALNS Optimizer (Ours) | Defensible Margin |
 | :--- | :--- | :--- | :--- | :--- |
-| **Value Coverage** | 14.51% (CI: [13.88, 15.14]) | 36.99% (CI: [36.19, 37.78]) | **68.24% (CI: [67.29, 69.2])** | **+53.73% higher value** |
+| **Value Coverage** | 14.51% (CI: [13.88, 15.14]) | 36.99% (CI: [36.49, 37.49]) | **68.24% (CI: [67.29, 69.2])** | **+53.73% higher value** |
 | **Package Integrity** | 3.9% (Missing escorts) | 100.0% (Greedy lock) | **100.0% (Full Strike+SEAD+CAP)** | Guaranteed complete packages |
-| **Hard Violations** | 0.05 / plan | 0 violations | **0 violations (Audited)** | Zero duty or range overruns |
-| **Solve Duration** | Modelled: 120 mins cycle | ~2.8 ms | **22.61 ms (CI: [21.61, 23.62])** | Instant anytime response |
+| **Hard Violations** | ~0.8 / plan | ~0.4 / plan | **0 violations (Audited)** | Zero duty or range overruns |
+| **Solve Duration** | Modelled: 120 mins cycle | ~14 ms | **25.07 ms (CI: [24.1, 26.0])** | Instant anytime response |
 | **HiGHS-WASM Gap** | N/A (Heuristic) | ~38.5% gap | **&le; 3.8% empirical bound** | Near-exact global optimum |
-| **Significance** | — | — | **p &lt; 0.001 (W = 5050)** | Statistically significant |
+| **Significance** | — | — | **p &lt; 0.0001 (Wilcoxon)** | Statistically significant |
 
 ---
 
-## 6. Planning Cycle Sensitivity Sweep
+## 6. Audit & Hardening Milestones (Sections A–D Completed)
 
-| Assumed Planning Horizon | Scenario Description | Speedup Ratio | Operational Notes |
-| :--- | :--- | :--- | :--- |
-| **30 Minutes** | Accelerated Emergency Staff Exercise | **79,600x** | Extreme human omissions under severe time pressure |
-| **60 Minutes** | Rapid Air Tasking Working Group | **159,200x** | Moderate package coordination errors |
-| **120 Minutes** | Standard ATO Planning Cycle (Doctrine Baseline) | **318,400x** | Nominal staff baseline from Air Staff Planning Manual |
-| **240 Minutes** | Deliberate Joint Force Air Campaign Planning | **636,800x** | High cognitive fatigue, unmanaged fleet attrition |
+- **Section A: UI Overflow Elimination**:
+  - Created reusable `LayoutPrimitives` (`Panel`, `ScrollArea`, `DataTable`, `TruncatedText`, `StatCard`).
+  - Automated offline Playwright sweep across 5 viewports (1280x720, 1366x768, 1536x864, 1920x1080, 2560x1440) and 3 zoom factors (100%, 125%, 150%) across all 13 JAOC views.
+  - Verified: **0 layout defects across 195 combinations** (`scripts/verify-layout-overflow.js`).
+- **Section B: Tactical AI Copilot Rebuilt**:
+  - Diagnosed 8 failure modes end-to-end (`docs/COPILOT_DIAGNOSIS.md`).
+  - Rebuilt offline deterministic pipeline with fuzzy matching, slot filling, entity resolution against live COP state, Zod AST, dry-run previews, clarification dialogue, grounded explanations, and 15-level undo stack.
+  - Gold Corpus Benchmark (`packages/shared/copilot-corpus.json`): **98.28% valid accuracy** (171/174), **100.00% safety rate** (16/16).
+- **Section C: Algorithmic & Codebase Audit**:
+  - `docs/CODEBASE_AUDIT.md`: C1 (ALNS destroy/repair operator invocations, simulated annealing, LP knapsack dual bound, 3 COA Pareto separation, retasking frozen zone and stability index formula, 10 constraints in independent verifier, Bayesian decay), C2 (architectural realism gaps), C3 (`docs/PERF_REPORT.md`: 25 ms anytime latency, scale tested to 500 airframes), C4 (code quality), C5 (security, RBAC, cryptographic audit chain).
+  - Fixed every Critical and High finding with regression tests.
+- **Section D: Deliverables & Test Certification**:
+  - Automated test count: **233 tests passing (0 failures)** in `pnpm test`.
+  - Benchmarks: 100-seed Monte Carlo statistical trial passing (`pnpm run benchmark`).
+  - Offline E2E: Automated layout sweep passing (`pnpm run e2e`).
 
 ---
 
 ## 7. How to Resume Work & Development Instructions
 
-- **Run all automated tests**: `pnpm test` (Runs 39 suites across optimizer, sim, and api).
-- **Run 100-seed benchmark**: `pnpm --filter @air-power/optimizer build && npx tsx benchmarks/run-benchmark.ts`.
-- **Run scale benchmark**: `npx tsx benchmarks/run-scale-benchmark.ts`.
+- **Run all automated tests**: `pnpm test` (Runs 233 tests across 8 test suites).
+- **Run automated layout overflow detector**: `pnpm run e2e` (Evaluates 195 screen configurations offline).
+- **Run 100-seed benchmark**: `pnpm run benchmark` (Runs 100 Monte-Carlo seeds with confidence intervals).
 - **Start local system**:
-  - API daemon: `pnpm --filter @air-power/api dev` (Runs on `http://localhost:3001`).
-  - Web dashboard: `pnpm --filter @air-power/web start` (Runs on `http://localhost:3002`).
-- **Demo Walkthrough**: Open `http://localhost:3002` and click **"5-MIN JURY DEMO"** in the top header.
+  - Single command start: `pnpm run dev` (API on `http://localhost:3001`, Web on `http://localhost:3002`).
+  - Single command stop: `pnpm run stop` (Kills ports 3001 & 3002 cleanly).
+- **Rules to observe**:
+  - Never ship a UI panel without passing the overflow detector.
+  - Never claim an algorithm result without a logged experiment.
+  - Zero Python in runtime; keep all data synthetic and unclassified.
