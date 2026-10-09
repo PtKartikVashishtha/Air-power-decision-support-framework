@@ -13,6 +13,7 @@ import {
   PriorityGreedyBaselinePlanner,
   DeconflictionAndKillChainEngine,
   TacticalCopilotEngine,
+  IndependentPlanVerifier,
 } from '@air-power/optimizer';
 import {
   generateAtoMilitaryText,
@@ -20,6 +21,7 @@ import {
   PlanCOA,
   TacticalInject,
 } from '@air-power/shared';
+import { HumanBaselineLoader, ParticipantTrialResult } from '../../../benchmarks/human/human-baseline-loader';
 
 const fastify = Fastify({
   logger: true,
@@ -597,7 +599,46 @@ fastify.post('/api/copilot/undo', async () => {
   };
 });
 
-// 13. SSE Live Stream for UI
+// 13. Human Operator Baseline Challenge API
+fastify.get('/api/human-baseline/summary', async () => {
+  return HumanBaselineLoader.getSummary();
+});
+
+fastify.post('/api/human-baseline/submit', async (request) => {
+  const trial = request.body as ParticipantTrialResult;
+  if (!trial || !trial.participantId) {
+    return { error: 'Invalid trial submission payload' };
+  }
+  HumanBaselineLoader.appendTrial(trial);
+  return HumanBaselineLoader.getSummary();
+});
+
+fastify.post('/api/human-baseline/verify', async (request) => {
+  const body = (request.body as any) || {};
+  const rawSorties = body.sorties || [];
+  const pic = stateStore.getFusedPicture();
+  const verifier = new IndependentPlanVerifier();
+  const syntheticPlan = {
+    id: `MANUAL_${Date.now()}`,
+    doctrineFocus: 'MANUAL_HUMAN',
+    generatedAtIso: new Date().toISOString(),
+    sorties: rawSorties,
+    kpis: {
+      totalScore: 0,
+      coveredTargetsCount: 0,
+      totalRiskScore: 0,
+      totalFuelKg: 0,
+      reserveAircraftCount: Math.max(0, pic.aircraft.length - rawSorties.length),
+    },
+    targetAssignments: [],
+    isFeasible: true,
+    violations: [],
+  };
+  const verification = verifier.verifyPlan(syntheticPlan as any, pic.bases, pic.aircraft, pic.pilots, pic.targetRequests);
+  return verification;
+});
+
+// 14. SSE Live Stream for UI
 fastify.get('/api/stream', (request, reply) => {
   reply.raw.setHeader('Content-Type', 'text/event-stream');
   reply.raw.setHeader('Cache-Control', 'no-cache');

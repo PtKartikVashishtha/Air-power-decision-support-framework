@@ -16,6 +16,7 @@ import { DeconflictionKillchainPanel } from '../components/DeconflictionKillchai
 import { WargameDashboard } from '../components/WargameDashboard';
 import { AtoExportView } from '../components/AtoExportView';
 import { BenchmarkDashboard } from '../components/BenchmarkDashboard';
+import { ManualPlanningChallenge } from '../components/ManualPlanningChallenge';
 import { PredictiveCalibrationView } from '../components/PredictiveCalibrationView';
 import { WhatIfSandbox } from '../components/WhatIfSandbox';
 import { AuditTrailView } from '../components/AuditTrailView';
@@ -159,6 +160,7 @@ export default function AirPowerDashboard() {
     { label: 'CLOSED-LOOP WARGAME SIMULATOR', key: 'wargame' },
     { label: 'ATO / ACO EXPORT', key: 'export' },
     { label: 'BENCHMARK EVIDENCE HARNESS', key: 'bench' },
+    { label: 'MANUAL CHALLENGE MODE', key: 'challenge' },
     { label: 'PREDICTIVE ANALYTICS', key: 'pred' },
     { label: 'WHAT-IF SANDBOX', key: 'whatif' },
     { label: 'AUDIT & FEEDS', key: 'audit' },
@@ -370,16 +372,21 @@ export default function AirPowerDashboard() {
             {activeTab === 8 && (
               <AtoExportView currentPlan={currentPlan} fusedPicture={fusedPicture} />
             )}
-            {activeTab === 9 && <BenchmarkDashboard />}
-            {activeTab === 10 && <PredictiveCalibrationView />}
-            {activeTab === 11 && (
+            {activeTab === 9 && (
+              <BenchmarkDashboard onNavigateToChallenge={() => setActiveTab(10)} />
+            )}
+            {activeTab === 10 && (
+              <ManualPlanningChallenge fusedPicture={fusedPicture} />
+            )}
+            {activeTab === 11 && <PredictiveCalibrationView />}
+            {activeTab === 12 && (
               <WhatIfSandbox
                 currentPlan={currentPlan}
                 fusedPicture={fusedPicture}
                 onCommitForkedPlan={(promoted) => setCurrentPlan(promoted)}
               />
             )}
-            {activeTab === 12 && <AuditTrailView fusedPicture={fusedPicture} />}
+            {activeTab === 13 && <AuditTrailView fusedPicture={fusedPicture} />}
           </>
         ) : (
           <div className="p-16 text-center text-on-surface-variant font-label-data-sm text-sm bg-surface-container-lowest border border-outline-variant">

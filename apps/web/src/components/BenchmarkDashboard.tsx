@@ -3,14 +3,28 @@
 import React, { useState, useEffect } from 'react';
 import { Panel, StatCard, DataTable, TruncatedText } from './primitives/LayoutPrimitives';
 
-export const BenchmarkDashboard: React.FC = () => {
+export const BenchmarkDashboard: React.FC<{ onNavigateToChallenge?: () => void }> = ({ onNavigateToChallenge }) => {
   const [benchmarkData, setBenchmarkData] = useState<any | null>(null);
+  const [humanSummary, setHumanSummary] = useState<any | null>(null);
   const [isRunning, setIsRunning] = useState(false);
   const [selectedStaffTimeMins, setSelectedStaffTimeMins] = useState(120);
 
   useEffect(() => {
     runBenchmark();
+    fetchHumanSummary();
   }, []);
+
+  const fetchHumanSummary = async () => {
+    try {
+      const res = await fetch('http://localhost:3001/api/human-baseline/summary');
+      if (res.ok) {
+        const data = await res.json();
+        setHumanSummary(data);
+      }
+    } catch (err) {
+      console.warn('Could not fetch human baseline summary', err);
+    }
+  };
 
   const runBenchmark = async () => {
     setIsRunning(true);
@@ -62,21 +76,54 @@ export const BenchmarkDashboard: React.FC = () => {
           </button>
         }
       >
+        {/* Human Baseline Empirical Status Banner */}
+        <div className={`p-3 border mb-4 font-mono text-xs flex flex-wrap items-center justify-between gap-3 ${
+          !humanSummary?.hasData
+            ? 'bg-amber-50 border-amber-300 text-amber-900'
+            : 'bg-emerald-50 border-emerald-300 text-emerald-900'
+        }`}>
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <span className="material-symbols-outlined text-[16px]">
+                {!humanSummary?.hasData ? 'pending_actions' : 'verified_user'}
+              </span>
+              <span className="font-bold uppercase tracking-wider text-xs">
+                {!humanSummary?.hasData
+                  ? 'NO EMPIRICAL HUMAN DATA YET (n=0 / TRIALS PENDING PROTOCOL)'
+                  : `MEASURED HUMAN OPERATOR BASELINE (n=${humanSummary.sampleSize} PARTICIPANTS)`}
+              </span>
+            </div>
+            <p className="text-[11px] leading-relaxed">
+              {!humanSummary?.hasData
+                ? 'Speedup claims currently report modelled CAOC staff assumptions across sensitivity tiers (30m / 60m / 120m / 240m). Run formal trials via the Manual Planning Challenge mode per docs/HUMAN_BASELINE_PROTOCOL.md.'
+                : `Mean Manual Duration: ${Math.round((humanSummary.meanDurationSeconds || 0) / 60)} min // Mean Target Value: ${humanSummary.meanScore} pts.`}
+            </p>
+          </div>
+          {onNavigateToChallenge && (
+            <button
+              onClick={onNavigateToChallenge}
+              className="px-3 py-1.5 bg-amber-900 text-white font-bold text-[11px] uppercase tracking-wider hover:bg-black transition shrink-0"
+            >
+              Launch Manual Challenge &rarr;
+            </button>
+          )}
+        </div>
+
         {/* Headline Stat Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 w-full min-w-0 mb-4">
           <StatCard
             label="Value Coverage (100 Seeds)"
             value="68.24%"
-            subtitle="95% CI: [67.29, 69.2] vs 14.51% (Staff)"
+            subtitle="95% CI: [67.29, 69.2] vs 36.99% (B2-LS)"
             icon="insights"
-            delta={{ value: '+53.7% Target Value', isPositive: true }}
+            delta={{ value: '+31.25% vs Strongest Baseline', isPositive: true }}
           />
           <StatCard
-            label="Package Integrity Rate"
-            value="100.0%"
-            subtitle="All strike packages paired with SEAD & CAP"
+            label="Value Delivered / Sortie"
+            value="18.03 pts"
+            subtitle="vs 17.76 pts (B2-LS) and 15.42 pts (Manual)"
             icon="verified"
-            delta={{ value: '+96.1% vs Manual', isPositive: true }}
+            delta={{ value: '+1.5% Resource Efficiency', isPositive: true }}
           />
           <StatCard
             label="Hard Constraint Violations"
@@ -87,10 +134,10 @@ export const BenchmarkDashboard: React.FC = () => {
           />
           <StatCard
             label="Solve Duration & Gap"
-            value="22.61 ms"
-            subtitle="<= 3.8% empirical bound vs HiGHS-WASM MILP"
+            value="47.10 ms"
+            subtitle="0.00% empirical gap vs HiGHS-WASM MILP"
             icon="timer"
-            delta={{ value: 'Anytime Ready', isPositive: true }}
+            delta={{ value: 'Exact Optimum', isPositive: true }}
           />
         </div>
 
@@ -100,47 +147,53 @@ export const BenchmarkDashboard: React.FC = () => {
             <thead className="bg-surface-container-high text-on-surface-variant text-[10px] uppercase font-bold border-b border-outline-variant">
               <tr>
                 <th className="py-2.5 px-3 whitespace-nowrap">EVALUATION METRIC</th>
-                <th className="py-2.5 px-3 whitespace-nowrap">MANUAL STAFF (BASELINE B1)</th>
-                <th className="py-2.5 px-3 whitespace-nowrap">GREEDY + REPAIR (BASELINE B2)</th>
-                <th className="py-2.5 px-3 whitespace-nowrap text-secondary">ALNS OPTIMIZER (OUR PLATFORM)</th>
-                <th className="py-2.5 px-3 whitespace-nowrap text-emerald-800">DEFENSIBLE ADVANTAGE</th>
+                <th className="py-2.5 px-3 whitespace-nowrap">MANUAL STAFF (B1)</th>
+                <th className="py-2.5 px-3 whitespace-nowrap">GREEDY (B2)</th>
+                <th className="py-2.5 px-3 whitespace-nowrap">STRONGEST BASELINE (B2-LS)</th>
+                <th className="py-2.5 px-3 whitespace-nowrap text-secondary">ALNS OPTIMIZER</th>
+                <th className="py-2.5 px-3 whitespace-nowrap text-emerald-800">MILP OPTIMUM (B3)</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-outline-variant/40 font-mono text-[11px]">
               <tr className="hover:bg-surface-container-low transition-colors">
-                <td className="py-2 px-3 font-bold text-primary whitespace-nowrap">Full Package Coordination</td>
-                <td className="py-2 px-3 text-on-surface-variant whitespace-nowrap">3.9% (Missing escorts)</td>
-                <td className="py-2 px-3 text-amber-800 whitespace-nowrap">100.0% (Greedy lock)</td>
-                <td className="py-2 px-3 text-secondary font-bold whitespace-nowrap">100.0% (Strike+SEAD+CAP)</td>
-                <td className="py-2 px-3 text-emerald-800 font-bold whitespace-nowrap">Guaranteed complete packages</td>
+                <td className="py-2 px-3 font-bold text-primary whitespace-nowrap">Target Value Delivered</td>
+                <td className="py-2 px-3 text-rose-800 whitespace-nowrap">14.51% (Modelled)</td>
+                <td className="py-2 px-3 text-amber-800 whitespace-nowrap">36.99%</td>
+                <td className="py-2 px-3 text-amber-900 font-bold whitespace-nowrap">36.99%</td>
+                <td className="py-2 px-3 text-secondary font-bold whitespace-nowrap">68.24% (+31.25%)</td>
+                <td className="py-2 px-3 text-emerald-800 font-bold whitespace-nowrap">Proven Optimal</td>
               </tr>
               <tr className="hover:bg-surface-container-low transition-colors">
-                <td className="py-2 px-3 font-bold text-primary whitespace-nowrap">Mean Target Value Coverage</td>
-                <td className="py-2 px-3 text-rose-800 whitespace-nowrap">14.51% (CI: [13.88, 15.14])</td>
-                <td className="py-2 px-3 text-amber-800 whitespace-nowrap">36.99% (CI: [36.19, 37.78])</td>
-                <td className="py-2 px-3 text-secondary font-bold whitespace-nowrap">68.24% (CI: [67.29, 69.2])</td>
-                <td className="py-2 px-3 text-emerald-800 font-bold whitespace-nowrap">+53.73% higher value</td>
+                <td className="py-2 px-3 font-bold text-primary whitespace-nowrap">Value / Consumed Sortie</td>
+                <td className="py-2 px-3 text-on-surface-variant whitespace-nowrap">15.42 pts/sortie</td>
+                <td className="py-2 px-3 text-amber-800 whitespace-nowrap">17.14 pts/sortie</td>
+                <td className="py-2 px-3 text-amber-900 font-bold whitespace-nowrap">17.76 pts/sortie</td>
+                <td className="py-2 px-3 text-secondary font-bold whitespace-nowrap">18.03 pts/sortie</td>
+                <td className="py-2 px-3 text-emerald-800 font-bold whitespace-nowrap">18.15 pts/sortie</td>
               </tr>
               <tr className="hover:bg-surface-container-low transition-colors">
                 <td className="py-2 px-3 font-bold text-primary whitespace-nowrap">Hard-Constraint Violations</td>
-                <td className="py-2 px-3 text-rose-800 whitespace-nowrap">0.05 / Plan (Duty overruns)</td>
-                <td className="py-2 px-3 text-emerald-800 whitespace-nowrap">0 Violations (Local repair)</td>
+                <td className="py-2 px-3 text-rose-800 whitespace-nowrap">0.05 / Plan</td>
+                <td className="py-2 px-3 text-emerald-800 whitespace-nowrap">0 Violations</td>
+                <td className="py-2 px-3 text-emerald-800 whitespace-nowrap">0 Violations</td>
                 <td className="py-2 px-3 text-emerald-800 font-bold whitespace-nowrap">0 Violations (Audited)</td>
-                <td className="py-2 px-3 text-emerald-800 font-bold whitespace-nowrap">Zero duty or range overruns</td>
+                <td className="py-2 px-3 text-emerald-800 font-bold whitespace-nowrap">0 Violations</td>
               </tr>
               <tr className="hover:bg-surface-container-low transition-colors">
-                <td className="py-2 px-3 font-bold text-primary whitespace-nowrap">Planning Cycle Duration</td>
-                <td className="py-2 px-3 text-on-surface-variant whitespace-nowrap">Modelled: 120 mins cycle</td>
-                <td className="py-2 px-3 text-amber-800 whitespace-nowrap">~2.8 ms</td>
-                <td className="py-2 px-3 text-secondary font-bold whitespace-nowrap">22.61 ms</td>
-                <td className="py-2 px-3 text-emerald-800 font-bold whitespace-nowrap">Instant anytime response</td>
+                <td className="py-2 px-3 font-bold text-primary whitespace-nowrap">Solve Duration</td>
+                <td className="py-2 px-3 text-on-surface-variant whitespace-nowrap">Pending Trials (120m assump)</td>
+                <td className="py-2 px-3 text-amber-800 whitespace-nowrap">~4 ms</td>
+                <td className="py-2 px-3 text-amber-900 whitespace-nowrap">14 ms</td>
+                <td className="py-2 px-3 text-secondary font-bold whitespace-nowrap">47 ms (Anytime)</td>
+                <td className="py-2 px-3 text-emerald-800 whitespace-nowrap">266 ms (Branch-Cut)</td>
               </tr>
               <tr className="hover:bg-surface-container-low transition-colors">
                 <td className="py-2 px-3 font-bold text-primary whitespace-nowrap">HiGHS-WASM Optimality Gap</td>
-                <td className="py-2 px-3 text-on-surface-variant whitespace-nowrap">N/A (Sub-optimal heuristic)</td>
+                <td className="py-2 px-3 text-on-surface-variant whitespace-nowrap">Loose Knapsack Bound</td>
                 <td className="py-2 px-3 text-amber-800 whitespace-nowrap">~38.5% Gap</td>
-                <td className="py-2 px-3 text-secondary font-bold whitespace-nowrap">&lt;= 3.8% Bound</td>
-                <td className="py-2 px-3 text-emerald-800 font-bold whitespace-nowrap">Near-exact global optimum</td>
+                <td className="py-2 px-3 text-amber-900 whitespace-nowrap">~22.4% Gap</td>
+                <td className="py-2 px-3 text-secondary font-bold whitespace-nowrap">0.00% Empirical Gap</td>
+                <td className="py-2 px-3 text-emerald-800 font-bold whitespace-nowrap">Z* = 617.1 (Exact)</td>
               </tr>
             </tbody>
           </table>
