@@ -1,6 +1,6 @@
 {
   "sampleSize": 100,
-  "timestamp": "2026-10-09T18:08:35.026Z",
+  "timestamp": "2026-10-09T20:17:41.366Z",
   "independentAuditViolationsTotal": 0,
   "optimizer": {
     "coverage": {
@@ -16,10 +16,10 @@
       "ciUpper": 18.14
     },
     "solveTimeMs": {
-      "mean": 47.07,
-      "std": 28.82,
-      "ciLower": 41.42,
-      "ciUpper": 52.72
+      "mean": 41.2,
+      "std": 24.76,
+      "ciLower": 36.35,
+      "ciUpper": 46.05
     },
     "optimalityGapVsExactMilpPercent": 0
   },
