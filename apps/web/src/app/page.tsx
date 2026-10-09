@@ -4,6 +4,8 @@ import React, { useState, useEffect } from 'react';
 import {
   FusedOperationalPicture,
   PlanCOA,
+  t,
+  SupportedLocale,
 } from '@air-power/shared';
 import { generateSyntheticScenario } from '@air-power/sim';
 import { TacticalMap } from '../components/TacticalMap';
@@ -22,6 +24,7 @@ import { WhatIfSandbox } from '../components/WhatIfSandbox';
 import { AuditTrailView } from '../components/AuditTrailView';
 import { ContestedOpsStudio } from '../components/ContestedOpsStudio';
 import { StaffCollegeTrainerStudio } from '../components/StaffCollegeTrainerStudio';
+import { ExplainabilityStudio } from '../components/ExplainabilityStudio';
 import { CopilotModal } from '../components/CopilotModal';
 import { AssumptionsDoctrineModal } from '../components/AssumptionsDoctrineModal';
 
@@ -33,6 +36,7 @@ export default function AirPowerDashboard() {
   const [isClockRunning, setIsClockRunning] = useState(false);
   const [clockSpeed, setClockSpeed] = useState(1);
   const [role, setRole] = useState<'COMMANDER' | 'PLANNER' | 'INTEL' | 'AUDITOR'>('COMMANDER');
+  const [locale, setLocale] = useState<SupportedLocale>('en');
 
   const [isCopilotOpen, setIsCopilotOpen] = useState(false);
   const [isAssumptionsOpen, setIsAssumptionsOpen] = useState(false);
@@ -152,22 +156,23 @@ export default function AirPowerDashboard() {
   };
 
   const navTabs = [
-    { label: 'COMMON OPERATING PICTURE', key: 'cop' },
-    { label: 'RESOURCE BOARD', key: 'res' },
-    { label: 'MISSION PLANNER & ATO', key: 'mp' },
-    { label: 'PLANNER-IN-THE-LOOP STUDIO', key: 'pil' },
-    { label: 'COA COMPARISON STUDIO', key: 'coa' },
-    { label: 'DYNAMIC RETASKING CONSOLE', key: 'retask' },
-    { label: '4D DECONFLICTION & TANKERS', key: 'deconf' },
-    { label: 'CLOSED-LOOP WARGAME SIMULATOR', key: 'wargame' },
-    { label: 'ATO / ACO EXPORT', key: 'export' },
-    { label: 'BENCHMARK EVIDENCE HARNESS', key: 'bench' },
-    { label: 'MANUAL CHALLENGE MODE', key: 'challenge' },
-    { label: 'PREDICTIVE ANALYTICS', key: 'pred' },
-    { label: 'WHAT-IF SANDBOX', key: 'whatif' },
-    { label: 'AUDIT & FEEDS', key: 'audit' },
-    { label: 'CONTESTED & EDGE OPS', key: 'contested' },
-    { label: 'STAFF COLLEGE TRAINER & AAR', key: 'trainer' },
+    { label: t('TAB_COP', locale), key: 'cop' },
+    { label: t('TAB_RES', locale), key: 'res' },
+    { label: t('TAB_MP', locale), key: 'mp' },
+    { label: t('TAB_PIL', locale), key: 'pil' },
+    { label: t('TAB_COA', locale), key: 'coa' },
+    { label: t('TAB_RETASK', locale), key: 'retask' },
+    { label: t('TAB_DECONF', locale), key: 'deconf' },
+    { label: t('TAB_WARGAME', locale), key: 'wargame' },
+    { label: t('TAB_EXPORT', locale), key: 'export' },
+    { label: t('TAB_BENCH', locale), key: 'bench' },
+    { label: t('TAB_CHALLENGE', locale), key: 'challenge' },
+    { label: t('TAB_PRED', locale), key: 'pred' },
+    { label: t('TAB_WHATIF', locale), key: 'whatif' },
+    { label: t('TAB_AUDIT', locale), key: 'audit' },
+    { label: t('TAB_CONTESTED', locale), key: 'contested' },
+    { label: t('TAB_TRAINER', locale), key: 'trainer' },
+    { label: t('TAB_XAI', locale), key: 'xai' },
   ];
 
   const formatClockTime = (mins: number) => {
@@ -182,7 +187,7 @@ export default function AirPowerDashboard() {
       <header className="sticky top-0 left-0 w-full max-w-full overflow-x-hidden z-40 bg-surface-container-lowest border-b border-outline-variant shadow-xs">
         {/* Mandatory Defence Training Classification Banner */}
         <div className="w-full bg-[#fef2f2] border-b border-[#fecaca] text-center py-0.5 px-2 text-[10px] font-bold text-[#b91c1c] tracking-widest uppercase font-sans select-none shrink-0 truncate">
-          CLASSIFICATION: NOTIONAL / TRAINING DATA ONLY — UNCLASSIFIED DEFENCE SIMULATION (SIH-26250)
+          {t('UNCLASSIFIED_BANNER', locale)}
         </div>
 
         {/* Primary Controls Row */}
@@ -195,14 +200,14 @@ export default function AirPowerDashboard() {
             <div className="flex flex-col min-w-0">
               <div className="flex items-center gap-1.5 min-w-0">
                 <span className="font-label-caps text-xs text-primary tracking-wider uppercase font-bold truncate">
-                  AIR POWER // C2 DECISION-SUPPORT
+                  {t('APP_TITLE', locale)}
                 </span>
                 <span className="hidden 2xl:inline-block px-1.5 py-0.5 bg-[#f0fdf4] text-[#15803d] border border-[#bbf7d0] font-label-data-sm text-[9px] uppercase font-bold leading-none shrink-0">
                   UNCLASSIFIED
                 </span>
               </div>
               <span className="hidden sm:block font-label-data-sm text-[9px] text-on-surface-variant font-medium tracking-tight truncate">
-                WESTERN SECTOR // 6 BASES // 68 AIRFRAMES
+                {t('SECTOR_SUBTITLE', locale)}
               </span>
             </div>
           </div>
@@ -290,6 +295,16 @@ export default function AirPowerDashboard() {
                   sync
                 </span>
                 <span>Reset</span>
+              </button>
+
+              <button
+                onClick={() => setLocale(locale === 'en' ? 'hi' : 'en')}
+                className="h-6.5 px-2 bg-surface-container-lowest text-primary border border-outline-variant font-mono text-[10px] uppercase font-bold hover:bg-surface-container-high transition flex items-center gap-1 shrink-0"
+                type="button"
+                title="Bilingual Mode: Toggle English / Hindi Military Terms"
+              >
+                <span className="material-symbols-outlined text-[13px]">translate</span>
+                <span>{locale === 'en' ? 'हिन्दी' : 'ENG'}</span>
               </button>
             </div>
           </div>
@@ -393,6 +408,9 @@ export default function AirPowerDashboard() {
             {activeTab === 13 && <AuditTrailView fusedPicture={fusedPicture} />}
             {activeTab === 14 && <ContestedOpsStudio />}
             {activeTab === 15 && <StaffCollegeTrainerStudio fusedPicture={fusedPicture} />}
+            {activeTab === 16 && (
+              <ExplainabilityStudio currentPlan={currentPlan} fusedPicture={fusedPicture} />
+            )}
           </>
         ) : (
           <div className="p-16 text-center text-on-surface-variant font-label-data-sm text-sm bg-surface-container-lowest border border-outline-variant">

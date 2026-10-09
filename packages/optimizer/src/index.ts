@@ -13,3 +13,4 @@ export * from './bandit-operator-selector';
 export * from './matheuristic-lns';
 export * from './pareto-engine';
 export * from './robust-stochastic-planner';
+export * from './assignment-explainer';

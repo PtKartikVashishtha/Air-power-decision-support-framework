@@ -22,6 +22,7 @@ import {
   ThreatAwareRoutePlanner,
   MultiObjectiveParetoEngine,
   RobustStochasticPlanner,
+  DecisionQualityExplainer,
 } from '@air-power/optimizer';
 import {
   generateAtoMilitaryText,
@@ -852,7 +853,43 @@ fastify.get('/api/aar/export-report', async (request, reply) => {
   return aarEngine.generatePrintableAarHtml();
 });
 
-// 22. SSE Live Stream for UI
+// 22. Explainable AI (XAI) & Decision Quality: Rationale Cards, Attribution, and Tornado Analysis
+const xaiExplainer = new DecisionQualityExplainer();
+
+fastify.get('/api/xai/sortie-rationale/:sortieId', async (request, reply) => {
+  const { sortieId } = request.params as { sortieId: string };
+  const currentPlan = stateStore.getCurrentPlan() || initialPlan;
+  const pic = stateStore.getFusedPicture();
+  const targetSortie = currentPlan.sorties.find((s) => s.sortieId === sortieId) || currentPlan.sorties[0];
+
+  if (!targetSortie) {
+    reply.status(404);
+    return { error: 'Sortie not found in current operational plan.' };
+  }
+
+  return xaiExplainer.explainSortieAssignment(targetSortie, {
+    allSorties: currentPlan.sorties,
+    aircraft: pic.aircraft,
+    pilots: pic.pilots,
+    targets: pic.targetRequests,
+    threats: pic.threats,
+  });
+});
+
+fastify.get('/api/xai/feature-attribution', async () => {
+  const currentPlan = stateStore.getCurrentPlan() || initialPlan;
+  return {
+    attributions: xaiExplainer.computeGlobalFeatureAttribution(currentPlan),
+  };
+});
+
+fastify.get('/api/xai/sensitivity-tornado', async () => {
+  return {
+    tornadoParameters: xaiExplainer.generateSensitivityTornadoAnalysis(),
+  };
+});
+
+// 23. SSE Live Stream for UI
 fastify.get('/api/stream', (request, reply) => {
   reply.raw.setHeader('Content-Type', 'text/event-stream');
   reply.raw.setHeader('Cache-Control', 'no-cache');
