@@ -4,6 +4,9 @@ import {
   TacticalStateStore,
   generateSyntheticScenario,
   ClosedLoopWargameSimulator,
+  SpoofDetectionEngine,
+  EdgeCrdtSyncNode,
+  RedCellWargameEngine,
 } from '@air-power/sim';
 import {
   AlnsTacticalOptimizer,
@@ -708,9 +711,106 @@ fastify.get('/api/solver/robust', async () => {
     pic.threats,
     8
   );
+// 17. Contested Operations: Spoof Detection & Feed Integrity Audit
+const spoofDetector = new SpoofDetectionEngine();
+
+fastify.get('/api/contested/spoof-audit', async () => {
+  const pic = stateStore.getFusedPicture();
+  const results = pic.threats.map((t) => spoofDetector.auditThreatTelemetry(t));
+  return {
+    trustProfiles: spoofDetector.getAllTrustProfiles(),
+    quarantinedAnomalies: spoofDetector.getQuarantinedAnomalies(),
+    auditedCount: pic.threats.length,
+    overallIntegrityScore: Math.round(
+      spoofDetector.getAllTrustProfiles().reduce((acc, p) => acc + p.baseTrustScore, 0) /
+        Math.max(1, spoofDetector.getAllTrustProfiles().length)
+    ),
+  };
 });
 
-// 17. SSE Live Stream for UI
+// 18. Contested Operations: Degraded-Comms CRDT Edge Node Sync Demo
+fastify.post('/api/contested/edge-crdt-demo', async (request) => {
+  const body = (request.body as any) || {};
+  const isCut = body.cutLink ?? true;
+
+  const hqNode = new EdgeCrdtSyncNode('CAOC_AIR_HQ');
+  const ambalaNode = new EdgeCrdtSyncNode('BASE_AMBALA');
+
+  // Step 1: Partition link
+  hqNode.setLinkSevered(isCut);
+  ambalaNode.setLinkSevered(isCut);
+
+  // Step 2: HQ creates scheduled package
+  const pic = stateStore.getFusedPicture();
+  const target = pic.targetRequests[0] || { id: 'TGT-001', location: { lat: 32, lon: 74 } };
+  const hqSortie: any = {
+    sortieId: 'SRT-HQ-AUTOPLAN',
+    callsign: 'VAYU-HQ-01',
+    packageId: 'PKG-HQ-01',
+    targetRequestId: target.id,
+    role: 'AIR_SUPERIORITY',
+    aircraftTail: 'SB-101',
+    pilotId: 'PILOT-001',
+    originBaseId: 'BASE_AMBALA',
+    recoveryBaseId: 'BASE_AMBALA',
+    depTimeMinutes: 75,
+    totMinutes: 105,
+    recoveryTimeMinutes: 135,
+    status: 'SCHEDULED',
+    expectedRiskScore: 32,
+    fuelPlannedKg: 4200,
+    munitionLoadout: [],
+    routeWaypoints: [pic.bases[0]?.location, target.location],
+    isFrozen: false,
+  };
+  hqNode.recordLocalOperation('LOCAL_SCRAMBLE_SORTIE', { sortie: hqSortie });
+
+  // Step 3: Forward base Ambala autonomously scrambles SB-101 to intercept threat
+  const localScramble: any = {
+    ...hqSortie,
+    sortieId: 'SRT-AMB-SCRAMBLE',
+    callsign: 'GARUDA-SCRAMBLE',
+    status: 'AIRBORNE',
+    depTimeMinutes: 10,
+    isFrozen: true,
+  };
+  ambalaNode.recordLocalOperation('LOCAL_SCRAMBLE_SORTIE', { sortie: localScramble });
+
+  // Step 4: Reconnect and reconcile
+  hqNode.setLinkSevered(false);
+  ambalaNode.setLinkSevered(false);
+  const reconciliation = hqNode.mergeRemoteEventLogs(ambalaNode);
+
+  return {
+    linkStateBefore: isCut ? 'SEVERED_PARTITIONED' : 'CONNECTED',
+    linkStateAfter: 'RECONNECTED_AND_SYNCHRONIZED',
+    hqClock: hqNode.getVectorClock(),
+    ambalaClock: ambalaNode.getVectorClock(),
+    reconciliation,
+    unifiedCommittedSorties: hqNode.getCommittedSorties(),
+  };
+});
+
+// 19. Contested Operations: Red Cell Adversarial Wargame
+const redCellEngine = new RedCellWargameEngine();
+
+fastify.post('/api/contested/red-cell-wargame', async (request) => {
+  const body = (request.body as any) || {};
+  const trials = body.trials || 6;
+  const pic = stateStore.getFusedPicture();
+
+  return redCellEngine.runAdversarialWargame(
+    pic.bases,
+    pic.aircraft.slice(0, 32),
+    pic.pilots.slice(0, 40),
+    pic.munitionStocks,
+    pic.targetRequests.slice(0, 8),
+    pic.threats,
+    trials
+  );
+});
+
+// 20. SSE Live Stream for UI
 fastify.get('/api/stream', (request, reply) => {
   reply.raw.setHeader('Content-Type', 'text/event-stream');
   reply.raw.setHeader('Cache-Control', 'no-cache');
