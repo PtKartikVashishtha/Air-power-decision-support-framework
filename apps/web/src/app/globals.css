@@ -2,70 +2,260 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ───────────────────────────────────────────────────────────────────────────
+   AIR POWER — Daylight JAOC Tactical Command Interface
+   Stitch / Material Design 3 Light Theme
+   Surface hierarchy: lowest (#fff) → low (#f0f4f8) → base (#eaeef2) → high (#e4e9ed) → highest (#dfe3e7)
+   Primary text: #001428   Secondary / interactive: #006398   Error: #ba1a1a
+   ─────────────────────────────────────────────────────────────────────────── */
+
+/* 1. CSS Custom Properties ─ Design Tokens */
 :root {
-  --background: #070b10;
-  --foreground: #e2e8f0;
+  --font-sans: 'Inter', 'Geist', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+
+  /* Colours (mirror tailwind.config.ts) */
+  --clr-bg:               #f6fafe;
+  --clr-surface-lowest:   #ffffff;
+  --clr-surface-low:      #f0f4f8;
+  --clr-surface:          #eaeef2;
+  --clr-surface-high:     #e4e9ed;
+  --clr-surface-highest:  #dfe3e7;
+  --clr-primary:          #001428;
+  --clr-secondary:        #006398;
+  --clr-on-surface:       #171c1f;
+  --clr-on-surface-var:   #43474d;
+  --clr-outline:          #74777e;
+  --clr-outline-var:      #c3c6ce;
+  --clr-error:            #ba1a1a;
+
+  /* Typography scale */
+  --text-xs:   0.6875rem;   /* 11px */
+  --text-sm:   0.75rem;     /* 12px */
+  --text-base: 0.875rem;    /* 14px */
+  --text-md:   1rem;        /* 16px */
+  --text-lg:   1.125rem;    /* 18px */
+  --text-xl:   1.25rem;     /* 20px */
+  --text-2xl:  1.5rem;      /* 24px */
+
+  /* Spacing */
+  --sp-xs:  0.125rem;   /* 2px  */
+  --sp-sm:  0.25rem;    /* 4px  */
+  --sp-md:  0.5rem;     /* 8px  */
+  --sp-lg:  0.75rem;    /* 12px */
+  --sp-xl:  1rem;       /* 16px */
+  --sp-2xl: 1.5rem;     /* 24px */
+}
+
+/* 2. Base Reset */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-size: 16px;
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  margin: 0;
+  min-height: 100%;
+  background-color: var(--clr-bg);
+  color: var(--clr-on-surface);
+  /* PRIMARY body font — Inter for all prose, labels, UI text */
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  font-weight: 400;
+  line-height: 1.5;
   overflow-x: hidden;
 }
 
-/* Custom Tactical Scrollbars */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-::-webkit-scrollbar-track {
-  background: #0c131d;
-}
-::-webkit-scrollbar-thumb {
-  background: #213650;
-  border-radius: 3px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #00e5ff;
+/* 3. Typography utility classes (resolved from design tokens) */
+
+/* --- Label / Caps (ALL CAPS, small, Inter) --- */
+.label-caps {
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);   /* 11px */
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  line-height: 1.4;
 }
 
-/* Tactical HUD grid patterns */
+/* --- Data / Mono (JetBrains Mono) --- */
+.label-data-xs {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;         /* 10px */
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: 0.02em;
+}
+.label-data-sm {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);   /* 11px */
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: 0.02em;
+}
+.label-data-md {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);   /* 12px */
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0.02em;
+}
+.label-data-lg {
+  font-family: var(--font-mono);
+  font-size: var(--text-base); /* 14px */
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 0.01em;
+}
+
+/* --- Headlines (Inter) --- */
+.headline-md {
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);   /* 12px */
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: 0.02em;
+}
+.headline-lg {
+  font-family: var(--font-sans);
+  font-size: var(--text-base); /* 14px */
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: 0.01em;
+}
+.headline-xl {
+  font-family: var(--font-sans);
+  font-size: var(--text-md);   /* 16px */
+  font-weight: 800;
+  line-height: 1.25;
+  letter-spacing: 0;
+}
+
+/* --- Body (Geist / Inter) --- */
+.body-sm {
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);   /* 12px */
+  font-weight: 400;
+  line-height: 1.6;
+}
+.body-md {
+  font-family: var(--font-sans);
+  font-size: var(--text-base); /* 14px */
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+/* 4. Tailwind @layer components — map design-token class names to CSS vars */
+@layer components {
+  /* font-family helpers */
+  .font-sans    { font-family: var(--font-sans) !important; }
+  .font-mono    { font-family: var(--font-mono) !important; }
+
+  /* Semantic typography shortcuts used throughout the app */
+  .font-label-caps     { font-family: var(--font-sans) !important; font-size: 0.6875rem !important; font-weight: 600 !important; letter-spacing: 0.07em !important; text-transform: uppercase !important; }
+  .font-label-data-xs  { font-family: var(--font-mono) !important; font-size: 0.625rem  !important; font-weight: 500 !important; }
+  .font-label-data-sm  { font-family: var(--font-mono) !important; font-size: 0.6875rem !important; font-weight: 500 !important; }
+  .font-label-data-md  { font-family: var(--font-mono) !important; font-size: 0.75rem   !important; font-weight: 600 !important; }
+  .font-label-data-lg  { font-family: var(--font-mono) !important; font-size: 0.875rem  !important; font-weight: 700 !important; }
+  .font-headline-md    { font-family: var(--font-sans) !important; font-size: 0.75rem   !important; font-weight: 700 !important; }
+  .font-headline-lg    { font-family: var(--font-sans) !important; font-size: 0.875rem  !important; font-weight: 700 !important; }
+  .font-headline-xl    { font-family: var(--font-sans) !important; font-size: 1rem      !important; font-weight: 800 !important; }
+  .font-body-sm        { font-family: var(--font-sans) !important; font-size: 0.75rem   !important; font-weight: 400 !important; }
+  .font-body-md        { font-family: var(--font-sans) !important; font-size: 0.875rem  !important; font-weight: 400 !important; }
+
+  /* text-* size aliases used alongside font-* classes */
+  .text-label-caps     { font-size: 0.6875rem !important; line-height: 1.4 !important; }
+  .text-label-data-xs  { font-size: 0.625rem  !important; line-height: 1.4 !important; }
+  .text-label-data-sm  { font-size: 0.6875rem !important; line-height: 1.4 !important; }
+  .text-label-data-md  { font-size: 0.75rem   !important; line-height: 1.4 !important; }
+  .text-label-data-lg  { font-size: 0.875rem  !important; line-height: 1.2 !important; }
+  .text-headline-md    { font-size: 0.75rem   !important; line-height: 1.3 !important; }
+  .text-headline-lg    { font-size: 0.875rem  !important; line-height: 1.3 !important; }
+  .text-headline-xl    { font-size: 1rem      !important; line-height: 1.25 !important; }
+  .text-body-sm        { font-size: 0.75rem   !important; line-height: 1.6 !important; }
+  .text-body-md        { font-size: 0.875rem  !important; line-height: 1.6 !important; }
+
+  /* Spacing helpers */
+  .px-space-xs  { padding-left: var(--sp-xs)  !important; padding-right: var(--sp-xs)  !important; }
+  .px-space-sm  { padding-left: var(--sp-sm)  !important; padding-right: var(--sp-sm)  !important; }
+  .px-space-md  { padding-left: var(--sp-md)  !important; padding-right: var(--sp-md)  !important; }
+  .px-space-lg  { padding-left: var(--sp-lg)  !important; padding-right: var(--sp-lg)  !important; }
+  .px-space-xl  { padding-left: var(--sp-xl)  !important; padding-right: var(--sp-xl)  !important; }
+
+  .py-space-xs  { padding-top: var(--sp-xs)   !important; padding-bottom: var(--sp-xs)   !important; }
+  .py-space-sm  { padding-top: var(--sp-sm)   !important; padding-bottom: var(--sp-sm)   !important; }
+  .py-space-md  { padding-top: var(--sp-md)   !important; padding-bottom: var(--sp-md)   !important; }
+  .py-space-lg  { padding-top: var(--sp-lg)   !important; padding-bottom: var(--sp-lg)   !important; }
+
+  .p-space-xs   { padding: var(--sp-xs)  !important; }
+  .p-space-sm   { padding: var(--sp-sm)  !important; }
+  .p-space-md   { padding: var(--sp-md)  !important; }
+  .p-space-lg   { padding: var(--sp-lg)  !important; }
+  .p-space-xl   { padding: var(--sp-xl)  !important; }
+
+  .gap-space-xs { gap: var(--sp-xs)  !important; }
+  .gap-space-sm { gap: var(--sp-sm)  !important; }
+  .gap-space-md { gap: var(--sp-md)  !important; }
+  .gap-space-lg { gap: var(--sp-lg)  !important; }
+  .gap-space-xl { gap: var(--sp-xl)  !important; }
+
+  .mr-space-xs  { margin-right: var(--sp-xs)  !important; }
+  .mr-space-sm  { margin-right: var(--sp-sm)  !important; }
+
+  .pt-space-xs  { padding-top: var(--sp-xs)   !important; }
+
+  .p-gutter-desktop { padding: var(--sp-lg)  !important; }
+  .px-gutter-desktop { padding-left: var(--sp-lg)  !important; padding-right: var(--sp-lg)  !important; }
+
+  /* shadow-xs — very subtle daylight shadow */
+  .shadow-xs    { box-shadow: 0 1px 2px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04) !important; }
+}
+
+/* 5. Daylight Tactical Scrollbars */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: #f0f4f8; }
+::-webkit-scrollbar-thumb { background: #c3c6ce; border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: #006398; }
+
+/* 6. Tactical grid pattern (for map tab only) */
 .tactical-grid {
-  background-image: linear-gradient(to right, rgba(33, 54, 80, 0.25) 1px, transparent 1px),
-                    linear-gradient(to bottom, rgba(33, 54, 80, 0.25) 1px, transparent 1px);
+  background-image:
+    linear-gradient(to right, rgba(0, 99, 152, 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 99, 152, 0.08) 1px, transparent 1px);
   background-size: 32px 32px;
 }
 
-.radar-sweep {
-  position: relative;
-  overflow: hidden;
-}
+/* 7. Radar sweep (kept for TacticalMap, daylight-adapted) */
+.radar-sweep { position: relative; overflow: hidden; }
 .radar-sweep::after {
   content: "";
   position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: conic-gradient(from 0deg, transparent 0deg, rgba(0, 229, 255, 0.12) 60deg, transparent 65deg);
+  top: -50%; left: -50%;
+  width: 200%; height: 200%;
+  background: conic-gradient(from 0deg, transparent 0deg, rgba(0, 99, 152, 0.1) 60deg, transparent 65deg);
   animation: sweep 8s linear infinite;
   pointer-events: none;
 }
-
 @keyframes sweep {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
 }
 
-/* Glow effects */
-.glow-cyan {
-  box-shadow: 0 0 15px rgba(0, 229, 255, 0.35);
+/* 8. Utility: glow-secondary (for active status indicators) */
+.glow-secondary { box-shadow: 0 0 8px rgba(0, 99, 152, 0.4); }
+.glow-alert     { box-shadow: 0 0 8px rgba(186, 26, 26, 0.4); }
+
+/* 9. Remove default select/input styling artifacts */
+select, input, textarea {
+  font-family: inherit;
+  font-size: inherit;
 }
-.glow-alert {
-  box-shadow: 0 0 15px rgba(255, 51, 75, 0.4);
-}
+
+/* 10. Table row hover resets */
+tr { transition: background-color 80ms ease; }

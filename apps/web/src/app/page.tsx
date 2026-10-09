@@ -22,35 +22,12 @@ import { AuditTrailView } from '../components/AuditTrailView';
 import { CopilotModal } from '../components/CopilotModal';
 import { DemoNarrationModal } from '../components/DemoNarrationModal';
 import { AssumptionsDoctrineModal } from '../components/AssumptionsDoctrineModal';
-import {
-  Map,
-  Layers,
-  CalendarCheck,
-  Edit3,
-  Split,
-  RefreshCw,
-  Compass,
-  Swords,
-  FileText,
-  BarChart2,
-  LineChart,
-  GitBranch,
-  Shield,
-  Bot,
-  Play,
-  Pause,
-  RotateCcw,
-  Sparkles,
-  Activity,
-  UserCheck,
-  BookOpen,
-} from 'lucide-react';
 
 export default function AirPowerDashboard() {
-  const [activeTab, setActiveTab] = useState(0);
+  const [activeTab, setActiveTab] = useState(3); // Default to Planner-in-the-Loop Studio for flagship daylight view
   const [fusedPicture, setFusedPicture] = useState<FusedOperationalPicture | null>(null);
   const [currentPlan, setCurrentPlan] = useState<PlanCOA | null>(null);
-  const [clockMinutes, setClockMinutes] = useState(0);
+  const [clockMinutes, setClockMinutes] = useState(255); // H+04:15 default
   const [isClockRunning, setIsClockRunning] = useState(false);
   const [clockSpeed, setClockSpeed] = useState(1);
   const [role, setRole] = useState<'COMMANDER' | 'PLANNER' | 'INTEL' | 'AUDITOR'>('COMMANDER');
@@ -111,8 +88,8 @@ export default function AirPowerDashboard() {
       const sc = generateSyntheticScenario(42);
       setFusedPicture({
         timestampIso: new Date().toISOString(),
-        simTimeMinutes: 0,
-        overallConfidenceScore: 95,
+        simTimeMinutes: 255,
+        overallConfidenceScore: 98.4,
         activeConflictsCount: 0,
         bases: sc.bases,
         aircraft: sc.aircraft,
@@ -158,7 +135,7 @@ export default function AirPowerDashboard() {
       if (res.ok) {
         setCurrentPlan(await res.json());
       }
-      setActiveTab(0);
+      setActiveTab(3);
     } catch (err) {
       console.error('Reset failed', err);
     } finally {
@@ -167,19 +144,19 @@ export default function AirPowerDashboard() {
   };
 
   const navTabs = [
-    { label: 'COP RADAR GRID', icon: Map },
-    { label: 'RESOURCE BOARD', icon: Layers },
-    { label: 'MISSION PLANNER', icon: CalendarCheck },
-    { label: 'PLANNER-IN-THE-LOOP', icon: Edit3 },
-    { label: 'COA STUDIO', icon: Split },
-    { label: 'RETASKING CONSOLE', icon: RefreshCw },
-    { label: 'DECONFLICTION & TANKERS', icon: Compass },
-    { label: 'WARGAME SIMULATOR', icon: Swords },
-    { label: 'ATO / ACO EXPORT', icon: FileText },
-    { label: 'BENCHMARK EVIDENCE', icon: BarChart2 },
-    { label: 'PREDICTIVE ANALYTICS', icon: LineChart },
-    { label: 'WHAT-IF SANDBOX', icon: GitBranch },
-    { label: 'AUDIT & FEEDS', icon: Shield },
+    { label: 'COMMON OPERATING PICTURE', key: 'cop' },
+    { label: 'RESOURCE BOARD', key: 'res' },
+    { label: 'MISSION PLANNER & ATO', key: 'mp' },
+    { label: 'PLANNER-IN-THE-LOOP STUDIO', key: 'pil' },
+    { label: 'COA COMPARISON STUDIO', key: 'coa' },
+    { label: 'DYNAMIC RETASKING CONSOLE', key: 'retask' },
+    { label: '4D DECONFLICTION & TANKERS', key: 'deconf' },
+    { label: 'CLOSED-LOOP WARGAME SIMULATOR', key: 'wargame' },
+    { label: 'ATO / ACO EXPORT', key: 'export' },
+    { label: 'BENCHMARK EVIDENCE HARNESS', key: 'bench' },
+    { label: 'PREDICTIVE ANALYTICS', key: 'pred' },
+    { label: 'WHAT-IF SANDBOX', key: 'whatif' },
+    { label: 'AUDIT & FEEDS', key: 'audit' },
   ];
 
   const formatClockTime = (mins: number) => {
@@ -189,127 +166,149 @@ export default function AirPowerDashboard() {
   };
 
   return (
-    <div className="flex-1 flex flex-col min-h-screen bg-ops-950 text-gray-200">
-      {/* Top Tactical Command HUD Header */}
-      <header className="bg-ops-900 border-b border-ops-700/60 px-6 py-3 flex flex-wrap items-center justify-between gap-4">
-        <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-2">
-            <span className="w-3 h-3 bg-ops-accent rounded-full animate-pulse glow-cyan" />
-            <h1 className="text-base font-bold text-white tracking-wide font-mono">
-              AIR POWER <span className="text-ops-accent">// C2 DECISION-SUPPORT FRAMEWORK</span>
-            </h1>
+    <div className="flex flex-col min-h-screen select-none" style={{ background: '#f6fafe', color: '#171c1f' }}>
+      {/* Top Daylight Military Header Bar */}
+      <header className="sticky top-0 left-0 w-full z-40 bg-surface-container-lowest border-b border-outline-variant shadow-xs">
+        <div className="h-12 w-full px-gutter-desktop flex items-center justify-between border-b border-outline-variant bg-surface-container-lowest">
+          {/* Logo & Operational Subtitle */}
+          <div className="flex items-center gap-space-lg">
+            <div className="w-8 h-8 rounded bg-primary flex items-center justify-center text-on-primary font-bold text-sm tracking-wider shadow-xs">
+              AP
+            </div>
+            <div className="flex flex-col">
+              <div className="flex items-center gap-space-md">
+                <span className="font-label-caps text-label-caps text-primary tracking-wider uppercase font-bold">
+                  AIR POWER // C2 DECISION-SUPPORT SYSTEM
+                </span>
+                <span className="px-space-sm py-0.5 bg-[#f0fdf4] text-[#15803d] border border-[#bbf7d0] font-label-data-sm text-[10px] uppercase font-bold leading-none">
+                  NOTIONAL TRAINING DATA — UNCLASSIFIED
+                </span>
+              </div>
+              <span className="font-label-data-sm text-label-data-sm text-on-surface-variant font-medium tracking-tight">
+                WESTERN SECTOR // 6 BASES // 68 AIRFRAMES
+              </span>
+            </div>
           </div>
-          <span className="text-[11px] px-2 py-0.5 rounded bg-ops-800 border border-ops-700 text-gray-300 font-mono">
-            SIH PS 26250
-          </span>
-          <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-950 border border-emerald-800 text-emerald-400 font-mono font-bold">
-            NOTIONAL / TRAINING DATA
-          </span>
+
+          {/* Tactical Mission Clock Scrubbing Control */}
+          <div className="flex items-center gap-space-md bg-surface-container px-space-md py-space-xs border border-outline-variant">
+            <div className="flex items-center gap-space-sm">
+              <span className="font-label-caps text-label-caps text-on-surface-variant uppercase font-bold">MET</span>
+              <span className="font-label-data-lg text-label-data-lg text-primary bg-surface-container-lowest px-space-sm py-0.5 border border-outline-variant font-bold">
+                {formatClockTime(clockMinutes)}
+              </span>
+            </div>
+            <div className="h-4 w-px bg-outline-variant"></div>
+            <div className="flex items-center gap-space-xs">
+              <button
+                onClick={() => handleClockControl(isClockRunning ? 'PAUSE' : 'PLAY')}
+                className="h-6 px-space-sm bg-surface-container-lowest border border-outline-variant text-on-surface hover:bg-surface-container-high transition-colors font-label-data-sm text-[11px] flex items-center justify-center font-bold"
+                type="button"
+                title={isClockRunning ? 'Pause Sim' : 'Play Sim'}
+              >
+                <span className="material-symbols-outlined text-[14px]">
+                  {isClockRunning ? 'pause' : 'play_arrow'}
+                </span>
+              </button>
+            </div>
+            <div className="h-4 w-px bg-outline-variant"></div>
+            <div className="flex items-center gap-0.5">
+              {[1, 5, 15, 60].map((spd) => (
+                <button
+                  key={spd}
+                  onClick={() => handleClockControl('SPEED', { multiplier: spd })}
+                  className={`h-6 px-space-sm font-label-data-sm text-[11px] font-bold border transition ${
+                    clockSpeed === spd
+                      ? 'bg-primary-container text-on-primary border-primary-container'
+                      : 'bg-surface-container-lowest text-on-surface hover:bg-surface-container-high border-outline-variant'
+                  }`}
+                  type="button"
+                >
+                  {spd}x
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* System Health, Role, and Action Controls */}
+          <div className="flex items-center gap-space-md">
+            <div className="flex items-center gap-space-sm bg-surface-container-low px-space-md py-space-xs border border-outline-variant">
+              <span className="h-2 w-2 rounded-full bg-[#15803d] animate-pulse"></span>
+              <span className="font-label-data-sm text-label-data-sm text-primary font-bold tracking-tight">
+                COP FUSION: {fusedPicture?.overallConfidenceScore || 98.4}% (BAYESIAN SYNC)
+              </span>
+            </div>
+
+            <div className="relative">
+              <select
+                value={role}
+                onChange={(e) => setRole(e.target.value as any)}
+                className="h-7 px-space-md bg-surface-container-lowest border border-outline-variant font-label-caps text-label-caps text-primary hover:bg-surface-container-high focus:outline-none cursor-pointer uppercase font-bold"
+              >
+                <option value="COMMANDER">AIR COMMANDER (APPROVAL ONLY)</option>
+                <option value="PLANNER">CHIEF PLANNER</option>
+                <option value="INTEL">INTEL ANALYST</option>
+                <option value="AUDITOR">DEFENCE AUDITOR</option>
+              </select>
+            </div>
+
+            <div className="flex items-center gap-space-sm">
+              <button
+                onClick={() => setIsAssumptionsOpen(true)}
+                className="h-7 px-space-md bg-surface-container-lowest text-primary border border-outline-variant font-headline-md text-[11px] uppercase tracking-wider hover:bg-surface-container-high transition-colors font-bold"
+                type="button"
+              >
+                Assumptions &amp; Doctrine
+              </button>
+
+              <button
+                onClick={handleResetDemo}
+                disabled={isResettingDemo}
+                className="h-7 px-space-md bg-surface-container-lowest text-on-surface border border-outline-variant font-headline-md text-[11px] uppercase tracking-wider hover:bg-surface-container-high transition-colors font-bold flex items-center gap-1"
+                type="button"
+                title="Restore Deterministic Demo State (< 2s)"
+              >
+                <span className={`material-symbols-outlined text-[13px] ${isResettingDemo ? 'animate-spin' : ''}`}>
+                  sync
+                </span>
+                <span>Reset Demo</span>
+              </button>
+
+              <button
+                onClick={() => setIsDemoOpen(true)}
+                className="h-7 px-space-md bg-secondary text-on-secondary font-headline-md text-[11px] uppercase tracking-wider hover:bg-primary-container transition-colors font-bold shadow-xs flex items-center gap-1"
+                type="button"
+              >
+                <span className="material-symbols-outlined text-[14px]">play_circle</span>
+                <span>5-Min Jury Demo</span>
+              </button>
+            </div>
+          </div>
         </div>
 
-        {/* Tactical Clock Scrubbing Widget */}
-        <div className="flex items-center space-x-3 bg-ops-950 border border-ops-700/80 px-3 py-1.5 rounded-lg text-xs font-mono">
-          <span className="text-gray-400">OPERATION TIME:</span>
-          <span className="text-ops-accent font-bold text-sm tracking-widest">
-            {formatClockTime(clockMinutes)}
-          </span>
-
-          <div className="flex items-center space-x-1 pl-2 border-l border-ops-800">
-            <button
-              onClick={() => handleClockControl(isClockRunning ? 'PAUSE' : 'PLAY')}
-              className={`p-1 rounded transition ${
-                isClockRunning ? 'bg-amber-950 text-amber-400' : 'bg-emerald-950 text-emerald-400'
-              }`}
-              title={isClockRunning ? 'Pause Sim' : 'Play Sim'}
-            >
-              {isClockRunning ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
-            </button>
-
-            {[1, 5, 15, 60].map((spd) => (
+        {/* Secondary Tab Navigation Bar */}
+        <nav className="h-9 w-full px-gutter-desktop flex items-stretch gap-0 bg-surface-container-lowest border-t border-outline-variant/30 overflow-x-auto">
+          {navTabs.map((tab, idx) => {
+            const isActive = activeTab === idx;
+            return (
               <button
-                key={spd}
-                onClick={() => handleClockControl('SPEED', { multiplier: spd })}
-                className={`px-1.5 py-0.5 text-[10px] rounded transition ${
-                  clockSpeed === spd
-                    ? 'bg-ops-accent text-ops-950 font-bold'
-                    : 'text-gray-400 hover:text-white'
+                key={tab.key}
+                onClick={() => setActiveTab(idx)}
+                className={`h-full px-space-lg flex items-center font-label-caps text-[11px] uppercase tracking-wider border-r border-outline-variant/40 transition-colors whitespace-nowrap ${
+                  isActive
+                    ? 'bg-surface-container-high text-primary border-b-2 border-secondary font-bold'
+                    : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low font-semibold'
                 }`}
               >
-                {spd}x
+                {tab.label}
               </button>
-            ))}
-          </div>
-        </div>
-
-        {/* System Health, Role, and Action Controls */}
-        <div className="flex items-center space-x-2.5 text-xs font-mono">
-          <button
-            onClick={() => setIsAssumptionsOpen(true)}
-            className="flex items-center space-x-1 bg-ops-950 border border-ops-800 px-2.5 py-1.5 rounded text-gray-300 hover:text-white hover:border-ops-700 transition"
-            title="Operational Assumptions & Doctrine Notes"
-          >
-            <BookOpen className="w-3.5 h-3.5 text-ops-accent" />
-            <span>ASSUMPTIONS</span>
-          </button>
-
-          <button
-            onClick={handleResetDemo}
-            disabled={isResettingDemo}
-            className="flex items-center space-x-1 bg-ops-950 border border-ops-800 px-2.5 py-1.5 rounded text-gray-300 hover:text-white hover:border-ops-700 transition"
-            title="Restore Deterministic Demo State (< 2s)"
-          >
-            <RotateCcw className={`w-3.5 h-3.5 text-amber-400 ${isResettingDemo ? 'animate-spin' : ''}`} />
-            <span>RESET DEMO</span>
-          </button>
-
-          <div className="flex items-center space-x-1.5 bg-ops-950 px-2.5 py-1.5 rounded border border-ops-800">
-            <UserCheck className="w-3.5 h-3.5 text-ops-accent" />
-            <select
-              value={role}
-              onChange={(e) => setRole(e.target.value as any)}
-              className="bg-transparent text-gray-200 text-xs focus:outline-none"
-            >
-              <option value="COMMANDER" className="bg-ops-900">AIR COMMANDER (APPROVAL ONLY)</option>
-              <option value="PLANNER" className="bg-ops-900">CHIEF PLANNER</option>
-              <option value="INTEL" className="bg-ops-900">INTEL ANALYST</option>
-              <option value="AUDITOR" className="bg-ops-900">DEFENCE AUDITOR</option>
-            </select>
-          </div>
-
-          <button
-            onClick={() => setIsDemoOpen(true)}
-            className="flex items-center space-x-1.5 bg-ops-accent text-ops-950 font-bold px-3 py-1.5 rounded hover:bg-cyan-300 transition shadow-lg glow-cyan"
-          >
-            <Sparkles className="w-4 h-4" />
-            <span>5-MIN JURY DEMO</span>
-          </button>
-        </div>
+            );
+          })}
+        </nav>
       </header>
 
-      {/* Navigation Tab Bar */}
-      <nav className="bg-ops-900/90 border-b border-ops-700/60 px-6 py-1.5 flex items-center space-x-1 overflow-x-auto">
-        {navTabs.map((tab, idx) => {
-          const Icon = tab.icon;
-          const isActive = activeTab === idx;
-          return (
-            <button
-              key={idx}
-              onClick={() => setActiveTab(idx)}
-              className={`flex items-center space-x-2 px-3 py-2 rounded-md text-xs font-mono transition whitespace-nowrap ${
-                isActive
-                  ? 'bg-ops-accent/15 text-ops-accent border border-ops-accent/40 font-bold'
-                  : 'text-gray-400 hover:text-gray-200 hover:bg-ops-850'
-              }`}
-            >
-              <Icon className="w-3.5 h-3.5" />
-              <span>{tab.label}</span>
-            </button>
-          );
-        })}
-      </nav>
-
-      {/* Main View Area */}
-      <main className="flex-1 p-6 max-w-7xl mx-auto w-full">
+      {/* Main Tactical Screen Container */}
+      <main className="flex-1 p-gutter-desktop max-w-[1600px] mx-auto w-full">
         {fusedPicture ? (
           <>
             {activeTab === 0 && (
@@ -356,20 +355,38 @@ export default function AirPowerDashboard() {
             {activeTab === 12 && <AuditTrailView fusedPicture={fusedPicture} />}
           </>
         ) : (
-          <div className="p-16 text-center text-gray-400 font-mono text-sm">
-            <div className="w-8 h-8 border-2 border-ops-accent border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+          <div className="p-16 text-center text-on-surface-variant font-label-data-sm text-sm bg-surface-container-lowest border border-outline-variant">
+            <div className="w-8 h-8 border-2 border-secondary border-t-transparent rounded-full animate-spin mx-auto mb-3" />
             CONNECTING TO TACTICAL FUSION ENGINE...
           </div>
         )}
       </main>
 
+      {/* Global Defense System Footer */}
+      <footer className="w-full bg-surface-container-lowest border-t border-outline-variant py-space-sm mt-auto">
+        <div className="w-full px-gutter-desktop flex items-center justify-between font-label-data-sm text-[10px] text-on-surface-variant uppercase tracking-wider">
+          <div className="flex items-center gap-space-lg">
+            <span>DEFENSE DECISION-SUPPORT SUITE</span>
+            <span>//</span>
+            <span>NODE: TOC-ALPHA-WEST</span>
+            <span>//</span>
+            <span>SECURITY: LEVEL-4 CLEARANCE REQUIRED</span>
+          </div>
+          <div className="flex items-center gap-space-lg">
+            <span>LATENCY: 12ms</span>
+            <span>SECURE ENCLAVE 09</span>
+            <span>&copy; JAOC AIR POWER SYSTEM</span>
+          </div>
+        </div>
+      </footer>
+
       {/* Floating Tactical AI Copilot Button & Panel */}
       <div className="fixed bottom-6 left-6 z-40">
         <button
           onClick={() => setIsCopilotOpen(!isCopilotOpen)}
-          className="flex items-center space-x-2 bg-ops-900 border border-ops-accent/60 text-ops-accent px-4 py-2.5 rounded-full shadow-2xl hover:bg-ops-850 transition glow-cyan text-xs font-mono font-bold"
+          className="flex items-center space-x-2 bg-primary text-on-primary border border-outline-variant px-4 py-2.5 rounded-full shadow-lg hover:bg-primary-container transition text-xs font-label-data-sm font-bold"
         >
-          <Bot className="w-4 h-4 text-ops-accent" />
+          <span className="material-symbols-outlined text-[16px]">smart_toy</span>
           <span>TACTICAL AI COPILOT</span>
         </button>
 
