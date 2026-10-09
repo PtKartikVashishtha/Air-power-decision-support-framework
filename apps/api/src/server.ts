@@ -27,6 +27,11 @@ import {
 import {
   generateAtoMilitaryText,
   generateAcoMilitaryText,
+  generateFullCoTFeed,
+  parseCotXml,
+  generateTheatreGeoJson,
+  generateCampaignKml,
+  getOpenApiSpec,
   PlanCOA,
   TacticalInject,
 } from '@air-power/shared';
@@ -271,6 +276,78 @@ fastify.get('/api/export/aco-text', async () => {
   };
 });
 
+// Tactical Interoperability (Cursor-on-Target XML, RFC 7946 GeoJSON, KML 2.2, OpenAPI 3.0)
+fastify.get('/api/interop/cot/sorties.xml', async (request, reply) => {
+  const plan = stateStore.getCurrentPlan() || initialPlan;
+  const pic = stateStore.getFusedPicture();
+  const xml = generateFullCoTFeed({
+    plan,
+    bases: pic.bases,
+    targets: pic.targetRequests,
+    threats: pic.threats,
+    simTimeMinutes: stateStore.clock.getSimTimeMinutes(),
+  });
+  reply.header('Content-Type', 'application/xml; charset=utf-8');
+  return reply.send(xml);
+});
+
+fastify.get('/api/interop/geojson/theatre.json', async (request, reply) => {
+  const plan = stateStore.getCurrentPlan() || initialPlan;
+  const pic = stateStore.getFusedPicture();
+  const geojson = generateTheatreGeoJson({
+    plan,
+    bases: pic.bases,
+    targets: pic.targetRequests,
+    threats: pic.threats,
+    airspaceZones: pic.airspaceZones,
+  });
+  reply.header('Content-Type', 'application/json; charset=utf-8');
+  return geojson;
+});
+
+fastify.get('/api/interop/kml/campaign.kml', async (request, reply) => {
+  const plan = stateStore.getCurrentPlan() || initialPlan;
+  const pic = stateStore.getFusedPicture();
+  const kml = generateCampaignKml({
+    plan,
+    bases: pic.bases,
+    targets: pic.targetRequests,
+    threats: pic.threats,
+    airspaceZones: pic.airspaceZones,
+  });
+  reply.header('Content-Type', 'application/vnd.google-earth.kml+xml; charset=utf-8');
+  return reply.send(kml);
+});
+
+fastify.get('/api/interop/openapi.json', async (request, reply) => {
+  reply.header('Content-Type', 'application/json; charset=utf-8');
+  return getOpenApiSpec();
+});
+
+fastify.post('/api/interop/cot/ingest', async (request, reply) => {
+  const body = request.body as any;
+  const xmlString = typeof body === 'string' ? body : body?.xml || '';
+  const result = parseCotXml(xmlString);
+  if (!result.success || !result.event) {
+    return reply.status(400).send({
+      success: false,
+      error: result.error || 'Invalid Cursor-on-Target XML payload',
+    });
+  }
+
+  stateStore.recordAudit('INTEROP_GATEWAY', 'COT_MESSAGE_INGESTED', {
+    uid: result.event.uid,
+    type: result.event.type,
+    callsign: result.event.detail.callsign,
+  });
+
+  return {
+    success: true,
+    message: 'CoT message validated and ingested successfully',
+    event: result.event,
+  };
+});
+
 // 11. Closed-Loop Wargame Simulator & Benchmark Runner
 const wargameSimulator = new ClosedLoopWargameSimulator((sc) =>
   optimizer.solve(
@@ -402,12 +479,9 @@ fastify.get('/api/killchain/:targetId', async (request) => {
   const params = request.params as { targetId: string };
   const pic = stateStore.getFusedPicture();
   const target = pic.targetRequests.find((t) => t.id === params.targetId) || pic.targetRequests[0];
-  const isDynamic = ((request.query as any)?.dynamic ?? 'true') === 'true';
-  return deconflictionEngine.generateF2T2EAKillChainTimeline(
-    target,
-    stateStore.clock.getSimTimeMinutes(),
-    isDynamic
-  );
+  const currentPlan = stateStore.getCurrentPlan() || initialPlan;
+  const assignedSortie = currentPlan.sorties.find((s) => s.targetRequestId === target.id);
+  return deconflictionEngine.computeF2T2EATimeline(target, assignedSortie);
 });
 
 // 12. Tactical AI Copilot (Deterministic Pipeline + AST + Dry-Run + Human Confirmation + Undo)
@@ -461,7 +535,7 @@ fastify.post('/api/copilot/command', async (request) => {
 
   if (ast.intent === 'CONTROL_TIME' && ast.slots.timeAction) {
     if (ast.slots.timeAction === 'PAUSE') stateStore.clock.pause();
-    else if (ast.slots.timeAction === 'PLAY') stateStore.clock.resume();
+    else if (ast.slots.timeAction === 'PLAY') stateStore.clock.start();
     else if (ast.slots.timeAction === 'SPEED' && ast.slots.timeSpeed) {
       stateStore.clock.setSpeed(ast.slots.timeSpeed as any);
     }
@@ -559,7 +633,7 @@ fastify.post('/api/copilot/confirm', async (request) => {
     updatedPlan = {
       ...currentPlan,
       id: `PLAN-MOD-${Date.now()}`,
-      sorties: currentPlan.sorties.filter((s) => s.id !== ast.slots.sortieId),
+      sorties: currentPlan.sorties.filter((s) => s.sortieId !== ast.slots.sortieId),
     };
     actionDescription = `CANCELLED_${ast.slots.sortieId}`;
   } else if (ast.intent === 'SWITCH_COA') {
@@ -627,23 +701,15 @@ fastify.post('/api/human-baseline/verify', async (request) => {
   const rawSorties = body.sorties || [];
   const pic = stateStore.getFusedPicture();
   const verifier = new IndependentPlanVerifier();
-  const syntheticPlan = {
-    id: `MANUAL_${Date.now()}`,
-    doctrineFocus: 'MANUAL_HUMAN',
-    generatedAtIso: new Date().toISOString(),
-    sorties: rawSorties,
-    kpis: {
-      totalScore: 0,
-      coveredTargetsCount: 0,
-      totalRiskScore: 0,
-      totalFuelKg: 0,
-      reserveAircraftCount: Math.max(0, pic.aircraft.length - rawSorties.length),
-    },
-    targetAssignments: [],
-    isFeasible: true,
-    violations: [],
-  };
-  const verification = verifier.verifyPlan(syntheticPlan as any, pic.bases, pic.aircraft, pic.pilots, pic.targetRequests);
+  const verification = verifier.verifyPlan(
+    rawSorties,
+    pic.aircraft,
+    pic.pilots,
+    pic.bases,
+    pic.munitionStocks,
+    pic.targetRequests,
+    pic.threats
+  );
   return verification;
 });
 
@@ -714,6 +780,8 @@ fastify.get('/api/solver/robust', async () => {
     pic.threats,
     8
   );
+});
+
 // 17. Contested Operations: Spoof Detection & Feed Integrity Audit
 const spoofDetector = new SpoofDetectionEngine();
 
