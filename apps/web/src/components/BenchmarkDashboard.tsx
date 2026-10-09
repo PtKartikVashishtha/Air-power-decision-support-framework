@@ -187,7 +187,7 @@ export const BenchmarkDashboard: React.FC = () => {
         </div>
 
         <p className="text-[11px] text-gray-400 leading-relaxed">
-          The 120-minute manual staff baseline represents the standard Air Tasking Working Group synthesis cycle (source: Air Staff Planning Manual). To ensure defensibility under jury questioning, here is the sensitivity across alternative time assumptions:
+          The 120-minute manual staff baseline represents the standard Air Tasking Working Group synthesis cycle (source: Air Staff Planning Manual). To ensure defensibility under operational evaluation, here is the sensitivity across alternative time assumptions:
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-3">

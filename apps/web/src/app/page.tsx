@@ -20,7 +20,6 @@ import { PredictiveCalibrationView } from '../components/PredictiveCalibrationVi
 import { WhatIfSandbox } from '../components/WhatIfSandbox';
 import { AuditTrailView } from '../components/AuditTrailView';
 import { CopilotModal } from '../components/CopilotModal';
-import { DemoNarrationModal } from '../components/DemoNarrationModal';
 import { AssumptionsDoctrineModal } from '../components/AssumptionsDoctrineModal';
 
 export default function AirPowerDashboard() {
@@ -33,7 +32,6 @@ export default function AirPowerDashboard() {
   const [role, setRole] = useState<'COMMANDER' | 'PLANNER' | 'INTEL' | 'AUDITOR'>('COMMANDER');
 
   const [isCopilotOpen, setIsCopilotOpen] = useState(false);
-  const [isDemoOpen, setIsDemoOpen] = useState(false);
   const [isAssumptionsOpen, setIsAssumptionsOpen] = useState(false);
   const [isResettingDemo, setIsResettingDemo] = useState(false);
 
@@ -273,15 +271,6 @@ export default function AirPowerDashboard() {
                 </span>
                 <span>Reset Demo</span>
               </button>
-
-              <button
-                onClick={() => setIsDemoOpen(true)}
-                className="h-7 px-space-md bg-secondary text-on-secondary font-headline-md text-[11px] uppercase tracking-wider hover:bg-primary-container transition-colors font-bold shadow-xs flex items-center gap-1"
-                type="button"
-              >
-                <span className="material-symbols-outlined text-[14px]">play_circle</span>
-                <span>5-Min Jury Demo</span>
-              </button>
             </div>
           </div>
         </div>
@@ -396,13 +385,6 @@ export default function AirPowerDashboard() {
           </div>
         )}
       </div>
-
-      {/* 5-Minute Guided Demo Narration Modal */}
-      <DemoNarrationModal
-        isOpen={isDemoOpen}
-        onClose={() => setIsDemoOpen(false)}
-        onNavigateTab={(idx) => setActiveTab(idx)}
-      />
 
       {/* Assumptions & Doctrine Notes Modal */}
       <AssumptionsDoctrineModal
