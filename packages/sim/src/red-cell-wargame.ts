@@ -224,9 +224,11 @@ export class RedCellWargameEngine {
       for (const wp of s.routeWaypoints) {
         for (const t of threats) {
           const d = haversineDistanceKm(wp, t.location);
-          if (d <= t.engagementRadiusKm * 0.75) {
-            // High probability of interception in lethal envelope
-            if (Math.random() < 0.22) {
+          if (d <= t.engagementRadiusKm * 0.85) {
+            // Sorties with higher risk exposure / unmasked ingress take higher attrition
+            const riskRatio = Math.min(1.0, (s.expectedRiskScore || 50) / 100);
+            const interceptProb = 0.05 + 0.35 * riskRatio;
+            if (Math.random() < interceptProb) {
               isIntercepted = true;
               break;
             }

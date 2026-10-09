@@ -7,6 +7,8 @@ import {
   SpoofDetectionEngine,
   EdgeCrdtSyncNode,
   RedCellWargameEngine,
+  StaffCollegeTrainerEngine,
+  AfterActionReviewEngine,
 } from '@air-power/sim';
 import {
   AlnsTacticalOptimizer,
@@ -810,7 +812,47 @@ fastify.post('/api/contested/red-cell-wargame', async (request) => {
   );
 });
 
-// 20. SSE Live Stream for UI
+// 20. Staff-College Trainer: Automated Pedagogical Plan Grading
+const trainerEngine = new StaffCollegeTrainerEngine();
+
+fastify.post('/api/trainer/grade-plan', async (request) => {
+  const body = (request.body as any) || {};
+  const studentSorties = body.sorties || [];
+  const pic = stateStore.getFusedPicture();
+
+  return trainerEngine.gradePlan(studentSorties, {
+    bases: pic.bases,
+    aircraft: pic.aircraft,
+    pilots: pic.pilots,
+    munitionStocks: pic.munitionStocks,
+    threats: pic.threats,
+    targetRequests: pic.targetRequests,
+  });
+});
+
+// 21. After-Action Review (AAR): Campaign Event Timeline & Branching What-If
+const aarEngine = new AfterActionReviewEngine();
+
+fastify.get('/api/aar/campaign-events', async () => {
+  return {
+    events: aarEngine.getCampaignTimelineEvents(),
+  };
+});
+
+fastify.post('/api/aar/branch-what-if', async (request) => {
+  const body = (request.body as any) || {};
+  const eventId = body.eventId || 'EVT-02';
+  const branchKey = body.branchKey || 'EARLY_RETASK_15M';
+
+  return aarEngine.simulateBranchWhatIf(eventId, branchKey);
+});
+
+fastify.get('/api/aar/export-report', async (request, reply) => {
+  reply.header('Content-Type', 'text/html; charset=utf-8');
+  return aarEngine.generatePrintableAarHtml();
+});
+
+// 22. SSE Live Stream for UI
 fastify.get('/api/stream', (request, reply) => {
   reply.raw.setHeader('Content-Type', 'text/event-stream');
   reply.raw.setHeader('Cache-Control', 'no-cache');

@@ -21,6 +21,7 @@ import { PredictiveCalibrationView } from '../components/PredictiveCalibrationVi
 import { WhatIfSandbox } from '../components/WhatIfSandbox';
 import { AuditTrailView } from '../components/AuditTrailView';
 import { ContestedOpsStudio } from '../components/ContestedOpsStudio';
+import { StaffCollegeTrainerStudio } from '../components/StaffCollegeTrainerStudio';
 import { CopilotModal } from '../components/CopilotModal';
 import { AssumptionsDoctrineModal } from '../components/AssumptionsDoctrineModal';
 
@@ -166,6 +167,7 @@ export default function AirPowerDashboard() {
     { label: 'WHAT-IF SANDBOX', key: 'whatif' },
     { label: 'AUDIT & FEEDS', key: 'audit' },
     { label: 'CONTESTED & EDGE OPS', key: 'contested' },
+    { label: 'STAFF COLLEGE TRAINER & AAR', key: 'trainer' },
   ];
 
   const formatClockTime = (mins: number) => {
@@ -390,6 +392,7 @@ export default function AirPowerDashboard() {
             )}
             {activeTab === 13 && <AuditTrailView fusedPicture={fusedPicture} />}
             {activeTab === 14 && <ContestedOpsStudio />}
+            {activeTab === 15 && <StaffCollegeTrainerStudio fusedPicture={fusedPicture} />}
           </>
         ) : (
           <div className="p-16 text-center text-on-surface-variant font-label-data-sm text-sm bg-surface-container-lowest border border-outline-variant">

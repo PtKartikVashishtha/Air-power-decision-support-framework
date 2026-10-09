@@ -8,3 +8,5 @@ export * from './file-adapter';
 export * from './spoof-detection';
 export * from './crdt-edge-sync';
 export * from './red-cell-wargame';
+export * from './staff-college-trainer';
+export * from './after-action-review';
