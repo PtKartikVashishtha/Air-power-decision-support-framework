@@ -1,0 +1,20 @@
+{
+  "name": "air-power-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm --parallel --filter @air-power/api --filter @air-power/web dev",
+    "build": "pnpm --recursive build",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "benchmark": "tsx benchmarks/run-benchmark.ts",
+    "demo": "pnpm --filter @air-power/api dev",
+    "lint": "eslint . --ext .ts,.tsx"
+  },
+  "devDependencies": {
+    "fast-check": "^4.10.2",
+    "tsx": "^4.19.3",
+    "typescript": "^5.7.3",
+    "vitest": "^3.0.7"
+  }
+}

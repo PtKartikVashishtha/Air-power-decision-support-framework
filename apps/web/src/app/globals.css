@@ -1,0 +1,71 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #070b10;
+  --foreground: #e2e8f0;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  overflow-x: hidden;
+}
+
+/* Custom Tactical Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0c131d;
+}
+::-webkit-scrollbar-thumb {
+  background: #213650;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #00e5ff;
+}
+
+/* Tactical HUD grid patterns */
+.tactical-grid {
+  background-image: linear-gradient(to right, rgba(33, 54, 80, 0.25) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgba(33, 54, 80, 0.25) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+.radar-sweep {
+  position: relative;
+  overflow: hidden;
+}
+.radar-sweep::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: conic-gradient(from 0deg, transparent 0deg, rgba(0, 229, 255, 0.12) 60deg, transparent 65deg);
+  animation: sweep 8s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes sweep {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Glow effects */
+.glow-cyan {
+  box-shadow: 0 0 15px rgba(0, 229, 255, 0.35);
+}
+.glow-alert {
+  box-shadow: 0 0 15px rgba(255, 51, 75, 0.4);
+}

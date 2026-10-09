@@ -1,0 +1,24 @@
+{
+  "name": "@air-power/api",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "./src/server.ts",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js"
+  },
+  "dependencies": {
+    "@air-power/shared": "workspace:*",
+    "@air-power/sim": "workspace:*",
+    "@air-power/optimizer": "workspace:*",
+    "fastify": "^5.2.1",
+    "@fastify/cors": "^10.0.2",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.1",
+    "tsx": "^4.19.3",
+    "typescript": "^5.7.3"
+  }
+}
