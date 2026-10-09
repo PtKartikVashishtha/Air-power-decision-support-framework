@@ -4,25 +4,17 @@
 # Files & directories excluded from SIH evaluation submission
 # ========================================================
 
-# --- Documentation, Internal Guides & Presentation Kits ---
-docs/
-*presentation*
-*presentation-guide*
-*presentation_guide*
-*presentation_kit*
-*slide_deck*
-AIR_POWER_12_SLIDE_DECK.html
-SIH_PRESENTATION_KIT.md
-AUDIT_REPORT.md
-CLAIMS_REGISTER.md
-MATHEMATICAL_MODEL.md
-SECURITY_NOTE_STRIDE.md
-DECISIONS.md
-PROMPT_HISTORY.md
+# --- Screen Recordings & Media (Recorded Separately) ---
+*.mp4
+*.mkv
+*.mov
+*.avi
+*.webm
+recordings/
+videos/
+screencasts/
 
-# --- Internal Agent & Development Work Notes ---
-AGENTS.md
-CONTEXT.md
+# --- Temporary Scratch Files & Internal Notes ---
 scratch/
 scratchpad*
 *.draft.md

@@ -254,37 +254,37 @@ export const TacticalMap: React.FC<TacticalMapProps> = ({
   }, [fusedPicture, currentPlan, showThreats, showCorridors, showRoutes]);
 
   return (
-    <div className="relative w-full h-[640px] bg-ops-950 rounded-lg border border-ops-700/60 overflow-hidden shadow-2xl flex flex-col">
+    <div className="flex flex-col w-full min-w-0 border border-outline-variant bg-surface-container-lowest shadow-xs">
       {/* Tactical HUD Header */}
-      <div className="flex items-center justify-between px-4 py-2 bg-ops-900/90 border-b border-ops-700/60 text-xs font-mono">
-        <div className="flex items-center space-x-3">
-          <span className="flex h-2 w-2 rounded-full bg-ops-accent animate-ping" />
-          <span className="text-ops-accent font-semibold">THEATER TACTICAL COP // 2D RADAR DISPLAY</span>
-          <span className="text-gray-400">SECTOR NORTH & WEST (WGS-84 NOTIONAL)</span>
+      <div className="flex flex-wrap items-center justify-between gap-2 px-3 py-2 bg-surface-container-low border-b border-outline-variant text-xs font-mono">
+        <div className="flex items-center gap-2">
+          <span className="flex h-2 w-2 rounded-full bg-secondary animate-ping" />
+          <span className="text-primary font-bold">THEATER TACTICAL COP // 2D RADAR DISPLAY</span>
+          <span className="text-on-surface-variant text-[11px]">SECTOR NORTH &amp; WEST (WGS-84 NOTIONAL)</span>
         </div>
 
         {/* Map Overlays Toggle */}
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center gap-1.5">
           <button
             onClick={() => setShowThreats(!showThreats)}
-            className={`px-2 py-1 rounded text-[11px] transition ${
-              showThreats ? 'bg-ops-alert/20 text-ops-alert border border-ops-alert/40' : 'bg-ops-800 text-gray-400'
+            className={`px-2 py-1 text-[11px] font-bold font-mono border transition ${
+              showThreats ? 'bg-rose-50 text-rose-800 border-rose-300' : 'bg-surface-container-lowest text-on-surface-variant border-outline-variant'
             }`}
           >
             SAM DOMES
           </button>
           <button
             onClick={() => setShowCorridors(!showCorridors)}
-            className={`px-2 py-1 rounded text-[11px] transition ${
-              showCorridors ? 'bg-ops-accent/20 text-ops-accent border border-ops-accent/40' : 'bg-ops-800 text-gray-400'
+            className={`px-2 py-1 text-[11px] font-bold font-mono border transition ${
+              showCorridors ? 'bg-secondary-fixed text-on-secondary-fixed border-secondary' : 'bg-surface-container-lowest text-on-surface-variant border-outline-variant'
             }`}
           >
             ACO CORRIDORS
           </button>
           <button
             onClick={() => setShowRoutes(!showRoutes)}
-            className={`px-2 py-1 rounded text-[11px] transition ${
-              showRoutes ? 'bg-ops-success/20 text-ops-success border border-ops-success/40' : 'bg-ops-800 text-gray-400'
+            className={`px-2 py-1 text-[11px] font-bold font-mono border transition ${
+              showRoutes ? 'bg-emerald-50 text-emerald-800 border-emerald-300' : 'bg-surface-container-lowest text-on-surface-variant border-outline-variant'
             }`}
           >
             SORTIE TRACKS
@@ -293,48 +293,48 @@ export const TacticalMap: React.FC<TacticalMapProps> = ({
       </div>
 
       {/* Interactive Map Canvas */}
-      <div className="relative flex-1 w-full h-full">
+      <div className="relative w-full h-[580px] bg-[#080d15] overflow-hidden">
         <canvas
           ref={canvasRef}
           width={1180}
           height={580}
-          className="w-full h-full cursor-crosshair"
+          className="w-full h-full cursor-crosshair block"
         />
 
         {/* Tactical Legend Overlay */}
-        <div className="absolute bottom-3 left-3 bg-ops-900/85 backdrop-blur-md p-2.5 rounded border border-ops-700/50 text-[11px] font-mono space-y-1.5 shadow-lg">
-          <div className="text-gray-300 font-bold mb-1">SYMBOLOGY LEGEND</div>
-          <div className="flex items-center space-x-2">
-            <span className="w-2.5 h-2.5 bg-ops-accent border border-white inline-block" />
-            <span className="text-gray-300">Operational Airbase (FOB / TB)</span>
+        <div className="absolute bottom-3 left-3 bg-surface-container-lowest/95 backdrop-blur-sm p-2.5 border border-outline-variant text-[11px] font-mono space-y-1 shadow-md max-w-[280px]">
+          <div className="text-primary font-bold mb-1 text-[10px] uppercase">SYMBOLOGY LEGEND</div>
+          <div className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 bg-secondary border border-primary inline-block shrink-0" />
+            <span className="text-primary truncate">Operational Airbase (FOB/TB)</span>
           </div>
-          <div className="flex items-center space-x-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-ops-alert inline-block" />
-            <span className="text-gray-300">High-Threat Target (&gt;90 Prio)</span>
+          <div className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-600 inline-block shrink-0" />
+            <span className="text-primary truncate">High-Threat Target (&gt;90 Prio)</span>
           </div>
-          <div className="flex items-center space-x-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-pink-500 animate-pulse inline-block" />
-            <span className="text-pink-300">Time-Sensitive Target (TST)</span>
+          <div className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-pink-600 animate-pulse inline-block shrink-0" />
+            <span className="text-primary truncate">Time-Sensitive Target (TST)</span>
           </div>
-          <div className="flex items-center space-x-2">
-            <span className="w-4 h-0.5 bg-ops-alert inline-block" />
-            <span className="text-gray-300">SAM Engagement Envelope</span>
+          <div className="flex items-center gap-2">
+            <span className="w-4 h-0.5 bg-rose-600 inline-block shrink-0" />
+            <span className="text-primary truncate">SAM Engagement Envelope</span>
           </div>
-          <div className="flex items-center space-x-2">
-            <span className="w-4 h-0.5 bg-ops-success border-dashed inline-block" />
-            <span className="text-gray-300">Planned Strike Ingress Track</span>
+          <div className="flex items-center gap-2">
+            <span className="w-4 h-0.5 bg-emerald-600 border-dashed inline-block shrink-0" />
+            <span className="text-primary truncate">Strike Ingress Track</span>
           </div>
         </div>
 
         {/* Sortie Summary Badge */}
         {currentPlan && (
-          <div className="absolute top-3 right-3 bg-ops-900/85 backdrop-blur-md px-3 py-2 rounded border border-ops-700/50 text-right font-mono text-xs">
-            <div className="text-ops-accent font-bold">{currentPlan.name}</div>
-            <div className="text-gray-300">
+          <div className="absolute top-3 right-3 bg-surface-container-lowest/95 backdrop-blur-sm px-3 py-2 border border-outline-variant text-right font-mono text-xs shadow-md max-w-[340px]">
+            <div className="text-secondary font-bold truncate">{currentPlan.name}</div>
+            <div className="text-on-surface-variant text-[11px]">
               {currentPlan.sorties.length} Sorties Planned | {currentPlan.kpis.coveredTargetsCount} Targets Assigned
             </div>
-            <div className="text-ops-success font-semibold">
-              Integrity: {currentPlan.kpis.packageIntegrityPercent}% | Hard Violations: {currentPlan.kpis.hardConstraintViolations}
+            <div className="text-emerald-800 font-bold text-[11px]">
+              Integrity: {currentPlan.kpis.packageIntegrityPercent}% | Violations: {currentPlan.kpis.hardConstraintViolations}
             </div>
           </div>
         )}

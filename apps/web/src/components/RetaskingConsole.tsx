@@ -1,12 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import {
-  PlanCOA,
-  RetaskingDiffReport,
-  TacticalInject,
-} from '@air-power/shared';
-import { AlertCircle, RefreshCw, CheckCircle, Shield, FileText, ArrowRight } from 'lucide-react';
+import { PlanCOA, RetaskingDiffReport, TacticalInject } from '@air-power/shared';
+import { Panel, TruncatedText } from './primitives/LayoutPrimitives';
 
 interface RetaskingConsoleProps {
   currentPlan: PlanCOA | null;
@@ -64,152 +60,146 @@ export const RetaskingConsole: React.FC<RetaskingConsoleProps> = ({
   };
 
   return (
-    <div className="space-y-4 font-mono text-xs">
-      {/* Top Banner */}
-      <div className="bg-ops-900 border border-ops-700/60 p-4 rounded-lg flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <div className="text-ops-alert font-bold text-sm flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 text-ops-alert" />
-            DYNAMIC RETASKING & REAL-TIME CONTINGENCY CONSOLE
-          </div>
-          <div className="text-gray-400 text-[11px] mt-0.5">
-            Frozen-Zone Policy Enforcement // Incremental Re-optimisation with Disruption Penalty
-          </div>
-        </div>
-
-        <div className="flex items-center space-x-3">
+    <div className="flex flex-col gap-4 w-full min-w-0">
+      <Panel
+        title="DYNAMIC RETASKING & REAL-TIME CONTINGENCY CONSOLE"
+        subtitle="Frozen-Zone Policy Enforcement // Incremental Re-optimisation with Disruption Penalty"
+        badge={
+          <span className="px-2 py-0.5 bg-rose-50 text-rose-800 border border-rose-200 text-[10px] font-bold font-mono">
+            FROZEN ZONE: 15-MIN TOT
+          </span>
+        }
+        actions={
           <button
             onClick={fetchInjects}
-            className="bg-ops-800 hover:bg-ops-700 border border-ops-700 px-3 py-1.5 rounded text-gray-200 transition"
+            className="flex items-center gap-1 px-3 py-1 bg-surface-container-lowest text-primary border border-outline-variant hover:bg-surface-container text-xs font-mono font-bold transition"
           >
-            REFRESH INJECTS
+            <span className="material-symbols-outlined text-[13px]">sync</span>
+            <span>REFRESH INJECTS</span>
           </button>
-        </div>
-      </div>
+        }
+      >
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 w-full min-w-0">
+          {/* Injects Selection on Left (4 cols) */}
+          <div className="lg:col-span-4 flex flex-col gap-2.5 min-w-0">
+            <div className="font-bold text-primary uppercase text-xs font-mono flex justify-between items-center border-b border-outline-variant pb-1">
+              <span>PENDING TACTICAL INJECTS</span>
+              <span className="px-1.5 py-0.5 bg-rose-50 text-rose-800 border border-rose-200 text-[10px]">
+                {injects.length} Active
+              </span>
+            </div>
 
-      {/* Injects Selection & Retask Trigger */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="bg-ops-900 border border-ops-700/60 p-4 rounded-lg md:col-span-1 space-y-3">
-          <div className="font-bold text-gray-200 uppercase text-xs flex justify-between">
-            <span>PENDING TACTICAL INJECTS</span>
-            <span className="text-ops-alert font-bold">{injects.length} Active</span>
+            <div className="space-y-2 max-h-[350px] overflow-y-auto w-full min-w-0 pr-1">
+              {injects.length === 0 ? (
+                <div className="text-on-surface-variant italic p-4 text-center text-xs font-mono bg-surface-container-low border border-outline-variant">
+                  All injected contingencies acknowledged and mitigated.
+                </div>
+              ) : (
+                injects.map((inj) => (
+                  <div
+                    key={inj.id}
+                    onClick={() => setSelectedInject(inj)}
+                    className={`p-2.5 border cursor-pointer transition flex flex-col gap-1 ${
+                      selectedInject?.id === inj.id
+                        ? 'bg-rose-50/50 border-rose-400 shadow-xs'
+                        : 'bg-surface-container-low border-outline-variant hover:border-outline'
+                    }`}
+                  >
+                    <div className="flex justify-between items-center">
+                      <span className="text-[10px] font-bold font-mono text-rose-800 uppercase">{inj.type}</span>
+                      <span className="text-[10px] text-on-surface-variant font-mono">H+{inj.simTimeMinutes}m</span>
+                    </div>
+                    <div className="font-bold text-xs text-primary">{inj.title}</div>
+                    <div className="text-[10px] text-on-surface-variant line-clamp-2 leading-tight">
+                      {inj.description}
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+
+            {selectedInject && (
+              <button
+                onClick={handleExecuteRetask}
+                disabled={isRetasking}
+                className={`w-full py-2 font-bold font-mono text-xs uppercase tracking-wider transition flex items-center justify-center gap-1.5 ${
+                  isRetasking
+                    ? 'bg-surface-container text-on-surface-variant border border-outline-variant cursor-not-allowed'
+                    : 'bg-rose-700 text-white hover:bg-rose-800 shadow-xs'
+                }`}
+              >
+                <span className={`material-symbols-outlined text-[14px] ${isRetasking ? 'animate-spin' : ''}`}>
+                  {isRetasking ? 'sync' : 'bolt'}
+                </span>
+                <span>{isRetasking ? 'CALCULATING RETASK...' : 'EXECUTE DYNAMIC RE-PLAN'}</span>
+              </button>
+            )}
           </div>
 
-          <div className="space-y-2 max-h-[300px] overflow-y-auto">
-            {injects.length === 0 ? (
-              <div className="text-gray-500 italic p-3 text-center">
-                All injected contingencies acknowledged and mitigated.
+          {/* Retasking Diff and Assessment on Right (8 cols) */}
+          <div className="lg:col-span-8 flex flex-col gap-2.5 min-w-0">
+            <div className="flex justify-between items-center border-b border-outline-variant pb-1 font-mono text-xs">
+              <span className="font-bold text-primary uppercase">
+                PLAN STABILITY &amp; IMPACT DIFF REPORT
+              </span>
+              {diffReport && (
+                <span className="text-secondary font-bold text-[11px]">
+                  STABILITY INDEX: {diffReport.stabilityIndex}% (MINIMAL DISRUPTION)
+                </span>
+              )}
+            </div>
+
+            {diffReport ? (
+              <div className="space-y-3 w-full min-w-0">
+                {/* Diff Changes Table */}
+                <div className="space-y-1.5 w-full min-w-0">
+                  <div className="text-primary font-bold text-[11px] font-mono">SORTIE-LEVEL ADJUSTMENTS:</div>
+                  <div className="space-y-1.5 max-h-[180px] overflow-y-auto w-full min-w-0">
+                    {diffReport.changes.map((c, idx) => (
+                      <div
+                        key={idx}
+                        className="p-2 bg-surface-container-low border border-outline-variant flex flex-wrap items-center justify-between gap-2 font-mono text-xs"
+                      >
+                        <div className="flex items-center gap-2 min-w-0 flex-1">
+                          <span
+                            className={`px-1.5 py-0.5 text-[10px] font-bold border shrink-0 ${
+                              c.changeType === 'ADDED'
+                                ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                                : c.changeType === 'CANCELLED'
+                                ? 'bg-rose-50 text-rose-800 border-rose-200'
+                                : 'bg-amber-50 text-amber-800 border-amber-200'
+                            }`}
+                          >
+                            {c.changeType}
+                          </span>
+                          <span className="font-bold text-primary shrink-0">{c.callsign}</span>
+                          <TruncatedText text={c.impactAssessment} className="text-on-surface-variant text-[11px]" />
+                        </div>
+                        <span className="text-on-surface-variant text-[10px] shrink-0">{c.reason}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Commander Brief Box */}
+                <div className="p-3 bg-surface-container-low border border-outline-variant flex flex-col gap-1 w-full min-w-0">
+                  <div className="text-secondary font-bold text-xs uppercase font-mono flex items-center gap-1">
+                    <span className="material-symbols-outlined text-[15px]">description</span>
+                    <span>AUTOMATED COMMANDER&apos;S OPERATIONAL BRIEF</span>
+                  </div>
+                  <div className="text-on-surface-variant text-[11px] font-mono whitespace-pre-line leading-relaxed max-h-[220px] overflow-y-auto">
+                    {diffReport.commanderBriefMarkdown}
+                  </div>
+                </div>
               </div>
             ) : (
-              injects.map((inj) => (
-                <div
-                  key={inj.id}
-                  onClick={() => setSelectedInject(inj)}
-                  className={`p-3 rounded border cursor-pointer transition ${
-                    selectedInject?.id === inj.id
-                      ? 'bg-ops-alert/15 border-ops-alert text-white'
-                      : 'bg-ops-850 border-ops-700/50 text-gray-300 hover:bg-ops-800'
-                  }`}
-                >
-                  <div className="flex justify-between items-center mb-1">
-                    <span className="text-[10px] font-bold text-ops-alert">{inj.type}</span>
-                    <span className="text-[10px] text-gray-400">H+{inj.simTimeMinutes}m</span>
-                  </div>
-                  <div className="font-semibold text-xs">{inj.title}</div>
-                  <div className="text-[10px] text-gray-400 mt-1 line-clamp-2">{inj.description}</div>
-                </div>
-              ))
+              <div className="p-12 text-center text-on-surface-variant italic font-mono text-xs bg-surface-container-low border border-outline-variant">
+                Select a pending tactical inject on the left and click &ldquo;EXECUTE DYNAMIC RE-PLAN&rdquo; to view real-time impact diff and automated commander&apos;s brief.
+              </div>
             )}
           </div>
-
-          {selectedInject && (
-            <button
-              onClick={handleExecuteRetask}
-              disabled={isRetasking}
-              className={`w-full py-2.5 rounded font-bold transition flex items-center justify-center space-x-2 ${
-                isRetasking
-                  ? 'bg-ops-700 text-gray-400 cursor-not-allowed'
-                  : 'bg-ops-alert hover:bg-rose-600 text-white shadow-lg'
-              }`}
-            >
-              {isRetasking ? (
-                <>
-                  <RefreshCw className="w-4 h-4 animate-spin" />
-                  <span>CALCULATING RETASK...</span>
-                </>
-              ) : (
-                <>
-                  <RefreshCw className="w-4 h-4" />
-                  <span>EXECUTE DYNAMIC RE-PLAN</span>
-                </>
-              )}
-            </button>
-          )}
         </div>
-
-        {/* Retasking Diff and Assessment */}
-        <div className="bg-ops-900 border border-ops-700/60 p-4 rounded-lg md:col-span-2 space-y-3">
-          <div className="flex justify-between items-center border-b border-ops-800/80 pb-2">
-            <span className="font-bold text-white uppercase text-xs">
-              PLAN STABILITY &amp; IMPACT DIFF REPORT
-            </span>
-            {diffReport && (
-              <span className="text-ops-accent font-bold">
-                STABILITY INDEX: {diffReport.stabilityIndex}% (MINIMAL DISRUPTION)
-              </span>
-            )}
-          </div>
-
-          {diffReport ? (
-            <div className="space-y-4">
-              {/* Diff Changes Table */}
-              <div className="space-y-2">
-                <div className="text-gray-300 font-bold text-[11px]">SORTIE-LEVEL ADJUSTMENTS:</div>
-                <div className="space-y-1.5 max-h-[160px] overflow-y-auto">
-                  {diffReport.changes.map((c, idx) => (
-                    <div
-                      key={idx}
-                      className="bg-ops-850 p-2.5 rounded border border-ops-700/50 flex items-center justify-between"
-                    >
-                      <div className="flex items-center space-x-2">
-                        <span
-                          className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                            c.changeType === 'ADDED'
-                              ? 'bg-emerald-950 text-emerald-400 border border-emerald-800'
-                              : c.changeType === 'CANCELLED'
-                              ? 'bg-rose-950 text-rose-400 border border-rose-800'
-                              : 'bg-amber-950 text-amber-400 border border-amber-800'
-                          }`}
-                        >
-                          {c.changeType}
-                        </span>
-                        <span className="font-bold text-white">{c.callsign}</span>
-                        <span className="text-gray-400 text-[11px]">{c.impactAssessment}</span>
-                      </div>
-                      <span className="text-gray-400 text-[10px]">{c.reason}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Commander Brief Markdown Box */}
-              <div className="bg-ops-950 p-3 rounded border border-ops-700/50">
-                <div className="text-ops-accent font-bold text-[11px] mb-1 flex items-center gap-1.5">
-                  <FileText className="w-3.5 h-3.5" />
-                  AUTOMATED COMMANDER&apos;S OPERATIONAL BRIEF
-                </div>
-                <div className="text-gray-300 text-[11px] whitespace-pre-line leading-relaxed">
-                  {diffReport.commanderBriefMarkdown}
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div className="p-8 text-center text-gray-500 italic">
-              Select a pending tactical inject on the left and click &ldquo;EXECUTE DYNAMIC RE-PLAN&rdquo; to view real-time impact diff and automated commander&apos;s brief.
-            </div>
-          )}
-        </div>
-      </div>
+      </Panel>
     </div>
   );
 };

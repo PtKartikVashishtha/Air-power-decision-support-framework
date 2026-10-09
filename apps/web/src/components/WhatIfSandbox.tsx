@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { PlanCOA, FusedOperationalPicture } from '@air-power/shared';
-import { GitFork, Play, CheckCircle2, ShieldAlert, ArrowRight } from 'lucide-react';
+import { Panel } from './primitives/LayoutPrimitives';
 
 interface WhatIfSandboxProps {
   currentPlan: PlanCOA | null;
@@ -24,7 +24,6 @@ export const WhatIfSandbox: React.FC<WhatIfSandboxProps> = ({
   const handleRunSimulation = async () => {
     setIsSimulating(true);
     try {
-      // Run what-if query against planner
       const res = await fetch('http://localhost:3001/api/plan/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -45,126 +44,129 @@ export const WhatIfSandbox: React.FC<WhatIfSandboxProps> = ({
   };
 
   return (
-    <div className="space-y-4 font-mono text-xs">
-      {/* Header */}
-      <div className="bg-ops-900 border border-ops-700/60 p-4 rounded-lg flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <div className="text-ops-accent font-bold text-sm flex items-center gap-2">
-            <GitFork className="w-4 h-4 text-ops-accent" />
-            WHAT-IF TACTICAL SANDBOX &amp; WARGAME SIMULATOR
+    <div className="flex flex-col gap-4 w-full min-w-0">
+      <Panel
+        title="WHAT-IF TACTICAL SANDBOX & WARGAME SIMULATOR"
+        subtitle="Non-Destructive Plan Forking // Stress-Testing Contingencies Without Live Plan Disruption"
+        badge={
+          <span className="px-2 py-0.5 bg-secondary-fixed text-on-secondary-fixed text-[10px] font-bold font-mono">
+            SANDBOX ISOLATED
+          </span>
+        }
+        actions={
+          <div className="flex items-center gap-2">
+            <select
+              value={scenarioType}
+              onChange={(e) => setScenarioType(e.target.value as any)}
+              className="bg-surface-container-lowest border border-outline-variant text-primary px-2.5 py-1 text-xs font-mono font-bold"
+            >
+              <option value="HALWARA_WEATHER_CLOSE">HYPOTHETICAL: FOB HALWARA WEATHER CLOSURE</option>
+              <option value="SAM_CLUSTER_SURGE">HYPOTHETICAL: SECTOR NORTH SAM CLUSTER SURGE</option>
+              <option value="MASS_TST_ALERT">HYPOTHETICAL: MULTIPLE FLEETING TST CONVOYS</option>
+            </select>
+
+            <button
+              onClick={handleRunSimulation}
+              disabled={isSimulating}
+              className={`flex items-center gap-1 px-3 py-1 font-bold font-mono text-xs uppercase tracking-wider border transition shrink-0 ${
+                isSimulating
+                  ? 'bg-surface-container text-on-surface-variant border-outline-variant cursor-not-allowed'
+                  : 'bg-primary text-on-primary border-primary hover:bg-secondary'
+              }`}
+            >
+              <span className={`material-symbols-outlined text-[14px] ${isSimulating ? 'animate-spin' : ''}`}>
+                {isSimulating ? 'sync' : 'play_arrow'}
+              </span>
+              <span>{isSimulating ? 'FORKING...' : 'SIMULATE FORK'}</span>
+            </button>
           </div>
-          <div className="text-gray-400 text-[11px] mt-0.5">
-            Non-Destructive Plan Forking // Stress-Testing Contingencies Without Live Plan Disruption
-          </div>
-        </div>
-
-        <div className="flex items-center space-x-3">
-          <select
-            value={scenarioType}
-            onChange={(e) => setScenarioType(e.target.value as any)}
-            className="bg-ops-800 border border-ops-700 text-gray-200 px-3 py-1.5 rounded text-xs"
-          >
-            <option value="HALWARA_WEATHER_CLOSE">HYPOTHETICAL: FOB HALWARA WEATHER CLOSURE</option>
-            <option value="SAM_CLUSTER_SURGE">HYPOTHETICAL: SECTOR NORTH SAM CLUSTER SURGE</option>
-            <option value="MASS_TST_ALERT">HYPOTHETICAL: MULTIPLE FLEETING TST CONVOYS</option>
-          </select>
-
-          <button
-            onClick={handleRunSimulation}
-            disabled={isSimulating}
-            className="bg-ops-accent hover:bg-cyan-300 text-ops-950 font-bold px-4 py-1.5 rounded flex items-center gap-2 transition"
-          >
-            {isSimulating ? (
-              <>
-                <div className="w-3.5 h-3.5 border-2 border-ops-950 border-t-transparent rounded-full animate-spin" />
-                <span>FORKING PLAN...</span>
-              </>
-            ) : (
-              <>
-                <Play className="w-3.5 h-3.5 fill-current" />
-                <span>SIMULATE FORK</span>
-              </>
-            )}
-          </button>
-        </div>
-      </div>
-
-      {/* Side-by-Side Live Plan vs Sandboxed Fork */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Live Master Plan */}
-        <div className="bg-ops-900 border border-ops-700/60 p-4 rounded-lg space-y-3">
-          <div className="flex justify-between items-center border-b border-ops-800 pb-2">
-            <span className="font-bold text-emerald-400 uppercase">ACTIVE LIVE MASTER PLAN</span>
-            <span className="text-gray-400">COMMITTED</span>
-          </div>
-
-          {currentPlan ? (
-            <div className="space-y-2 text-xs">
-              <div className="text-white font-bold">{currentPlan.name}</div>
-              <div className="flex justify-between text-gray-300">
-                <span>Priority Coverage:</span>
-                <span className="text-ops-accent font-bold">{currentPlan.kpis.priorityCoveragePercent}%</span>
+        }
+      >
+        {/* Side-by-Side Live Plan vs Sandboxed Fork */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full min-w-0">
+          {/* Live Master Plan */}
+          <div className="p-3 bg-surface-container-low border border-outline-variant flex flex-col justify-between gap-3">
+            <div>
+              <div className="flex justify-between items-center border-b border-outline-variant pb-1.5 mb-2 font-mono">
+                <span className="font-bold text-emerald-800 uppercase text-xs">ACTIVE LIVE MASTER PLAN</span>
+                <span className="text-[10px] px-1.5 py-0.5 bg-emerald-50 text-emerald-800 border border-emerald-200 font-bold">
+                  COMMITTED
+                </span>
               </div>
-              <div className="flex justify-between text-gray-300">
-                <span>Assigned Sorties:</span>
-                <span className="font-bold">{currentPlan.sorties.length}</span>
-              </div>
-              <div className="flex justify-between text-gray-300">
-                <span>Expected Fleet Risk:</span>
-                <span className="text-emerald-400 font-bold">{currentPlan.kpis.totalExpectedLossScore}</span>
-              </div>
-              <div className="flex justify-between text-gray-300">
-                <span>Reserve Airframes:</span>
-                <span className="font-bold">{currentPlan.kpis.strategicReserveAircraft}</span>
-              </div>
+
+              {currentPlan ? (
+                <div className="space-y-2 text-xs font-mono">
+                  <div className="text-primary font-bold">{currentPlan.name}</div>
+                  <div className="flex justify-between text-on-surface-variant">
+                    <span>Priority Target Coverage:</span>
+                    <span className="text-secondary font-bold">{currentPlan.kpis.priorityCoveragePercent}%</span>
+                  </div>
+                  <div className="flex justify-between text-on-surface-variant">
+                    <span>Assigned Sorties:</span>
+                    <span className="font-bold text-primary">{currentPlan.sorties.length}</span>
+                  </div>
+                  <div className="flex justify-between text-on-surface-variant">
+                    <span>Expected Fleet Risk:</span>
+                    <span className="font-bold text-emerald-800">{currentPlan.kpis.totalExpectedLossScore}</span>
+                  </div>
+                  <div className="flex justify-between text-on-surface-variant">
+                    <span>Reserve Airframes Held:</span>
+                    <span className="font-bold text-primary">{currentPlan.kpis.strategicReserveAircraft}</span>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-on-surface-variant font-mono text-xs italic">No active plan committed.</div>
+              )}
             </div>
-          ) : (
-            <div className="text-gray-500">No active plan committed.</div>
-          )}
-        </div>
-
-        {/* Sandboxed Plan */}
-        <div className="bg-ops-900 border border-ops-accent/50 p-4 rounded-lg space-y-3">
-          <div className="flex justify-between items-center border-b border-ops-800 pb-2">
-            <span className="font-bold text-ops-accent uppercase">FORKED SANDBOX SCENARIO</span>
-            <span className="text-amber-400 font-bold">UNCOMMITTED EXPERIMENT</span>
           </div>
 
-          {sandboxedPlan ? (
-            <div className="space-y-3 text-xs">
-              <div className="text-white font-bold">{sandboxedPlan.name}</div>
-              <div className="flex justify-between text-gray-300">
-                <span>Hypothetical Coverage:</span>
-                <span className="text-ops-accent font-bold">{sandboxedPlan.kpis.priorityCoveragePercent}%</span>
-              </div>
-              <div className="flex justify-between text-gray-300">
-                <span>Re-tasked Sorties:</span>
-                <span className="font-bold">{sandboxedPlan.sorties.length}</span>
-              </div>
-              <div className="flex justify-between text-gray-300">
-                <span>Hypothetical Risk:</span>
-                <span className="text-amber-400 font-bold">{sandboxedPlan.kpis.totalExpectedLossScore}</span>
-              </div>
-              <div className="flex justify-between text-gray-300">
-                <span>Reserve Maintained:</span>
-                <span className="font-bold">{sandboxedPlan.kpis.strategicReserveAircraft}</span>
+          {/* Sandboxed Plan */}
+          <div className="p-3 bg-surface-container-lowest border-2 border-secondary flex flex-col justify-between gap-3 shadow-xs">
+            <div>
+              <div className="flex justify-between items-center border-b border-secondary/30 pb-1.5 mb-2 font-mono">
+                <span className="font-bold text-secondary uppercase text-xs">FORKED SANDBOX SCENARIO</span>
+                <span className="text-[10px] px-1.5 py-0.5 bg-amber-50 text-amber-800 border border-amber-200 font-bold">
+                  UNCOMMITTED EXPERIMENT
+                </span>
               </div>
 
-              <button
-                onClick={() => onCommitForkedPlan(sandboxedPlan)}
-                className="w-full py-2 bg-ops-success hover:bg-emerald-400 text-ops-950 font-bold rounded transition flex items-center justify-center gap-2 mt-4"
-              >
-                <CheckCircle2 className="w-4 h-4" />
-                <span>PROMOTE FORK TO LIVE MASTER PLAN</span>
-              </button>
+              {sandboxedPlan ? (
+                <div className="space-y-2 text-xs font-mono">
+                  <div className="text-primary font-bold">{sandboxedPlan.name}</div>
+                  <div className="flex justify-between text-on-surface-variant">
+                    <span>Hypothetical Coverage:</span>
+                    <span className="text-secondary font-bold">{sandboxedPlan.kpis.priorityCoveragePercent}%</span>
+                  </div>
+                  <div className="flex justify-between text-on-surface-variant">
+                    <span>Re-tasked Sorties:</span>
+                    <span className="font-bold text-primary">{sandboxedPlan.sorties.length}</span>
+                  </div>
+                  <div className="flex justify-between text-on-surface-variant">
+                    <span>Hypothetical Risk:</span>
+                    <span className="text-amber-800 font-bold">{sandboxedPlan.kpis.totalExpectedLossScore}</span>
+                  </div>
+                  <div className="flex justify-between text-on-surface-variant">
+                    <span>Reserve Maintained:</span>
+                    <span className="font-bold text-primary">{sandboxedPlan.kpis.strategicReserveAircraft}</span>
+                  </div>
+
+                  <button
+                    onClick={() => onCommitForkedPlan(sandboxedPlan)}
+                    className="w-full py-2 bg-secondary text-on-secondary hover:bg-primary font-bold rounded-none transition flex items-center justify-center gap-1.5 mt-3 uppercase tracking-wider text-xs"
+                  >
+                    <span className="material-symbols-outlined text-[14px]">task_alt</span>
+                    <span>PROMOTE FORK TO LIVE MASTER PLAN</span>
+                  </button>
+                </div>
+              ) : (
+                <div className="p-8 text-center text-on-surface-variant italic font-mono text-xs">
+                  Select a hypothetical contingency above and click &ldquo;SIMULATE FORK&rdquo; to test impacts safely without touching live operations.
+                </div>
+              )}
             </div>
-          ) : (
-            <div className="p-8 text-center text-gray-500 italic">
-              Select a hypothetical contingency above and click &ldquo;SIMULATE FORK&rdquo; to test impacts safely without touching live operations.
-            </div>
-          )}
+          </div>
         </div>
-      </div>
+      </Panel>
     </div>
   );
 };

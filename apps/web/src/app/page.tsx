@@ -35,6 +35,13 @@ export default function AirPowerDashboard() {
   const [isAssumptionsOpen, setIsAssumptionsOpen] = useState(false);
   const [isResettingDemo, setIsResettingDemo] = useState(false);
 
+  const navRef = React.useRef<HTMLElement>(null);
+  const handleNavScroll = (delta: number) => {
+    if (navRef.current) {
+      navRef.current.scrollBy({ left: delta, behavior: 'smooth' });
+    }
+  };
+
   // Initial data loading & SSE stream
   useEffect(() => {
     fetchInitialData();
@@ -164,58 +171,64 @@ export default function AirPowerDashboard() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen select-none" style={{ background: '#f6fafe', color: '#171c1f' }}>
+    <div className="flex flex-col min-h-screen w-full max-w-full overflow-x-hidden select-none" style={{ background: '#f6fafe', color: '#171c1f' }}>
       {/* Top Daylight Military Header Bar */}
-      <header className="sticky top-0 left-0 w-full z-40 bg-surface-container-lowest border-b border-outline-variant shadow-xs">
-        <div className="h-12 w-full px-gutter-desktop flex items-center justify-between border-b border-outline-variant bg-surface-container-lowest">
+      <header className="sticky top-0 left-0 w-full max-w-full overflow-x-hidden z-40 bg-surface-container-lowest border-b border-outline-variant shadow-xs">
+        {/* Mandatory Defence Training Classification Banner */}
+        <div className="w-full bg-[#fef2f2] border-b border-[#fecaca] text-center py-0.5 px-2 text-[10px] font-bold text-[#b91c1c] tracking-widest uppercase font-sans select-none shrink-0 truncate">
+          CLASSIFICATION: NOTIONAL / TRAINING DATA ONLY — UNCLASSIFIED DEFENCE SIMULATION (SIH-26250)
+        </div>
+
+        {/* Primary Controls Row */}
+        <div className="w-full px-2.5 lg:px-4 py-1.5 border-b border-outline-variant bg-surface-container-lowest flex items-center justify-between gap-2 min-w-0">
           {/* Logo & Operational Subtitle */}
-          <div className="flex items-center gap-space-lg">
-            <div className="w-8 h-8 rounded bg-primary flex items-center justify-center text-on-primary font-bold text-sm tracking-wider shadow-xs">
+          <div className="flex items-center gap-2 shrink-0 min-w-0">
+            <div className="w-7 h-7 rounded bg-primary flex items-center justify-center text-on-primary font-bold text-xs tracking-wider shadow-xs shrink-0">
               AP
             </div>
-            <div className="flex flex-col">
-              <div className="flex items-center gap-space-md">
-                <span className="font-label-caps text-label-caps text-primary tracking-wider uppercase font-bold">
-                  AIR POWER // C2 DECISION-SUPPORT SYSTEM
+            <div className="flex flex-col min-w-0">
+              <div className="flex items-center gap-1.5 min-w-0">
+                <span className="font-label-caps text-xs text-primary tracking-wider uppercase font-bold truncate">
+                  AIR POWER // C2 DECISION-SUPPORT
                 </span>
-                <span className="px-space-sm py-0.5 bg-[#f0fdf4] text-[#15803d] border border-[#bbf7d0] font-label-data-sm text-[10px] uppercase font-bold leading-none">
-                  NOTIONAL TRAINING DATA — UNCLASSIFIED
+                <span className="hidden 2xl:inline-block px-1.5 py-0.5 bg-[#f0fdf4] text-[#15803d] border border-[#bbf7d0] font-label-data-sm text-[9px] uppercase font-bold leading-none shrink-0">
+                  UNCLASSIFIED
                 </span>
               </div>
-              <span className="font-label-data-sm text-label-data-sm text-on-surface-variant font-medium tracking-tight">
+              <span className="hidden sm:block font-label-data-sm text-[9px] text-on-surface-variant font-medium tracking-tight truncate">
                 WESTERN SECTOR // 6 BASES // 68 AIRFRAMES
               </span>
             </div>
           </div>
 
           {/* Tactical Mission Clock Scrubbing Control */}
-          <div className="flex items-center gap-space-md bg-surface-container px-space-md py-space-xs border border-outline-variant">
-            <div className="flex items-center gap-space-sm">
-              <span className="font-label-caps text-label-caps text-on-surface-variant uppercase font-bold">MET</span>
-              <span className="font-label-data-lg text-label-data-lg text-primary bg-surface-container-lowest px-space-sm py-0.5 border border-outline-variant font-bold">
+          <div className="flex items-center gap-1.5 bg-surface-container px-2 py-0.5 border border-outline-variant shrink-0">
+            <div className="flex items-center gap-1 shrink-0">
+              <span className="font-label-caps text-[9px] text-on-surface-variant uppercase font-bold">MET</span>
+              <span className="font-label-data-sm text-[11px] text-primary bg-surface-container-lowest px-1 py-0.5 border border-outline-variant font-bold">
                 {formatClockTime(clockMinutes)}
               </span>
             </div>
-            <div className="h-4 w-px bg-outline-variant"></div>
-            <div className="flex items-center gap-space-xs">
+            <div className="h-3.5 w-px bg-outline-variant shrink-0"></div>
+            <div className="flex items-center gap-0.5 shrink-0">
               <button
                 onClick={() => handleClockControl(isClockRunning ? 'PAUSE' : 'PLAY')}
-                className="h-6 px-space-sm bg-surface-container-lowest border border-outline-variant text-on-surface hover:bg-surface-container-high transition-colors font-label-data-sm text-[11px] flex items-center justify-center font-bold"
+                className="h-5.5 w-5.5 bg-surface-container-lowest border border-outline-variant text-on-surface hover:bg-surface-container-high transition-colors flex items-center justify-center font-bold shrink-0"
                 type="button"
                 title={isClockRunning ? 'Pause Sim' : 'Play Sim'}
               >
-                <span className="material-symbols-outlined text-[14px]">
+                <span className="material-symbols-outlined text-[13px]">
                   {isClockRunning ? 'pause' : 'play_arrow'}
                 </span>
               </button>
             </div>
-            <div className="h-4 w-px bg-outline-variant"></div>
-            <div className="flex items-center gap-0.5">
+            <div className="h-3.5 w-px bg-outline-variant shrink-0"></div>
+            <div className="flex items-center gap-0.5 shrink-0">
               {[1, 5, 15, 60].map((spd) => (
                 <button
                   key={spd}
                   onClick={() => handleClockControl('SPEED', { multiplier: spd })}
-                  className={`h-6 px-space-sm font-label-data-sm text-[11px] font-bold border transition ${
+                  className={`h-5.5 px-1 font-label-data-sm text-[9px] font-bold border transition shrink-0 ${
                     clockSpeed === spd
                       ? 'bg-primary-container text-on-primary border-primary-container'
                       : 'bg-surface-container-lowest text-on-surface hover:bg-surface-container-high border-outline-variant'
@@ -229,71 +242,96 @@ export default function AirPowerDashboard() {
           </div>
 
           {/* System Health, Role, and Action Controls */}
-          <div className="flex items-center gap-space-md">
-            <div className="flex items-center gap-space-sm bg-surface-container-low px-space-md py-space-xs border border-outline-variant">
-              <span className="h-2 w-2 rounded-full bg-[#15803d] animate-pulse"></span>
-              <span className="font-label-data-sm text-label-data-sm text-primary font-bold tracking-tight">
-                COP FUSION: {fusedPicture?.overallConfidenceScore || 98.4}% (BAYESIAN SYNC)
+          <div className="flex items-center gap-1.5 shrink-0">
+            <div className="hidden xl:flex items-center gap-1 bg-surface-container-low px-1.5 py-0.5 border border-outline-variant shrink-0">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#15803d] animate-pulse shrink-0"></span>
+              <span className="font-label-data-sm text-[9px] text-primary font-bold tracking-tight whitespace-nowrap">
+                FUSION: {fusedPicture?.overallConfidenceScore || 98.4}% (BAYESIAN)
               </span>
             </div>
 
-            <div className="relative">
+            <div className="relative shrink-0">
               <select
                 value={role}
                 onChange={(e) => setRole(e.target.value as any)}
-                className="h-7 px-space-md bg-surface-container-lowest border border-outline-variant font-label-caps text-label-caps text-primary hover:bg-surface-container-high focus:outline-none cursor-pointer uppercase font-bold"
+                className="h-6.5 px-1.5 bg-surface-container-lowest border border-outline-variant font-label-caps text-[10px] text-primary hover:bg-surface-container-high focus:outline-none cursor-pointer uppercase font-bold shrink-0"
               >
-                <option value="COMMANDER">AIR COMMANDER (APPROVAL ONLY)</option>
+                <option value="COMMANDER">AIR COMMANDER</option>
                 <option value="PLANNER">CHIEF PLANNER</option>
                 <option value="INTEL">INTEL ANALYST</option>
                 <option value="AUDITOR">DEFENCE AUDITOR</option>
               </select>
             </div>
 
-            <div className="flex items-center gap-space-sm">
+            <div className="flex items-center gap-1 shrink-0">
               <button
                 onClick={() => setIsAssumptionsOpen(true)}
-                className="h-7 px-space-md bg-surface-container-lowest text-primary border border-outline-variant font-headline-md text-[11px] uppercase tracking-wider hover:bg-surface-container-high transition-colors font-bold"
+                className="h-6.5 px-2 bg-surface-container-lowest text-primary border border-outline-variant font-headline-md text-[10px] uppercase tracking-wider hover:bg-surface-container-high transition-colors font-bold whitespace-nowrap shrink-0 flex items-center gap-1"
                 type="button"
+                title="View Operational Doctrine & Planning Assumptions"
               >
-                Assumptions &amp; Doctrine
+                <span>Doctrine</span>
               </button>
 
               <button
                 onClick={handleResetDemo}
                 disabled={isResettingDemo}
-                className="h-7 px-space-md bg-surface-container-lowest text-on-surface border border-outline-variant font-headline-md text-[11px] uppercase tracking-wider hover:bg-surface-container-high transition-colors font-bold flex items-center gap-1"
+                className="h-6.5 px-2 bg-surface-container-lowest text-on-surface border border-outline-variant font-headline-md text-[10px] uppercase tracking-wider hover:bg-surface-container-high transition-colors font-bold flex items-center gap-1 whitespace-nowrap shrink-0"
                 type="button"
                 title="Restore Deterministic Demo State (< 2s)"
               >
-                <span className={`material-symbols-outlined text-[13px] ${isResettingDemo ? 'animate-spin' : ''}`}>
+                <span className={`material-symbols-outlined text-[12px] ${isResettingDemo ? 'animate-spin' : ''}`}>
                   sync
                 </span>
-                <span>Reset Demo</span>
+                <span>Reset</span>
               </button>
             </div>
           </div>
         </div>
 
-        {/* Secondary Tab Navigation Bar */}
-        <nav className="h-9 w-full px-gutter-desktop flex items-stretch gap-0 bg-surface-container-lowest border-t border-outline-variant/30 overflow-x-auto">
-          {navTabs.map((tab, idx) => {
-            const isActive = activeTab === idx;
-            return (
-              <button
-                key={tab.key}
-                onClick={() => setActiveTab(idx)}
-                className={`h-full px-space-lg flex items-center font-label-caps text-[11px] uppercase tracking-wider border-r border-outline-variant/40 transition-colors whitespace-nowrap ${
-                  isActive
-                    ? 'bg-surface-container-high text-primary border-b-2 border-secondary font-bold'
-                    : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low font-semibold'
-                }`}
-              >
-                {tab.label}
-              </button>
-            );
-          })}
-        </nav>
+        {/* Secondary Tab Navigation Bar with Responsive Scroll Chevrons */}
+        <div className="relative w-full max-w-full min-w-0 flex items-center bg-surface-container-lowest border-t border-outline-variant/30 overflow-hidden">
+          <button
+            onClick={() => handleNavScroll(-220)}
+            className="h-8.5 px-2 bg-surface-container-low hover:bg-surface-container text-on-surface border-r border-outline-variant flex items-center justify-center shrink-0 z-10 transition-colors"
+            type="button"
+            title="Scroll Tabs Left"
+          >
+            <span className="material-symbols-outlined text-[15px]">chevron_left</span>
+          </button>
+
+          <nav
+            ref={navRef}
+            className="h-8.5 flex-1 min-w-0 flex items-stretch gap-0 overflow-x-auto scroll-smooth no-scrollbar"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+          >
+            {navTabs.map((tab, idx) => {
+              const isActive = activeTab === idx;
+              return (
+                <button
+                  key={tab.key}
+                  onClick={() => setActiveTab(idx)}
+                  className={`h-full px-3.5 flex items-center font-label-caps text-[11px] uppercase tracking-wider border-r border-outline-variant/40 transition-colors whitespace-nowrap shrink-0 ${
+                    isActive
+                      ? 'bg-surface-container-high text-primary border-b-2 border-secondary font-bold'
+                      : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low font-semibold'
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              );
+            })}
+          </nav>
+
+          <button
+            onClick={() => handleNavScroll(220)}
+            className="h-9 px-2 bg-surface-container-low hover:bg-surface-container text-on-surface border-l border-outline-variant flex items-center justify-center shrink-0 z-10 transition-colors"
+            type="button"
+            title="Scroll Tabs Right"
+          >
+            <span className="material-symbols-outlined text-[16px]">chevron_right</span>
+          </button>
+        </div>
       </header>
 
       {/* Main Tactical Screen Container */}

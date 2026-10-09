@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { X, BookOpen, Shield, AlertCircle, FileCheck, CheckCircle2 } from 'lucide-react';
 
 interface AssumptionsModalProps {
   isOpen: boolean;
@@ -62,44 +61,45 @@ export const AssumptionsDoctrineModal: React.FC<AssumptionsModalProps> = ({
   ];
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-ops-900 border border-ops-700/80 rounded-xl max-w-3xl w-full max-h-[85vh] flex flex-col shadow-2xl text-xs font-mono">
+    <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
+      <div className="bg-surface-container-lowest border border-outline-variant max-w-3xl w-full max-h-[85vh] flex flex-col shadow-2xl text-xs font-mono">
         {/* Header */}
-        <div className="p-4 border-b border-ops-700/60 flex items-center justify-between bg-ops-850 rounded-t-xl">
-          <div className="flex items-center space-x-2.5">
-            <BookOpen className="w-4 h-4 text-ops-accent" />
-            <h2 className="text-sm font-bold text-white tracking-wide">
+        <div className="p-3.5 border-b border-outline-variant flex items-center justify-between bg-surface-container-low">
+          <div className="flex items-center gap-2">
+            <span className="material-symbols-outlined text-[18px] text-primary">menu_book</span>
+            <h2 className="text-xs font-bold text-primary uppercase tracking-wider">
               OPERATIONAL ASSUMPTIONS &amp; DOCTRINE SPECIFICATION
             </h2>
           </div>
           <button
             onClick={onClose}
-            className="p-1 rounded text-gray-400 hover:text-white hover:bg-ops-700 transition"
+            className="h-6 w-6 rounded flex items-center justify-center text-on-surface-variant hover:text-primary hover:bg-surface-container transition"
+            type="button"
           >
-            <X className="w-4 h-4" />
+            <span className="material-symbols-outlined text-[16px]">close</span>
           </button>
         </div>
 
         {/* Content Body */}
-        <div className="p-5 overflow-y-auto space-y-4">
-          <div className="p-3 bg-ops-950 border border-ops-800 rounded text-gray-300 leading-relaxed">
-            <span className="text-ops-accent font-bold">DEFENCE AUDIT NOTICE: </span>
+        <div className="p-4 overflow-y-auto space-y-3 flex-1">
+          <div className="p-2.5 bg-surface-container-low border border-outline-variant text-on-surface-variant leading-relaxed">
+            <strong className="text-primary font-bold">DEFENCE AUDIT NOTICE: </strong>
             This system operates with complete transparency. Every simplification from real-world military operations is documented below to ensure defensibility under hostile questioning by defence staff officers and operational researchers.
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-3">
             {assumptions.map((cat, idx) => (
-              <div key={idx} className="bg-ops-950/60 border border-ops-800 rounded-lg p-3.5 space-y-2">
-                <div className="flex justify-between items-center border-b border-ops-800/80 pb-1.5">
-                  <span className="font-bold text-white text-xs">{cat.category}</span>
-                  <span className="text-[10px] px-2 py-0.5 rounded bg-ops-800 text-ops-accent border border-ops-700">
+              <div key={idx} className="bg-surface-container-low border border-outline-variant p-3 space-y-2">
+                <div className="flex justify-between items-center border-b border-outline-variant/50 pb-1">
+                  <span className="font-bold text-primary text-xs uppercase">{cat.category}</span>
+                  <span className="text-[10px] px-1.5 py-0.5 bg-surface-container-lowest text-secondary border border-outline-variant font-bold">
                     {cat.badge}
                   </span>
                 </div>
-                <ul className="space-y-1.5 text-gray-400 text-[11px]">
+                <ul className="space-y-1 text-on-surface-variant text-[11px]">
                   {cat.items.map((item, i) => (
-                    <li key={i} className="flex items-start space-x-2">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
+                    <li key={i} className="flex items-start gap-1.5">
+                      <span className="material-symbols-outlined text-emerald-700 text-[14px] shrink-0 mt-0.5">check_circle</span>
                       <span>{item}</span>
                     </li>
                   ))}
@@ -110,10 +110,11 @@ export const AssumptionsDoctrineModal: React.FC<AssumptionsModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="p-3 border-t border-ops-700/60 bg-ops-850 flex justify-end rounded-b-xl">
+        <div className="p-3 border-t border-outline-variant bg-surface-container-low flex justify-end">
           <button
             onClick={onClose}
-            className="px-4 py-1.5 bg-ops-accent text-ops-950 font-bold rounded hover:bg-cyan-300 transition text-xs"
+            className="px-4 py-1.5 bg-primary text-on-primary font-bold text-xs uppercase tracking-wider hover:bg-secondary transition"
+            type="button"
           >
             ACKNOWLEDGE &amp; RETURN
           </button>

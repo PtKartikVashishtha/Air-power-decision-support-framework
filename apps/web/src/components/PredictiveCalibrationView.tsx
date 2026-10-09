@@ -1,16 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import {
-  LineChart,
-  Activity,
-  CheckCircle2,
-  AlertCircle,
-  HelpCircle,
-  Zap,
-  TrendingDown,
-  Percent,
-} from 'lucide-react';
+import { Panel, StatCard, TruncatedText } from './primitives/LayoutPrimitives';
 
 export const PredictiveCalibrationView: React.FC = () => {
   const [selectedModel, setSelectedModel] = useState<'TURNAROUND' | 'THREAT_RISK' | 'WEATHER'>('TURNAROUND');
@@ -71,118 +62,117 @@ export const PredictiveCalibrationView: React.FC = () => {
   const active = models[selectedModel];
 
   return (
-    <div className="space-y-5 font-mono text-xs">
-      {/* Header */}
-      <div className="bg-ops-900 border border-ops-700/60 p-4 rounded-lg flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <div className="text-ops-accent font-bold text-sm flex items-center gap-2">
-            <LineChart className="w-4 h-4 text-ops-accent" />
-            CALIBRATED PREDICTIVE ANALYTICS &amp; BACKTEST HARNESS
-          </div>
-          <div className="text-gray-400 text-[11px] mt-0.5">
-            Empirical validation of machine learning surrogates feeding the tactical optimizer
-          </div>
-        </div>
-
-        <div className="flex items-center space-x-2">
-          {(['TURNAROUND', 'THREAT_RISK', 'WEATHER'] as const).map((m) => (
-            <button
-              key={m}
-              onClick={() => setSelectedModel(m)}
-              className={`px-3 py-1.5 rounded text-xs font-bold transition ${
-                selectedModel === m
-                  ? 'bg-ops-accent text-ops-950 glow-cyan'
-                  : 'bg-ops-800 text-gray-300 hover:bg-ops-700'
-              }`}
-            >
-              {m.replace('_', ' ')}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Model Spec Card */}
-      <div className="bg-ops-900 border border-ops-700/60 rounded-lg p-4 space-y-3">
-        <div className="flex justify-between items-center border-b border-ops-800 pb-2">
-          <span className="font-bold text-white text-xs uppercase">{active.name}</span>
-          <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-800 font-bold">
-            90% INTERVAL COVERAGE: {active.intervalCoverage90}
+    <div className="flex flex-col gap-4 w-full min-w-0">
+      <Panel
+        title="CALIBRATED PREDICTIVE ANALYTICS & BACKTEST HARNESS"
+        subtitle="Empirical validation of machine learning surrogates feeding the tactical optimizer"
+        badge={
+          <span className="px-2 py-0.5 bg-emerald-50 text-emerald-800 border border-emerald-200 text-[10px] font-bold font-mono">
+            90% INTERVAL COVERED
           </span>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-3 text-[11px]">
-          <div className="bg-ops-950 p-2.5 rounded border border-ops-800">
-            <div className="text-gray-400 text-[10px]">PREDICTED TARGET</div>
-            <div className="text-white font-bold mt-0.5">{active.target}</div>
-          </div>
-          <div className="bg-ops-950 p-2.5 rounded border border-ops-800">
-            <div className="text-gray-400 text-[10px]">MEAN ABSOLUTE ERROR (MAE)</div>
-            <div className="text-ops-accent font-bold mt-0.5">{active.mae}</div>
-          </div>
-          <div className="bg-ops-950 p-2.5 rounded border border-ops-800">
-            <div className="text-gray-400 text-[10px]">BRIER SCORE (CALIBRATION)</div>
-            <div className="text-emerald-400 font-bold mt-0.5">{active.brierScore}</div>
-          </div>
-          <div className="bg-ops-950 p-2.5 rounded border border-ops-800">
-            <div className="text-gray-400 text-[10px]">TRAINING CORPUS</div>
-            <div className="text-gray-200 mt-0.5">{active.trainingSamples}</div>
-          </div>
-        </div>
-
-        {/* Feature List */}
-        <div className="text-[11px] text-gray-400">
-          Features Utilized:{' '}
-          <span className="text-gray-200">{active.features.join(' • ')}</span>
-        </div>
-      </div>
-
-      {/* Reliability Diagram Table */}
-      <div className="bg-ops-900 border border-ops-700/60 rounded-lg overflow-hidden">
-        <div className="px-4 py-3 bg-ops-850 border-b border-ops-700/60 flex justify-between items-center">
-          <span className="font-bold text-white text-xs uppercase">
-            RELIABILITY CALIBRATION CURVE // BINNED BACKTEST ACCURACY
-          </span>
-          <span className="text-[11px] text-gray-400">
-            PERFECT CALIBRATION: PREDICTED BIN == OBSERVED GROUND TRUTH
-          </span>
-        </div>
-
-        <table className="w-full text-left font-mono text-xs">
-          <thead className="bg-ops-900 text-gray-400 uppercase text-[10px] border-b border-ops-700/60">
-            <tr>
-              <th className="p-3">PREDICTION BIN</th>
-              <th className="p-3 text-ops-accent">OBSERVED MEAN VALUE</th>
-              <th className="p-3 text-gray-300">SAMPLE COUNT</th>
-              <th className="p-3 text-emerald-400">CALIBRATION DELTA</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-ops-800/80">
-            {active.bins.map((bin, idx) => (
-              <tr key={idx} className="hover:bg-ops-850/50">
-                <td className="p-3 font-bold text-white">{bin.predictedBin}</td>
-                <td className="p-3 text-ops-accent font-bold">{bin.actualMean}</td>
-                <td className="p-3 text-gray-400">{bin.sampleCount} historical sorties</td>
-                <td className="p-3 text-emerald-400 font-bold flex items-center gap-1">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                  Within &lt; 3% error margin
-                </td>
-              </tr>
+        }
+        actions={
+          <div className="flex items-center gap-1">
+            {(['TURNAROUND', 'THREAT_RISK', 'WEATHER'] as const).map((m) => (
+              <button
+                key={m}
+                onClick={() => setSelectedModel(m)}
+                className={`px-3 py-1 text-xs font-bold font-mono uppercase tracking-wider border transition whitespace-nowrap shrink-0 ${
+                  selectedModel === m
+                    ? 'bg-primary text-on-primary border-primary'
+                    : 'bg-surface-container-lowest text-on-surface-variant border-outline-variant hover:bg-surface-container'
+                }`}
+              >
+                {m.replace('_', ' ')}
+              </button>
             ))}
-          </tbody>
-        </table>
-      </div>
+          </div>
+        }
+      >
+        {/* Model Spec Card */}
+        <div className="p-3 bg-surface-container-low border border-outline-variant mb-4 flex flex-col gap-2.5">
+          <div className="flex justify-between items-center border-b border-outline-variant pb-1.5 font-mono">
+            <span className="font-bold text-primary text-xs uppercase">{active.name}</span>
+            <span className="text-[10px] px-1.5 py-0.5 bg-emerald-50 text-emerald-800 border border-emerald-200 font-bold">
+              90% INTERVAL COVERAGE: {active.intervalCoverage90}
+            </span>
+          </div>
 
-      {/* Ablation Analysis */}
-      <div className="bg-ops-900 border border-ops-700/60 rounded-lg p-4 space-y-2">
-        <div className="flex items-center space-x-2 text-ops-accent font-bold text-xs uppercase">
-          <Zap className="w-4 h-4 text-ops-accent" />
-          <span>ABLATION EXPERIMENT: CAMPAIGN QUALITY WITH VS WITHOUT PREDICTIVE ANALYTICS</span>
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-2.5 text-[11px] font-mono">
+            <div className="p-2.5 bg-surface-container-lowest border border-outline-variant">
+              <div className="text-on-surface-variant text-[10px] uppercase font-bold">PREDICTED TARGET</div>
+              <div className="text-primary font-bold mt-0.5">{active.target}</div>
+            </div>
+            <div className="p-2.5 bg-surface-container-lowest border border-outline-variant">
+              <div className="text-on-surface-variant text-[10px] uppercase font-bold">MEAN ABS ERROR (MAE)</div>
+              <div className="text-secondary font-bold mt-0.5">{active.mae}</div>
+            </div>
+            <div className="p-2.5 bg-surface-container-lowest border border-outline-variant">
+              <div className="text-on-surface-variant text-[10px] uppercase font-bold">BRIER SCORE (CALIBRATION)</div>
+              <div className="text-emerald-800 font-bold mt-0.5">{active.brierScore}</div>
+            </div>
+            <div className="p-2.5 bg-surface-container-lowest border border-outline-variant">
+              <div className="text-on-surface-variant text-[10px] uppercase font-bold">TRAINING CORPUS</div>
+              <div className="text-primary mt-0.5 leading-tight">{active.trainingSamples}</div>
+            </div>
+          </div>
+
+          <div className="text-[11px] font-mono text-on-surface-variant pt-1 border-t border-outline-variant/40">
+            Features Utilized:{' '}
+            <span className="text-primary font-bold">{active.features.join(' • ')}</span>
+          </div>
         </div>
-        <div className="p-3 bg-ops-950 rounded border border-ops-800 text-[11px] text-gray-300 leading-relaxed">
-          <strong className="text-white">Measured Operational Value: </strong>
-          {active.ablationEffect}. Without predictive turnaround and threat modeling, the optimizer falls back to nominal handbook values, leading to cascading runway turnaround delays and preventable corridor incursions.
+
+        {/* Reliability Diagram Table */}
+        <div className="w-full min-w-0 border border-outline-variant mb-4">
+          <div className="px-3 py-2 bg-surface-container-high border-b border-outline-variant flex justify-between items-center font-mono">
+            <span className="font-bold text-primary text-xs uppercase">
+              RELIABILITY CALIBRATION CURVE // BINNED BACKTEST ACCURACY
+            </span>
+            <span className="text-[10px] text-on-surface-variant">
+              PERFECT CALIBRATION: PREDICTED BIN == OBSERVED GROUND TRUTH
+            </span>
+          </div>
+
+          <div className="w-full min-w-0 overflow-x-auto">
+            <table className="w-full text-left font-mono text-xs border-collapse">
+              <thead className="bg-surface-container-low text-on-surface-variant text-[10px] uppercase font-bold border-b border-outline-variant">
+                <tr>
+                  <th className="py-2.5 px-3 whitespace-nowrap">PREDICTION BIN</th>
+                  <th className="py-2.5 px-3 whitespace-nowrap text-secondary">OBSERVED MEAN VALUE</th>
+                  <th className="py-2.5 px-3 whitespace-nowrap">SAMPLE COUNT</th>
+                  <th className="py-2.5 px-3 whitespace-nowrap text-emerald-800">CALIBRATION DELTA</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-outline-variant/40 font-mono text-[11px]">
+                {active.bins.map((bin, idx) => (
+                  <tr key={idx} className="hover:bg-surface-container-low transition-colors">
+                    <td className="py-2 px-3 font-bold text-primary whitespace-nowrap">{bin.predictedBin}</td>
+                    <td className="py-2 px-3 text-secondary font-bold whitespace-nowrap">{bin.actualMean}</td>
+                    <td className="py-2 px-3 text-on-surface-variant whitespace-nowrap">{bin.sampleCount} historical sorties</td>
+                    <td className="py-2 px-3 text-emerald-800 font-bold whitespace-nowrap flex items-center gap-1">
+                      <span className="material-symbols-outlined text-[13px] text-emerald-700">check_circle</span>
+                      <span>Within &lt; 3% error margin</span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
+
+        {/* Ablation Analysis */}
+        <div className="p-3 bg-surface-container-low border border-outline-variant flex flex-col gap-1.5">
+          <div className="font-bold text-primary text-xs uppercase font-mono flex items-center gap-1.5">
+            <span className="material-symbols-outlined text-[15px] text-secondary">science</span>
+            <span>ABLATION EXPERIMENT: CAMPAIGN QUALITY WITH VS WITHOUT PREDICTIVE ANALYTICS</span>
+          </div>
+          <div className="text-[11px] font-mono text-on-surface-variant leading-relaxed">
+            <strong className="text-primary font-bold">Measured Operational Value: </strong>
+            {active.ablationEffect}. Without predictive turnaround and threat modeling, the optimizer falls back to nominal handbook values, leading to cascading runway turnaround delays and preventable corridor incursions.
+          </div>
+        </div>
+      </Panel>
     </div>
   );
 };

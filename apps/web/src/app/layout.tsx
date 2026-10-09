@@ -40,26 +40,7 @@ export default function RootLayout({
           }
         `}} />
       </head>
-      <body>
-        {/* Mandatory Defence Training Classification Banner */}
-        <div
-          style={{
-            width: '100%',
-            background: '#fef2f2',
-            borderBottom: '1px solid #fecaca',
-            textAlign: 'center',
-            padding: '2px 0',
-            fontSize: '10px',
-            fontWeight: 700,
-            color: '#b91c1c',
-            letterSpacing: '0.08em',
-            textTransform: 'uppercase',
-            fontFamily: "'Inter', sans-serif",
-            flexShrink: 0,
-          }}
-        >
-          CLASSIFICATION: NOTIONAL / TRAINING DATA ONLY — UNCLASSIFIED DEFENCE SIMULATION (SIH-26250)
-        </div>
+      <body className="min-h-screen flex flex-col bg-[#f6fafe] text-[#171c1f] antialiased overflow-x-hidden">
         {children}
       </body>
     </html>
