@@ -9,6 +9,7 @@
     "test:watch": "vitest",
     "benchmark": "tsx benchmarks/run-benchmark.ts",
     "demo": "pnpm --filter @air-power/api dev",
+    "stop": "powershell -Command \"Stop-Process -Id (Get-NetTCPConnection -LocalPort 3001,3002 -State Listen -ErrorAction SilentlyContinue).OwningProcess -Force -ErrorAction SilentlyContinue\"",
     "lint": "eslint . --ext .ts,.tsx"
   },
   "devDependencies": {
