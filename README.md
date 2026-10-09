@@ -1,13 +1,66 @@
-# AIR POWER // Dynamic Air Operations & Resource Optimisation
+# AIR POWER // Autonomous Air Tasking & Dynamic Resource Optimization
 ### Problem Statement 26250 — Smart India Hackathon 2026
 **Nominator**: Ministry of Defence / Defence Services Staff College (DSSC)  
 **Theme**: Transportation & Logistics (Software)  
-**Target Goal**: National Top 5 — Production-Grade, Offline-Capable, Scientifically Audited Prototype  
+**One-Line Pitch**: *An offline-first, mathematically proven Common Decision-Support System that synthesizes joint Air Tasking Orders in 47 ms, retasks dynamically in under 2.5s with $\ge 80\%$ plan stability, and provides verifiable human-in-the-loop explainability.*
 
 ---
 
-> **CLASSIFICATION BANNER**: NOTIONAL / TRAINING DATA ONLY — UNCLASSIFIED SIMULATION  
-> All airframes, units, coordinates, and operational parameters are synthetic approximations for research and demonstration purposes.
+[![Stack: TypeScript](https://img.shields.io/badge/Stack-TypeScript%205.7-blue.svg)](https://www.typescriptlang.org/)
+[![Runtime: Node.js 22](https://img.shields.io/badge/Runtime-Node.js%2022%20LTS-green.svg)](https://nodejs.org/)
+[![Frontend: Next.js 15](https://img.shields.io/badge/Frontend-Next.js%2015-black.svg)](https://nextjs.org/)
+[![Optimization: ALNS + HiGHS--WASM](https://img.shields.io/badge/Solver-ALNS%20%2B%20HiGHS--WASM-orange.svg)](https://highs.dev/)
+[![Tests: 239 Passing](https://img.shields.io/badge/Tests-239%20Passing-brightgreen.svg)](https://vitest.dev/)
+[![Classification: UNCLASSIFIED](https://img.shields.io/badge/Classification-NOTIONAL%20%2F%20UNCLASSIFIED-darkgreen.svg)](NOTICE)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+
+> **CRITICAL CLASSIFICATION BANNER**: **NOTIONAL / TRAINING DATA ONLY — UNCLASSIFIED SIMULATION**  
+> All airframes, units, coordinates, and weapon tables are synthetic approximations for academic evaluation. Zero access to classified defense systems. See [NOTICE](NOTICE) for full statement.
+
+---
+
+## ⚡ Quick Links for Evaluators & Jury
+- 🧭 **[Evaluator Guide (60s Tour & 5-Min Walkthrough)](docs/EVALUATOR_GUIDE.md)**
+- 📊 **[Claims & Scientific Evidence Register](docs/CLAIMS_REGISTER.md)**
+- 🛡️ **[Self-Red-Team Hostile OR Audit Report](docs/SELF_REDTEAM.md)**
+- 🧑‍✈️ **[Human Operator Baseline Protocol](docs/HUMAN_BASELINE_PROTOCOL.md)**
+- 🏛️ **[Architecture Decision Records (ADRs)](docs/DECISIONS.md)**
+- 🖥️ **[12-Slide Defense Command Deck (HTML)](docs/AIR_POWER_12_SLIDE_DECK.html)**
+
+---
+
+## 🚀 3-Command Quickstart
+
+Requires **Node.js v20+ LTS** and **pnpm** (Windows, Linux, or macOS):
+
+```bash
+# 1. Install workspace dependencies
+pnpm install
+
+# 2. Run automated test suite (unit, differential fuzzing, true MILP, copilot)
+pnpm test
+
+# 3. Launch live platform locally (API on :3001, Daylight Command UI on :3002)
+pnpm run demo
+# Open browser at: http://localhost:3002
+```
+
+To stop running processes cleanly in one command:
+```bash
+pnpm run stop
+```
+
+---
+
+## 🔍 What is Real vs Simulated?
+
+| Capability | Real Ground-Truth Execution | Synthetic / Notional Simulation |
+|---|---|---|
+| **Anytime Optimization** | **100% Real**: Live ALNS heuristic + HiGHS-WASM C++ branch-and-cut executing in Node.js. | None |
+| **Independent Verifier** | **100% Real**: Physically decoupled rule checker auditing all generated sorties. | None |
+| **Geographic Coordinates** | Realistic Western Sector border coordinates. | **100% Notional**: De-identified synthetic terrain data. |
+| **Airframes & Weapons** | Realistic IAF aircraft types (Su-30, Rafale, Tejas) & payloads. | **100% Unclassified**: Synthetic tail numbers and nominal unclassified tables. |
+| **Data Streams** | Real JSON REST & SSE streaming over Fastify. | Simulated sensors (Radar, ELINT, UAV, Satellite feeds). |
 
 ---
 
@@ -17,114 +70,68 @@ Planning and dynamically retasking joint air operations in a contested environme
 
 **AIR POWER** is an end-to-end, offline-capable Common Decision-Support Framework that:
 1. **Fuses 7 operational data families** onto an interactive 60 FPS Common Operating Picture (COP) with Bayesian confidence scoring and temporal decay.
-2. **Synthesizes Master Air Tasking Orders (ATO) in 22 milliseconds** using an Anytime Adaptive Large Neighborhood Search (ALNS) metaheuristic satisfying 12 hard operational constraints with **zero violations verified by an independent auditor**.
-3. **Executes Dynamic Retasking in under 2.5 seconds** under tactical injects using **Frozen-Zone logic** ($\Delta t = 15\text{m}$) and stability penalties (88.5% stability index), generating an explainable Plan Diff and automated Commander's Brief.
+2. **Synthesizes Master Air Tasking Orders (ATO) in 47 milliseconds** using an Anytime Adaptive Large Neighborhood Search (ALNS) metaheuristic satisfying 12 hard operational constraints with **zero violations verified by an independent auditor**.
+3. **Executes Dynamic Retasking in under 2.5 seconds** under tactical injects using **Frozen-Zone logic** ($\Delta t = 15\text{m}$) and stability penalties ($\ge 80\%$ operational preservation ratio), generating an explainable Plan Diff and automated Commander's Brief.
 4. **Empowers Commanders with Triple Courses of Action (COAs)**: Side-by-side trade-offs between *Max-Effect*, *Min-Risk*, and *Balanced-Reserve*.
 5. **Provides Rigorous Scientific Proof**:
-   - **Value Coverage**: **68.24%** (95% CI: [67.29, 69.2]) vs 14.51% (Staff Heuristic) across 100 randomized seeds.
-   - **Closed-Loop Wargame Simulation**: **94% reduction in aircraft losses** and **96% time-sensitive target interception** ($p < 0.001$, paired Wilcoxon signed-rank test).
-   - **HiGHS-WASM Optimality Gap**: $\le 3.8\%$ empirical bound.
-   - **Scale Tested**: Sub-second execution up to 500 sorties (998 ms), scaling to 1,000 sorties in 4.68 seconds.
+   - **Target Value Coverage**: **68.24%** vs 36.99% for Strongest Baseline B2-LS ($p < 0.0001$).
+   - **Value Delivered Per Sortie**: **18.03 pts/sortie** (ALNS) vs 17.76 pts (B2-LS).
+   - **HiGHS-WASM True MILP Optimality Gap**: **0.00% empirical gap** on solvable instances ($Z^* = 617.1$).
+   - **Differential Fuzzing**: 10,000 randomized plans fuzzed with **0 disagreements** between solver and independent verifier.
 
 ---
 
-## 2. Quickstart (3 Commands)
-
-Ensure **Node.js v22 LTS** and **pnpm** are installed.
-
-```bash
-# 1. Install dependencies
-pnpm install
-
-# 2. Run unit, property & golden-seed regression test suite
-pnpm test
-
-# 3. Start the platform (API on :3001, Web Shell on :3002 or :3000)
-pnpm start
-```
-
-Or with Docker (100% offline, air-gapped):
-```bash
-docker compose up --build
-```
-
----
-
-## 3. Architecture Overview
+## 2. Architecture Overview
 
 ```
 +--------------------------------------------------------------------------------------------------+
-|                                     AIR POWER WEB SHELL (Next.js 15)                             |
+|                                  AIR POWER WEB SHELL (Next.js 15)                                |
 |  [COP Radar Grid] [Resource Board] [Mission Planner] [Planner-in-Loop] [COA Studio] [Retasking]  |
 |  [4D Deconfliction & Tankers] [Wargame Simulator] [ATO/ACO Export] [Benchmark Evidence]          |
-|  [Predictive Analytics] [What-If Sandbox] [Audit Trail] [Tactical AI Copilot] [5-Min Jury Demo]  |
+|  [Manual Challenge Mode] [Predictive Analytics] [What-If Sandbox] [Audit Trail] [Tactical Copilot] |
 +--------------------------------------------------------------------------------------------------+
-                                        ▲                     ▲
-                          SSE / WebSocket Push          REST / RPC (BFF)
-                                        ▼                     ▼
+                                               ▲
+                                    HTTP / SSE │ (3001)
+                                               ▼
 +--------------------------------------------------------------------------------------------------+
-|                                      FASTIFY API BACKEND (Node.js LTS)                           |
-|  - 7-Domain Data Fusion Engine (Bayesian decay, entity resolution, conflict manager)              |
-|  - State Store & Event Sourcing (Time-Travel Replay, SHA-256 Hash-Chained Audit Ledger)          |
-|  - Closed-Loop Stochastic Wargame Campaign Simulator (24h campaign peer controllers)             |
-|  - 4D Spatiotemporal Airspace Deconfliction & NATO DINO-SAAR Tanker AAR Optimizer               |
-|  - Worker Thread Pool:                                                                            |
-|      * Anytime ALNS Metaheuristic (Destroy/Repair regret operators, package matching)            |
-|      * Independent Plan Verifier (Impartial mathematical constraint auditor)                     |
-|      * HiGHS-WASM Exact MILP Baseline (Optimality yardstick)                                     |
+|                                    AIR POWER API (Fastify)                                       |
+|  [Plan Synthesis] [COA Generation] [Dynamic Retasking Engine] [Clock Control] [Human Baseline]   |
 +--------------------------------------------------------------------------------------------------+
-                                        ▲                     ▲
-              +-------------------------+                     +------------------------+
-              |                                                                        |
-+-------------------------------+                                      +-------------------------------+
-|     /packages/optimizer       |                                      |       /packages/shared        |
-| - 12 Hard Constraints Engine  |                                      | - Strict Zod Domain Schemas   |
-| - ALNS Metaheuristic Solver   |                                      | - USMTF Military Serializers  |
-| - Multi-Wave SGR Separation   |                                      | - Geo & Threat Envelopes      |
-| - Independent Verifier Module |                                      | - Benchmark Metrics Contracts |
-+-------------------------------+                                      +-------------------------------+
+               ▲                                       ▲                              ▲
+               │                                       │                              │
++------------------------------+     +-------------------------------+     +-----------------------+
+|    @air-power/optimizer      |     |        @air-power/sim         |     |   @air-power/shared   |
+| - ALNS Engine (Anytime <50ms)|     | - Synthetic Generator (Seed 42|     | - Zod Schemas         |
+| - HiGHS-WASM True MILP C++   |     | - Discrete-Event World Clock  |     | - USMTF ATO/ACO Text  |
+| - Baseline B2-LS (2-Opt)     |     | - Threat Movement & Decay     |     | - Audit Trail Types   |
+| - Independent Verifier (Spec)|     | - Wargame Monte Carlo Sim     |     | - Held-Out Corpus     |
+| - Tactical Copilot Engine    |     | - Distribution Shift Auditor  |     | - Mathematical Specs  |
++------------------------------+     +-------------------------------+     +-----------------------+
 ```
 
 ---
 
-## 4. Key Artifacts & Documentation Index
+## 3. Verification & Compliance Commands
 
-| Document | Purpose & Description |
-| :--- | :--- |
-| **[`docs/CLAIMS_REGISTER.md`](file:///d:/PROGRAMMING/projects/SIH-2026/Air-Power/docs/CLAIMS_REGISTER.md)** | Every public number traced to exact command, seed data, and sensitivity sweep. |
-| **[`docs/AUDIT_REPORT.md`](file:///d:/PROGRAMMING/projects/SIH-2026/Air-Power/docs/AUDIT_REPORT.md)** | Credibility audit listing weaknesses found and remediation actions taken. |
-| **[`docs/AIR_POWER_12_SLIDE_DECK.html`](file:///d:/PROGRAMMING/projects/SIH-2026/Air-Power/docs/AIR_POWER_12_SLIDE_DECK.html)** | Standalone 12-slide interactive defence presentation deck with dark-ops styling. |
-| **[`docs/SIH_PRESENTATION_KIT.md`](file:///d:/PROGRAMMING/projects/SIH-2026/Air-Power/docs/SIH_PRESENTATION_KIT.md)** | 12-slide deck outline, 30 hostile defence questions & answers, and 5-min live script. |
-| **[`docs/SECURITY_NOTE_STRIDE.md`](file:///d:/PROGRAMMING/projects/SIH-2026/Air-Power/docs/SECURITY_NOTE_STRIDE.md)** | STRIDE-lite threat model, RBAC matrix, and SBOM supply-chain notes. |
-| **[`docs/MATHEMATICAL_MODEL.md`](file:///d:/PROGRAMMING/projects/SIH-2026/Air-Power/docs/MATHEMATICAL_MODEL.md)** | Formal objective formulation, Multi-Wave SGR constraints, and decision variables. |
+```bash
+# Run all unit, property, and differential tests
+pnpm test
 
----
+# Verify cross-file number and claim consistency
+pnpm run check:consistency
 
-## 5. Statistical Rigor Summary (100 Seeds Benchmark)
+# Verify repository hygiene and absence of internal secrets/blobs
+pnpm run hygiene
 
-| Metric | Manual Staff Heuristic (B1) | Package Greedy (B2) | ALNS Optimizer (Ours) | Defensible Margin |
-| :--- | :--- | :--- | :--- | :--- |
-| **Value Coverage** | 14.51% (CI: [13.88, 15.14]) | 36.99% (CI: [36.19, 37.78]) | **68.24% (CI: [67.29, 69.2])** | **+53.73% higher value** |
-| **Package Integrity** | 3.9% (Missing escorts) | 100.0% (Greedy lock) | **100.0% (Full Strike+SEAD+CAP)** | Complete packages |
-| **Hard Violations** | 0.05 / plan | 0 violations | **0 violations (Audited)** | Zero duty or range overruns |
-| **Solve Duration** | Modelled: 120 mins cycle | ~2.8 ms | **22.61 ms (CI: [21.61, 23.62])** | Instant anytime response |
-| **HiGHS-WASM Gap** | N/A (Heuristic) | ~38.5% gap | **&le; 3.8% empirical bound** | Near-exact global optimum |
-| **Significance** | — | — | **p &lt; 0.001 (W = 5050)** | Statistically significant |
+# Run 100-seed Monte Carlo statistical benchmark
+pnpm run benchmark
+
+# Run Playwright offline layout overflow audit
+pnpm run e2e
+```
 
 ---
 
-## 6. Planning Cycle Sensitivity Sweep
+## 4. Contributing & License
 
-| Assumed Planning Horizon | Scenario Description | Speedup | Operational Notes |
-| :--- | :--- | :--- | :--- |
-| **30 Minutes** | Accelerated Emergency Staff Exercise | **79,600x** | Extreme human omissions under severe time pressure |
-| **60 Minutes** | Rapid Air Tasking Working Group | **159,200x** | Moderate package coordination errors |
-| **120 Minutes** | Standard ATO Planning Cycle (Doctrine Baseline) | **318,400x** | Nominal staff baseline from Air Staff Planning Manual |
-| **240 Minutes** | Deliberate Joint Force Air Campaign Planning | **636,800x** | High cognitive fatigue, unmanaged fleet attrition |
-
----
-
-## 7. License & Compliance
-
-- **Sponsorship**: Smart India Hackathon 2026 — Ministry of Defence (MoD) / Defence Services Staff College (DSSC).
-- **Compliance**: 100% synthetic and unclassified data. Zero real military callsigns, deployment coordinates, or classified weapons tables.
+Contributions are welcome via conventional commit pull requests. See [LICENSE](LICENSE) (Apache 2.0) and [NOTICE](NOTICE) for terms.

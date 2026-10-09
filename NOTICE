@@ -1,0 +1,33 @@
+AIR POWER: Autonomous Decision Support Framework for Air Tasking Orders
+Copyright 2026 The AIR POWER Contributors (Smart India Hackathon 2026, Problem SIH 26250)
+
+================================================================================
+CRITICAL NOTICE: NOTIONAL / UNCLASSIFIED / SYNTHETIC DATA STATEMENT
+================================================================================
+
+1. UNCLASSIFIED & NOTIONAL NATURE:
+   All geographic deployments, aircraft tail numbers, pilot callsigns, radar
+   frequencies, radar threat envelopes, weapon loadout tables, munition types,
+   and operational parameters in this repository are entirely NOTIONAL, SYNTHETIC,
+   and UNCLASSIFIED.
+
+2. ZERO ACCESS TO CLASSIFIED ASSETS:
+   This project was developed without access to any classified military documentation,
+   defense data links, operational tactical codes, or proprietary defense communication
+   systems. Any resemblance to real operational deployments, squadron callsigns, or
+   wartime target lists is purely coincidental.
+
+3. INTENDED PURPOSE:
+   This software is an academic demonstration and proof-of-concept algorithmic
+   decision-support system built for competition evaluation in Smart India Hackathon
+   2026. It is designed to illustrate Operations Research optimization, discrete-event
+   simulation, explainable AI, and human-in-the-loop doctrine.
+
+4. THIRD-PARTY COMPONENTS:
+   This software incorporates third-party open-source components including:
+   - HiGHS Optimization Solver (MIT License, University of Edinburgh)
+   - Fastify (MIT License)
+   - Next.js and React (MIT License)
+   - Zod (MIT License)
+   - Vitest and Playwright (MIT / Apache 2.0)
+================================================================================

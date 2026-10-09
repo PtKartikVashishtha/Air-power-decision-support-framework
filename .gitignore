@@ -1,54 +1,24 @@
 # ========================================================
 # AIR POWER - SIH 26250 EXCLUSION LIST (.gitignore)
 # ========================================================
-# Non-required, internal, transient, and agent files excluded
-# from SIH evaluation submission
+# Clearly grouped repository exclusions. Designed to maintain
+# professional evaluator visibility while keeping internal/agent
+# directives, local caches, and transient test traces local.
 # ========================================================
 
-# --- Internal Agent Directives & Prompt Histories ---
+# --- 1. Agent Directives & Prompt Histories ---
 AGENTS.md
 CONTEXT.md
 docs/PROMPT_HISTORY.md
-docs/DECISIONS.md
-*prompt*.md
-*PROMPT*.md
+docs/SIH_PRESENTATION_KIT.md
+.local/
 .agents/
 .gemini/
+/*prompt*.md
+docs/*prompt*.md
+docs/*PROMPT*.md
 
-# --- Presentation Guides & Speaking Kits (Recorded Separately) ---
-docs/SIH_PRESENTATION_KIT.md
-*presentation*
-*PRESENTATION*
-docs/presentation*
-
-# --- Visual Regression & Layout Bug Dumps (8+ MB PNGs) ---
-docs/bugs/
-test-results/
-playwright-report/
-blob-report/
-*.png
-*.jpg
-*.jpeg
-
-# --- Screen Recordings & Media (Recorded Separately) ---
-*.mp4
-*.mkv
-*.mov
-*.avi
-*.webm
-recordings/
-videos/
-screencasts/
-
-# --- Benchmark Raw Dumps & Profiling Traces ---
-benchmarks/results/
-*.csv
-*.jsonl
-*.cpuprofile
-clinic/
-.clinic/
-
-# --- Temporary Scratch Files & Internal Notes ---
+# --- 2. Temporary Scratch Files & Internal Notes ---
 scratch/
 scratchpad*
 *.draft.md
@@ -57,11 +27,11 @@ scratchpad*
 *.swp
 *~
 
-# --- Dependencies & Package Manager Stores ---
+# --- 3. Dependencies & Package Stores ---
 node_modules/
 .pnpm-store/
 
-# --- Build Outputs & Compilation Caches ---
+# --- 4. Build Outputs & Compilation Caches ---
 dist/
 build/
 out/
@@ -71,19 +41,53 @@ out/
 *.tsbuildinfo
 next-env.d.ts
 
-# --- Logs & Process Dumps ---
+# --- 5. Media & Visual Regression Dumps (With Whitelist) ---
+# Ignore visual regression screenshot dumps and temp media:
+docs/bugs/
+test-results/
+playwright-report/
+blob-report/
+recordings/
+videos/
+screencasts/
+*.mp4
+*.mkv
+*.mov
+*.avi
+*.webm
+
+# Default ignore for bulk images, with explicit evaluator whitelist:
+*.png
+*.jpg
+*.jpeg
+
+# DO NOT OVER-IGNORE: Whitelist README assets, architecture diagrams, and web icons:
+!docs/media/**
+!docs/assets/**
+!apps/web/public/**
+
+# --- 6. Raw Benchmark Per-Seed Dumps & Profiling Traces ---
+benchmarks/results/*
+!benchmarks/results/benchmark-summary.json
+!benchmarks/results/optimality_gap.json
+benchmarks/human/raw/
+*.cpuprofile
+clinic/
+.clinic/
+
+# --- 7. Logs & Process Traces ---
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# --- Test Coverage & Tooling Outputs ---
+# --- 8. Test Coverage Reports ---
 coverage/
 .nyc_output/
 *.lcov
 
-# --- Environment & Local Secrets ---
+# --- 9. Environment & Secrets ---
 .env
 .env*.local
 .env.development.local
@@ -92,16 +96,10 @@ coverage/
 *.pem
 *.key
 
-# --- IDE, Editor & OS Artifacts ---
+# --- 10. IDE, Editor & OS Artifacts ---
 .vscode/
 .idea/
 *.sublime-project
 *.sublime-workspace
 .DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
 Thumbs.db
-desktop.ini
