@@ -5,3 +5,4 @@ export * from './dynamic-retasker';
 export * from './coa-generator';
 export * from './independent-verifier';
 export * from './deconfliction-and-killchain';
+export * from './copilot-engine';

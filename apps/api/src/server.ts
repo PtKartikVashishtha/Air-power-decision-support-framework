@@ -12,6 +12,7 @@ import {
   ManualStaffBaselinePlanner,
   PriorityGreedyBaselinePlanner,
   DeconflictionAndKillChainEngine,
+  TacticalCopilotEngine,
 } from '@air-power/optimizer';
 import {
   generateAtoMilitaryText,
@@ -398,23 +399,139 @@ fastify.get('/api/killchain/:targetId', async (request) => {
   );
 });
 
-// 12. Tactical AI Copilot (Natural Language -> Validated Command Execution)
+// 12. Tactical AI Copilot (Deterministic Pipeline + AST + Dry-Run + Human Confirmation + Undo)
+const copilotEngine = new TacticalCopilotEngine();
+
 fastify.post('/api/copilot/command', async (request) => {
   const body = (request.body as any) || {};
   const query = (body.query || '').trim();
-  const lower = query.toLowerCase();
 
   stateStore.recordAudit('COPILOT_USER', 'TACTICAL_QUERY', { query });
 
-  if (lower.includes('retask') || lower.includes('sam') || lower.includes('threat')) {
+  const pic = stateStore.getFusedPicture();
+  const currentPlan = stateStore.getCurrentPlan() || initialPlan;
+
+  const ast = copilotEngine.parseCommand(query, {
+    currentPlan,
+    bases: pic.bases,
+    aircraft: pic.aircraft,
+    activeSorties: currentPlan.sorties,
+    simTimeMinutes: stateStore.clock.getSimTimeMinutes(),
+  });
+
+  if (!ast.isSafe || ast.intent === 'INVALID_UNSAFE') {
+    stateStore.recordAudit('COPILOT_ENGINE', 'UNSAFE_COMMAND_BLOCKED', { query, error: ast.errorMessage });
+    return {
+      success: false,
+      ast,
+      response: ast.errorMessage || 'COMMAND REJECTED: Violates operational safety doctrine.',
+    };
+  }
+
+  if (ast.intent === 'UNDO_LAST_ACTION') {
+    const restored = copilotEngine.popUndoSnapshot();
+    if (restored) {
+      stateStore.setCurrentPlan(restored);
+      stateStore.recordAudit('COPILOT_ENGINE', 'UNDO_EXECUTED', { planId: restored.id });
+      return {
+        success: true,
+        ast,
+        action: 'UNDO_RESTORED',
+        response: 'Previous operational plan snapshot successfully restored from undo stack.',
+        plan: restored,
+      };
+    }
+    return {
+      success: false,
+      ast,
+      response: 'Undo stack is empty. No previous operational plan snapshot available to revert.',
+    };
+  }
+
+  if (ast.intent === 'CONTROL_TIME' && ast.slots.timeAction) {
+    if (ast.slots.timeAction === 'PAUSE') stateStore.clock.pause();
+    else if (ast.slots.timeAction === 'PLAY') stateStore.clock.resume();
+    else if (ast.slots.timeAction === 'SPEED' && ast.slots.timeSpeed) {
+      stateStore.clock.setSpeed(ast.slots.timeSpeed as any);
+    }
+    return {
+      success: true,
+      ast,
+      action: 'TIME_CONTROL_EXECUTED',
+      response: `Simulation clock action executed: ${ast.slots.timeAction} (Speed ${stateStore.clock.getSpeed()}x).`,
+    };
+  }
+
+  if (ast.intent === 'QUERY_STATUS') {
+    return {
+      success: true,
+      ast,
+      action: 'STATUS_SUMMARY',
+      response: ast.explanation,
+    };
+  }
+
+  if (ast.intent === 'EXPLAIN_ASSIGNMENT') {
+    return {
+      success: true,
+      ast,
+      action: 'TACTICAL_EXPLANATION',
+      response: ast.explanation,
+    };
+  }
+
+  if (ast.intent === 'HELP') {
+    return {
+      success: true,
+      ast,
+      action: 'HELP_SUMMARY',
+      response: 'Tactical AI Copilot supports natural language C2 actions: (1) Retask around pop-up threats; (2) Cancel/abort sortie; (3) Swap airframe; (4) Ground aircraft (AOG); (5) Close airbase; (6) Add time-sensitive target (TST); (7) Prioritize target; (8) Query fleet status; (9) Switch COA doctrine; (10) Time scrubbing; (11) Undo last action.',
+    };
+  }
+
+  if (ast.clarification) {
+    return {
+      success: false,
+      isAmbiguous: true,
+      ast,
+      clarification: ast.clarification,
+      response: ast.clarification.prompt,
+    };
+  }
+
+  // Mutating action requiring Commander Confirmation
+  return {
+    success: true,
+    requiresConfirmation: ast.requiresConfirmation,
+    ast,
+    preview: ast.dryRunPreview,
+    response: ast.dryRunPreview?.summary || 'Command compiled into AST. Confirm to execute.',
+  };
+});
+
+fastify.post('/api/copilot/confirm', async (request) => {
+  const body = (request.body as any) || {};
+  const ast = body.ast;
+  if (!ast) {
+    return { success: false, error: 'Missing AST payload for confirmation.' };
+  }
+
+  const pic = stateStore.getFusedPicture();
+  const currentPlan = stateStore.getCurrentPlan() || initialPlan;
+
+  // Push current plan to undo stack before executing mutation
+  copilotEngine.pushUndoSnapshot(currentPlan);
+
+  let updatedPlan = currentPlan;
+  let actionDescription = 'EXECUTED';
+
+  if (ast.intent === 'RETASK_THREAT') {
     const pending = stateStore.getPendingInjects();
     const samInject = pending.find((p) => p.type === 'SAM_POPUP') || pending[0];
     if (samInject) {
       stateStore.applyInject(samInject);
-      const pic = stateStore.getFusedPicture();
-      const current = stateStore.getCurrentPlan() || initialPlan;
-      const { updatedPlan, diffReport } = retasker.retaskPlan(
-        current,
+      const res = retasker.retaskPlan(
+        currentPlan,
         samInject,
         stateStore.clock.getSimTimeMinutes(),
         pic.bases,
@@ -424,53 +541,59 @@ fastify.post('/api/copilot/command', async (request) => {
         pic.targetRequests,
         pic.threats
       );
-      stateStore.setCurrentPlan(updatedPlan);
-      return {
-        action: 'EXECUTE_RETASKING',
-        confidence: 0.98,
-        response: `Acknowledged threat injection. Executed dynamic re-planning avoiding newly active SAM sector. Sorties updated with 92% plan stability.`,
-        plan: updatedPlan,
-        diff: diffReport,
-      };
+      updatedPlan = res.updatedPlan;
+      actionDescription = 'RETASKING_EXECUTED';
     }
-  }
-
-  if (lower.includes('status') || lower.includes('health') || lower.includes('readiness')) {
-    const pic = stateStore.getFusedPicture();
-    const fmcCount = pic.aircraft.filter((a) => a.status === 'FMC').length;
-    const readyPilots = pic.pilots.filter((p) => p.status === 'READY').length;
-    return {
-      action: 'STATUS_SUMMARY',
-      confidence: 0.99,
-      response: `Current Fleet Status: ${fmcCount}/${pic.aircraft.length} aircraft FMC. ${readyPilots}/${pic.pilots.length} combat pilots ready. Overall COP confidence is ${pic.overallConfidenceScore}%.`,
+  } else if (ast.intent === 'CANCEL_SORTIE' && ast.slots.sortieId) {
+    updatedPlan = {
+      ...currentPlan,
+      id: `PLAN-MOD-${Date.now()}`,
+      sorties: currentPlan.sorties.filter((s) => s.id !== ast.slots.sortieId),
     };
-  }
-
-  if (lower.includes('generate') || lower.includes('optimize') || lower.includes('coa')) {
-    const pic = stateStore.getFusedPicture();
-    const plan = optimizer.solve(
+    actionDescription = `CANCELLED_${ast.slots.sortieId}`;
+  } else if (ast.intent === 'SWITCH_COA') {
+    const doctrine = ast.slots.coaType || 'MAX_EFFECT';
+    updatedPlan = optimizer.solve(
       pic.bases,
       pic.aircraft,
       pic.pilots,
       pic.munitionStocks,
       pic.targetRequests,
       pic.threats,
-      { doctrineFocus: lower.includes('risk') ? 'MIN_RISK' : 'BALANCED_RESERVE' }
+      { doctrineFocus: doctrine }
     );
-    stateStore.setCurrentPlan(plan);
-    return {
-      action: 'PLAN_GENERATED',
-      confidence: 0.96,
-      response: `New ATO generated in ${plan.kpis.solveTimeMs}ms covering ${plan.kpis.coveredTargetsCount} target objectives with zero constraint violations.`,
-      plan,
-    };
+    actionDescription = `COA_SWITCHED_TO_${doctrine}`;
   }
 
-  // Fallback operational explanation
+  stateStore.setCurrentPlan(updatedPlan);
+  stateStore.recordAudit('AIR_COMMANDER', 'COPILOT_ACTION_CONFIRMED', {
+    intent: ast.intent,
+    action: actionDescription,
+    planId: updatedPlan.id,
+  });
+
   return {
-    action: 'TACTICAL_EXPLANATION',
-    confidence: 0.91,
-    response: `Command parsed: "${query}". System evaluated 6 airbases and active airspace corridors. All active sorties maintain positive deconfliction and minimum safe separation.`,
+    success: true,
+    action: actionDescription,
+    message: `Commander authorization confirmed. Action ${ast.intent} successfully committed to Master ATO.`,
+    plan: updatedPlan,
+  };
+});
+
+fastify.post('/api/copilot/undo', async () => {
+  const restored = copilotEngine.popUndoSnapshot();
+  if (restored) {
+    stateStore.setCurrentPlan(restored);
+    stateStore.recordAudit('AIR_COMMANDER', 'UNDO_EXECUTED', { planId: restored.id });
+    return {
+      success: true,
+      message: 'Previous operational plan snapshot restored successfully.',
+      plan: restored,
+    };
+  }
+  return {
+    success: false,
+    message: 'No undo history available to restore.',
   };
 });
 

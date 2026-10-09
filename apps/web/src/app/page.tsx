@@ -418,8 +418,11 @@ export default function AirPowerDashboard() {
         </button>
 
         {isCopilotOpen && (
-          <div className="absolute bottom-12 left-0 w-[420px] shadow-2xl z-50">
-            <CopilotModal onPlanUpdated={(plan) => setCurrentPlan(plan)} />
+          <div className="absolute bottom-12 left-0 w-[460px] max-w-[calc(100vw-3rem)] shadow-2xl z-50">
+            <CopilotModal
+              onPlanUpdated={(plan) => setCurrentPlan(plan)}
+              onClose={() => setIsCopilotOpen(false)}
+            />
           </div>
         )}
       </div>
