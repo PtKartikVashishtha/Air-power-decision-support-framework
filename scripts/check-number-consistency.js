@@ -14,7 +14,6 @@ const ROOT = path.join(__dirname, '..');
 const FILES = {
   readme: path.join(ROOT, 'README.md'),
   claimsRegister: path.join(ROOT, 'docs', 'CLAIMS_REGISTER.md'),
-  deck: path.join(ROOT, 'docs', 'AIR_POWER_12_SLIDE_DECK.html'),
   audit: path.join(ROOT, 'docs', 'CODEBASE_AUDIT.md'),
 };
 

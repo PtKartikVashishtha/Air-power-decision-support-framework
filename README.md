@@ -34,9 +34,6 @@
 | 🧭 **[Evaluator Guide](docs/EVALUATOR_GUIDE.md)** | 60-second quick tour, 5-minute scoring rubric mapping, architecture overview | Markdown Document |
 | 📋 **[Implementation Status Matrix](docs/IMPLEMENTATION_STATUS.md)** | Candid audit of all 17 screens: Implemented vs Prototype vs Simulated-only | Engineering Truth Table |
 | 📊 **[Claims & Evidence Register](docs/CLAIMS_REGISTER.md)** | Reproducible commands, confidence intervals, and sensitivity matrices for every claim | Scientific Audit Index |
-| 📄 **[12-Slide Defence Command Deck (PDF)](docs/AIR_POWER_12_SLIDE_DECK.pdf)** | Standalone briefing deck formatted for MoD/DSSC jury with Candid Limitations slide | Printable PDF Document |
-| 🖥️ **[Interactive 12-Slide Web Deck](docs/AIR_POWER_12_SLIDE_DECK.html)** | Standalone dark-mode HTML presentation deck with keyboard navigation | Offline HTML Deck |
-| 🎬 **[5-Minute Rehearsal & Reliability Harness](docs/REHEARSAL_AND_RELIABILITY.md)** | Automated Playwright live-run timings, fault injection results, and low-spec profiling | Test Report & Logs |
 | 🛡️ **[Self-Red-Team Hostile OR Audit](docs/SELF_REDTEAM.md)** | Adversarial operations research audit: HiGHS MILP, B2-LS, fuzzing, distribution shift | Technical Whitepaper |
 | 🧑‍✈️ **[Human Baseline Trial Protocol](docs/HUMAN_BASELINE_PROTOCOL.md)** | Empirical 15-minute challenge experiment design, consent forms, and CI loader | Clinical / OR Protocol |
 | 📦 **[v1.0.0 Release Notes](docs/RELEASE_NOTES_v1.0.0.md)** | Complete Phase 4 freeze notes, verified capabilities, and architectural changelog | Release Document |
@@ -226,10 +223,8 @@ A decoupled rule engine fuzzed across 10,000 candidate sorties verifies:
 │   ├── IMPLEMENTATION_STATUS.md # Maturity classification of all 17 screens
 │   ├── BENCHMARK_ABLATION.md    # Component ablation matrix & HiGHS gap curve
 │   ├── GIT_HISTORY_AUDIT.md     # Git commit history exposure analysis & safe submission plan
-│   ├── REHEARSAL_AND_RELIABILITY.md # 5-min demo rehearsal results & low-spec profiling
 │   ├── DEMO_VIDEO_SCRIPT.md     # 5-minute video narration script with exact cue times
 │   ├── RELEASE_NOTES_v1.0.0.md  # Formal release notes for v1.0.0
-│   ├── AIR_POWER_12_SLIDE_DECK.pdf # Standalone 12-slide presentation deck exported to PDF
 │   ├── CLAIMS_REGISTER.md       # Traceability index of all quantitative claims (CLM-01 to CLM-20)
 │   ├── EVALUATOR_GUIDE.md       # 60s tour, 5-minute evaluator rubric walkthrough
 │   ├── sbom.json                # CycloneDX 1.5 Software Bill of Materials
