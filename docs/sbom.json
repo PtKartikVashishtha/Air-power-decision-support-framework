@@ -1,0 +1,346 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.5",
+  "serialNumber": "urn:uuid:a1b2c3d4-e5f6-7890-abcd-airpower26250",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2026-10-10T14:37:17.397Z",
+    "tools": [
+      {
+        "vendor": "Air Power DSS Team",
+        "name": "air-power-sbom-generator",
+        "version": "1.0.0"
+      }
+    ],
+    "component": {
+      "type": "application",
+      "name": "air-power-monorepo",
+      "version": "1.0.0",
+      "description": "Autonomous Air Tasking & Dynamic Resource Optimization Framework (SIH 26250)",
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ]
+    }
+  },
+  "components": [
+    {
+      "type": "library",
+      "name": "fast-check",
+      "version": "4.10.2",
+      "description": "Direct / monorepo dependency: fast-check",
+      "purl": "pkg:npm/fast-check@4.10.2",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT",
+            "name": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "playwright",
+      "version": "1.64.0",
+      "description": "Direct / monorepo dependency: playwright",
+      "purl": "pkg:npm/playwright@1.64.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0",
+            "name": "MIT / Apache-2.0"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "tsx",
+      "version": "4.19.3",
+      "description": "Direct / monorepo dependency: tsx",
+      "purl": "pkg:npm/tsx@4.19.3",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT",
+            "name": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "typescript",
+      "version": "5.7.3",
+      "description": "Direct / monorepo dependency: typescript",
+      "purl": "pkg:npm/typescript@5.7.3",
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0",
+            "name": "Apache-2.0"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "vitest",
+      "version": "3.0.7",
+      "description": "Direct / monorepo dependency: vitest",
+      "purl": "pkg:npm/vitest@3.0.7",
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0",
+            "name": "MIT / Apache-2.0"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "fastify",
+      "version": "5.2.1",
+      "description": "Direct / monorepo dependency: fastify",
+      "purl": "pkg:npm/fastify@5.2.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT",
+            "name": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "@fastify/cors",
+      "version": "10.0.2",
+      "description": "Direct / monorepo dependency: @fastify/cors",
+      "purl": "pkg:npm/@fastify%2Fcors@10.0.2",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT",
+            "name": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "zod",
+      "version": "3.24.2",
+      "description": "Direct / monorepo dependency: zod",
+      "purl": "pkg:npm/zod@3.24.2",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT",
+            "name": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "@types/node",
+      "version": "22.13.1",
+      "description": "Direct / monorepo dependency: @types/node",
+      "purl": "pkg:npm/@types%2Fnode@22.13.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT",
+            "name": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "clsx",
+      "version": "2.1.1",
+      "description": "Direct / monorepo dependency: clsx",
+      "purl": "pkg:npm/clsx@2.1.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT",
+            "name": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "lucide-react",
+      "version": "0.475.0",
+      "description": "Direct / monorepo dependency: lucide-react",
+      "purl": "pkg:npm/lucide-react@0.475.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT",
+            "name": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "maplibre-gl",
+      "version": "6.13.0",
+      "description": "Direct / monorepo dependency: maplibre-gl",
+      "purl": "pkg:npm/maplibre-gl@6.13.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT",
+            "name": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "next",
+      "version": "15.1.7",
+      "description": "Direct / monorepo dependency: next",
+      "purl": "pkg:npm/next@15.1.7",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT",
+            "name": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "react",
+      "version": "19.0.0",
+      "description": "Direct / monorepo dependency: react",
+      "purl": "pkg:npm/react@19.0.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT",
+            "name": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "react-dom",
+      "version": "19.0.0",
+      "description": "Direct / monorepo dependency: react-dom",
+      "purl": "pkg:npm/react-dom@19.0.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT",
+            "name": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "tailwind-merge",
+      "version": "3.0.1",
+      "description": "Direct / monorepo dependency: tailwind-merge",
+      "purl": "pkg:npm/tailwind-merge@3.0.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT",
+            "name": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "@types/react",
+      "version": "19.0.8",
+      "description": "Direct / monorepo dependency: @types/react",
+      "purl": "pkg:npm/@types%2Freact@19.0.8",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT",
+            "name": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "@types/react-dom",
+      "version": "19.0.3",
+      "description": "Direct / monorepo dependency: @types/react-dom",
+      "purl": "pkg:npm/@types%2Freact-dom@19.0.3",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT",
+            "name": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "postcss",
+      "version": "8.5.2",
+      "description": "Direct / monorepo dependency: postcss",
+      "purl": "pkg:npm/postcss@8.5.2",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT",
+            "name": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "tailwindcss",
+      "version": "3.4.17",
+      "description": "Direct / monorepo dependency: tailwindcss",
+      "purl": "pkg:npm/tailwindcss@3.4.17",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT",
+            "name": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "name": "highs",
+      "version": "1.15.3",
+      "description": "Direct / monorepo dependency: highs",
+      "purl": "pkg:npm/highs@1.15.3",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT",
+            "name": "MIT"
+          }
+        }
+      ]
+    }
+  ]
+}
