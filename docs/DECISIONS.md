@@ -20,3 +20,10 @@
 - **Context**: Demonstrating dynamic retasking requires an interactive theater clock with injects (SAM pop-up, AOG, weather changes) and time-travel replay.
 - **Decision**: Build an in-memory discrete-event simulation engine emitting versioned events over SSE/WebSocket, with an immutable append-only event store.
 - **Consequences**: Enables 1x-60x speed scrub, instant rewind/replay, and auditable plan divergence diffs.
+
+## ADR-004: Anytime ALNS vs OR-Tools CP-SAT in Air-Gapped Environment
+- **Date**: 2026-10-10
+- **Status**: Accepted
+- **Context**: Jurors frequently query why an anytime metaheuristic was chosen over standard solvers like Google OR-Tools CP-SAT or Gurobi.
+- **Decision**: Standardize on an in-process Anytime ALNS metaheuristic with an embedded HiGHS-WASM branch-and-cut yardstick, evaluating CP-SAT solely as an offline research comparator. See comprehensive rationale in [docs/SOLVER_CHOICE.md](SOLVER_CHOICE.md).
+- **Consequences**: Zero Python runtime dependency, zero process boundary IPC latency, sub-50ms anytime feasibility under tactical mission injects, and verified 0.00% optimality gap against exact branch-and-cut up to N=16 targets.
