@@ -1,0 +1,10 @@
+[build]
+  command = "pnpm run build:preview"
+  publish = "apps/web/out"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"

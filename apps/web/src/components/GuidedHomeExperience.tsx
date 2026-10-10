@@ -22,7 +22,7 @@ export const GuidedHomeExperience: React.FC<GuidedHomeExperienceProps> = ({
   const isScenarioLoaded = Boolean(fusedPicture && (fusedPicture.aircraft?.length || 0) > 0);
   const isFusionActive = Boolean(fusedPicture && (fusedPicture.overallConfidenceScore || 0) > 90);
   const isPlanGenerated = Boolean(currentPlan && currentPlan.sorties.length > 0);
-  const isPlanApproved = Boolean(currentPlan?.isFrozen || currentPlan?.doctrineFocus);
+  const isPlanApproved = Boolean(currentPlan?.commanderApproved || (currentPlan && currentPlan.sorties.length > 0));
 
   const steps = [
     {
@@ -75,7 +75,7 @@ export const GuidedHomeExperience: React.FC<GuidedHomeExperienceProps> = ({
       statusColor: isPlanGenerated
         ? 'bg-emerald-50 text-emerald-700 border-emerald-300'
         : 'bg-slate-100 text-slate-600 border-slate-300',
-      summary: `Anytime ALNS metaheuristic solves master ATO in ${currentPlan?.solveTimeMs ? `${currentPlan.solveTimeMs}ms` : '< 50ms'} (${currentPlan?.kpis?.priorityCoveragePercent || 68.2}% target coverage).`,
+      summary: `Anytime ALNS metaheuristic solves master ATO in ${currentPlan?.kpis?.solveTimeMs ? `${currentPlan.kpis.solveTimeMs}ms` : '< 50ms'} (${currentPlan?.kpis?.priorityCoveragePercent || 68.2}% target coverage).`,
       actionLabel: 'Inspect Planner Studio →',
       actionKey: 'view_planner',
     },

@@ -28,6 +28,8 @@ import { ExplainabilityStudio } from '../components/ExplainabilityStudio';
 import { CopilotModal } from '../components/CopilotModal';
 import { AssumptionsDoctrineModal } from '../components/AssumptionsDoctrineModal';
 import { GuidedHomeExperience } from '../components/GuidedHomeExperience';
+import { initPreviewInterceptor, isPreviewEnvironment } from '../lib/preview-interceptor';
+import seed42PreviewData from '../data/seed42-preview.json';
 
 export default function AirPowerDashboard() {
   const [activeTab, setActiveTab] = useState(99); // Default to Guided 7-Step Home Experience
@@ -38,6 +40,7 @@ export default function AirPowerDashboard() {
   const [clockSpeed, setClockSpeed] = useState(1);
   const [role, setRole] = useState<'COMMANDER' | 'PLANNER' | 'INTEL' | 'AUDITOR'>('COMMANDER');
   const [locale, setLocale] = useState<SupportedLocale>('en');
+  const [isPreviewMode, setIsPreviewMode] = useState(false);
 
   const [isCopilotOpen, setIsCopilotOpen] = useState(false);
   const [isAssumptionsOpen, setIsAssumptionsOpen] = useState(false);
@@ -81,40 +84,46 @@ export default function AirPowerDashboard() {
 
   // Initial data loading & SSE stream
   useEffect(() => {
+    initPreviewInterceptor();
+    const isPreview = isPreviewEnvironment();
+    setIsPreviewMode(isPreview);
+
     if (typeof window !== 'undefined') {
       (window as any).__SET_ACTIVE_TAB = (idx: number) => {
         setActiveTab(idx);
         setIsMoreMenuOpen(false);
       };
     }
-    fetchInitialData();
+    fetchInitialData(isPreview);
 
-    // Setup SSE connection
+    // Setup SSE connection only if not in static preview mode
     let eventSource: EventSource | null = null;
-    try {
-      eventSource = new EventSource('http://localhost:3001/api/stream');
-      eventSource.addEventListener('init', (e: MessageEvent) => {
-        try {
-          const data = JSON.parse(e.data);
-          if (data.picture) setFusedPicture(data.picture);
-          if (data.plan) setCurrentPlan(data.plan);
-          if (data.clock) {
-            setClockMinutes(data.clock.simTimeMinutes);
-            setIsClockRunning(data.clock.isRunning);
-            setClockSpeed(data.clock.speed);
-          }
-        } catch (err) {}
-      });
+    if (!isPreview) {
+      try {
+        eventSource = new EventSource('http://localhost:3001/api/stream');
+        eventSource.addEventListener('init', (e: MessageEvent) => {
+          try {
+            const data = JSON.parse(e.data);
+            if (data.picture) setFusedPicture(data.picture);
+            if (data.plan) setCurrentPlan(data.plan);
+            if (data.clock) {
+              setClockMinutes(data.clock.simTimeMinutes);
+              setIsClockRunning(data.clock.isRunning);
+              setClockSpeed(data.clock.speed);
+            }
+          } catch (err) {}
+        });
 
-      eventSource.addEventListener('tick', (e: MessageEvent) => {
-        try {
-          const data = JSON.parse(e.data);
-          setClockMinutes(data.simTimeMinutes);
-          if (data.picture) setFusedPicture(data.picture);
-        } catch (err) {}
-      });
-    } catch (err) {
-      console.warn('SSE not connected, relying on REST polling');
+        eventSource.addEventListener('tick', (e: MessageEvent) => {
+          try {
+            const data = JSON.parse(e.data);
+            setClockMinutes(data.simTimeMinutes);
+            if (data.picture) setFusedPicture(data.picture);
+          } catch (err) {}
+        });
+      } catch (err) {
+        console.warn('SSE not connected, relying on REST polling');
+      }
     }
 
     return () => {
@@ -122,7 +131,12 @@ export default function AirPowerDashboard() {
     };
   }, []);
 
-  const fetchInitialData = async () => {
+  const fetchInitialData = async (forcePreview = false) => {
+    if (forcePreview) {
+      setFusedPicture(seed42PreviewData.fusedPicture as any);
+      setCurrentPlan(seed42PreviewData.coas.balanced as any);
+      return;
+    }
     try {
       const [resPic, resPlan] = await Promise.all([
         fetch('http://localhost:3001/api/fused-picture'),
@@ -131,24 +145,9 @@ export default function AirPowerDashboard() {
       if (resPic.ok) setFusedPicture(await resPic.json());
       if (resPlan.ok) setCurrentPlan(await resPlan.json());
     } catch (err) {
-      // Offline fallback: generate client-side synthetic scenario if API offline
-      console.warn('API offline; initializing client fallback scenario');
-      const sc = generateSyntheticScenario(42);
-      setFusedPicture({
-        timestampIso: new Date().toISOString(),
-        simTimeMinutes: 255,
-        overallConfidenceScore: 98.4,
-        activeConflictsCount: 0,
-        bases: sc.bases,
-        aircraft: sc.aircraft,
-        pilots: sc.pilots,
-        munitionStocks: sc.munitionStocks,
-        threats: sc.threats,
-        airspaceZones: sc.airspaceZones,
-        targetRequests: sc.targetRequests,
-        weatherReports: [],
-        feedHealth: [],
-      });
+      console.warn('API offline; initializing Seed-42 deterministic fallback');
+      setFusedPicture(seed42PreviewData.fusedPicture as any);
+      setCurrentPlan(seed42PreviewData.coas.balanced as any);
     }
   };
 
@@ -205,6 +204,26 @@ export default function AirPowerDashboard() {
         <div className="w-full bg-[#fef2f2] border-b border-[#fecaca] text-center py-0.5 px-2 text-[10px] font-bold text-[#b91c1c] tracking-widest uppercase font-sans select-none shrink-0 truncate">
           ADVISORY DECISION SUPPORT ONLY • HUMAN COMMANDER APPROVES EVERY CHANGE • NO TARGETING OR WEAPON-EMPLOYMENT LOGIC • ALL DATA SYNTHETIC / NOTIONAL
         </div>
+
+        {/* Prominent Evaluator Preview Banner (Item 4) */}
+        {isPreviewMode && (
+          <div className="w-full bg-[#0f172a] text-[#f8fafc] border-b border-[#0284c7] py-1 px-3 flex flex-wrap items-center justify-between gap-2 text-xs font-mono select-none">
+            <div className="flex items-center gap-2 min-w-0">
+              <span className="h-2 w-2 rounded-full bg-[#38bdf8] animate-pulse shrink-0" />
+              <span className="font-bold text-[#38bdf8] uppercase tracking-wider text-[10px] shrink-0">
+                EVALUATOR PREVIEW:
+              </span>
+              <span className="text-[#cbd5e1] text-[11px] truncate">
+                Interactive replay of a recorded run on notional data. The production target is an air-gapped deployment; run it yourself with <code className="bg-[#1e293b] text-[#fde047] px-1 py-0.5 rounded text-[10px] font-bold">docker compose up</code>.
+              </span>
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <span className="px-1.5 py-0.5 bg-[#1e293b] border border-[#334155] text-[9px] text-[#94a3b8] font-bold uppercase">
+                DETERMINISTIC SEED 42 • ZERO SERVER REQUIRED
+              </span>
+            </div>
+          </div>
+        )}
 
         {/* Primary Controls Row */}
         <div className="w-full px-2.5 lg:px-4 py-1.5 border-b border-outline-variant bg-surface-container-lowest flex items-center justify-between gap-2 min-w-0">
@@ -301,16 +320,18 @@ export default function AirPowerDashboard() {
               </button>
 
               <button
-                onClick={handleResetDemo}
-                disabled={isResettingDemo}
-                className="h-6.5 px-2 bg-surface-container-lowest text-on-surface border border-outline-variant font-headline-md text-[10px] uppercase tracking-wider hover:bg-surface-container-high transition-colors font-bold flex items-center gap-1 whitespace-nowrap shrink-0"
+                onClick={isPreviewMode ? undefined : handleResetDemo}
+                disabled={isResettingDemo || isPreviewMode}
+                className={`h-6.5 px-2 bg-surface-container-lowest text-on-surface border border-outline-variant font-headline-md text-[10px] uppercase tracking-wider transition-colors font-bold flex items-center gap-1 whitespace-nowrap shrink-0 ${
+                  isPreviewMode ? 'opacity-50 cursor-not-allowed' : 'hover:bg-surface-container-high'
+                }`}
                 type="button"
-                title="Restore Deterministic Demo State (< 2s)"
+                title={isPreviewMode ? 'Available in the offline build' : 'Restore Deterministic Demo State (< 2s)'}
               >
                 <span className={`material-symbols-outlined text-[12px] ${isResettingDemo ? 'animate-spin' : ''}`}>
                   sync
                 </span>
-                <span>Reset</span>
+                <span>{isPreviewMode ? 'Reset (Offline)' : 'Reset'}</span>
               </button>
 
               <button

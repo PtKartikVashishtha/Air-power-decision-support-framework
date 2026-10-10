@@ -1,7 +1,14 @@
 import type { NextConfig } from 'next';
 
+const isPreview = process.env.BUILD_PREVIEW === 'true';
+const isStandalone = process.env.BUILD_STANDALONE === 'true';
+
 const nextConfig: NextConfig = {
-  output: process.env.BUILD_STANDALONE === 'true' ? 'standalone' : undefined,
+  output: isPreview ? 'export' : isStandalone ? 'standalone' : undefined,
+  trailingSlash: isPreview,
+  images: {
+    unoptimized: isPreview,
+  },
   reactStrictMode: true,
   transpilePackages: ['@air-power/shared', '@air-power/sim', '@air-power/optimizer'],
   serverExternalPackages: ['highs'],
