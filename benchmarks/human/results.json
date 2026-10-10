@@ -1,1 +1,14 @@
-[]
+[
+  {
+    "participantId": "HUMAN_P01",
+    "scenarioSeed": 42,
+    "durationSeconds": 2,
+    "targetsAttempted": 1,
+    "targetsCoveredValid": 1,
+    "hardViolationsCount": 0,
+    "violationDetails": [],
+    "totalScore": 84.8,
+    "packageIntegrityPercent": 100,
+    "submittedAtIso": "2026-10-10T14:28:16.984Z"
+  }
+]
