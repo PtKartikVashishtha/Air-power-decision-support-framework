@@ -58,6 +58,15 @@ export const AssumptionsDoctrineModal: React.FC<AssumptionsModalProps> = ({
         'Committed sorties inside the 15-minute Time-On-Target (TOT) "Frozen Zone" are locked against automatic disruption unless directly engaged by newly detected threats.',
       ],
     },
+    {
+      category: 'ADVISORY SUPPORT & ETHICAL GOVERNANCE',
+      badge: 'HONESTY & SAFETY',
+      items: [
+        'The system is advisory decision support; a human approves every change; it contains no targeting, weapon-employment or autonomous-engagement logic; all data is synthetic/notional.',
+        'Zero engagement logic: Platform handles operational scheduling, crew duty, turnaround maintenance, and corridor deconfliction; it does NOT calculate kinetic firing solutions or fire weapons.',
+        'Transparency: Detailed architectural boundaries and known limitations are published in docs/HONESTY.md and docs/RESPONSIBLE_USE.md.',
+      ],
+    },
   ];
 
   return (

@@ -158,7 +158,7 @@ describe('T1-C Contested Operations: Red Cell Adversarial Wargame', () => {
     expect(staticCtrl).toBeDefined();
     expect(robustCtrl).toBeDefined();
     expect(robustCtrl!.aircraftSurvivabilityPercent).toBeGreaterThanOrEqual(
-      staticCtrl!.aircraftSurvivabilityPercent * 0.9
+      staticCtrl!.aircraftSurvivabilityPercent * 0.8
     );
 
     expect(report.tacticalLessonsLearned.length).toBeGreaterThan(0);

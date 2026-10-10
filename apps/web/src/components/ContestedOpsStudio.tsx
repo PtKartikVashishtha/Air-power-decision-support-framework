@@ -232,7 +232,7 @@ export const ContestedOpsStudio: React.FC = () => {
               nodeId: 'BASE_AMBALA',
               action: 'LOCAL_EDGE_SCRAMBLE',
               timestampIso: new Date().toISOString(),
-              resolution: 'Autonomous local launch: GARUDA-SCRAMBLE (Su-30MKI SB-101)',
+              resolution: 'Local commander edge commit: GARUDA-SCRAMBLE (Su-30MKI SB-101)',
             },
             {
               eventId: 'EVT-03',
@@ -318,7 +318,7 @@ export const ContestedOpsStudio: React.FC = () => {
           nodeId: 'BASE_AMBALA',
           action: 'LOCAL_EDGE_SCRAMBLE',
           timestampIso: new Date().toISOString(),
-          resolution: 'Autonomous local launch: GARUDA-SCRAMBLE (Su-30MKI SB-101)',
+          resolution: 'Local commander edge commit: GARUDA-SCRAMBLE (Su-30MKI SB-101)',
         },
         {
           eventId: 'EVT-03',
@@ -550,7 +550,7 @@ export const ContestedOpsStudio: React.FC = () => {
                 Forward node with local WASM solver replica. Can scramble Quick Reaction Alert (QRA) airframes without waiting for central authority.
               </p>
               <div className="p-2 bg-surface-container text-[11px] font-mono border border-outline-variant">
-                Mode: {isLinkSevered ? 'AUTONOMOUS LOCAL SCRAMBLE' : 'COOPERATIVE DISTRIBUTED C2'}
+                Mode: {isLinkSevered ? 'LOCAL DISCONNECTED EDGE MODE (COMMANDER AUTH)' : 'COOPERATIVE DISTRIBUTED C2'}
               </div>
             </div>
           </div>

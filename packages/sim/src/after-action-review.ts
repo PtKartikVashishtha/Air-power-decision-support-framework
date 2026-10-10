@@ -202,7 +202,7 @@ export class AfterActionReviewEngine {
         pedagogicalTakeaway: 'COUNTERFACTUAL FINDING: Retasking 15 minutes earlier allowed the package to exploit the Pir Panjal mountain ridge for terrain-masked ingress, reducing radar line-of-sight exposure by 63% and completely preventing airframe loss.',
         alternativeTimelineEvents: [
           'T+60m: Early intel correlation flags radar power-up signature.',
-          'T+62m: AI Copilot issues autonomous reroute diff; commander approves in 8s.',
+          'T+62m: AI Copilot issues advisory reroute diff; commander approves in 8s.',
           'T+70m: Strike package drops from FL300 to 500ft AGL, masked behind ridge line.',
           'T+75m: HQ-9 radar search sweeps empty airspace; zero tracking lock achieved.',
           'T+110m: Bunker neutralized with 100% force preservation.',

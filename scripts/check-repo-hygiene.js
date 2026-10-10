@@ -24,6 +24,8 @@ const ESSENTIAL_EVALUATOR_FILES = [
   'docs/SELF_REDTEAM.md',
   'docs/HUMAN_BASELINE_PROTOCOL.md',
   'docs/DECISIONS.md',
+  'docs/HONESTY.md',
+  'docs/RESPONSIBLE_USE.md',
 ];
 
 const INTERNAL_FORBIDDEN_FILES = [

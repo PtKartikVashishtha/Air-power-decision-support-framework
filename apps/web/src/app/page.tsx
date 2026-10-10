@@ -193,9 +193,9 @@ export default function AirPowerDashboard() {
     <div className="flex flex-col min-h-screen w-full max-w-full overflow-x-hidden select-none" style={{ background: '#f6fafe', color: '#171c1f' }}>
       {/* Top Daylight Military Header Bar */}
       <header className="sticky top-0 left-0 w-full max-w-full overflow-x-hidden z-40 bg-surface-container-lowest border-b border-outline-variant shadow-xs">
-        {/* Mandatory Defence Training Classification Banner */}
+        {/* Mandatory Defence Training Classification & Advisory Statement */}
         <div className="w-full bg-[#fef2f2] border-b border-[#fecaca] text-center py-0.5 px-2 text-[10px] font-bold text-[#b91c1c] tracking-widest uppercase font-sans select-none shrink-0 truncate">
-          {t('UNCLASSIFIED_BANNER', locale)}
+          ADVISORY DECISION SUPPORT ONLY • HUMAN COMMANDER APPROVES EVERY CHANGE • NO TARGETING OR WEAPON-EMPLOYMENT LOGIC • ALL DATA SYNTHETIC / NOTIONAL
         </div>
 
         {/* Primary Controls Row */}
@@ -483,9 +483,11 @@ export default function AirPowerDashboard() {
           <div className="flex items-center gap-space-lg">
             <span>DEFENSE DECISION-SUPPORT SUITE</span>
             <span>//</span>
-            <span>NODE: TOC-ALPHA-WEST</span>
+            <span>ADVISORY SUPPORT ONLY (HUMAN APPROVAL REQUIRED)</span>
             <span>//</span>
-            <span>SECURITY: LEVEL-4 CLEARANCE REQUIRED</span>
+            <span>NO TARGETING / ENGAGEMENT LOGIC</span>
+            <span>//</span>
+            <span>ALL DATA SYNTHETIC &amp; NOTIONAL</span>
           </div>
           <div className="flex items-center gap-space-lg">
             <span>LATENCY: 12ms</span>

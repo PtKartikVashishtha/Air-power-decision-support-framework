@@ -836,7 +836,7 @@ fastify.post('/api/contested/edge-crdt-demo', async (request) => {
   };
   hqNode.recordLocalOperation('LOCAL_SCRAMBLE_SORTIE', { sortie: hqSortie });
 
-  // Step 3: Forward base Ambala autonomously scrambles SB-101 to intercept threat
+  // Step 3: Forward base Ambala edge commander commits scramble of SB-101 to intercept threat
   const localScramble: any = {
     ...hqSortie,
     sortieId: 'SRT-AMB-SCRAMBLE',

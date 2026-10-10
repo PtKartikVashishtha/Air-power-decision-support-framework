@@ -1,5 +1,9 @@
 # SIH EVALUATOR GUIDE — AIR POWER (PROBLEM 26250)
-*Autonomous Decision-Support Framework for Air Tasking Orders & Dynamic Retasking*
+*Advisory Decision-Support Framework for Air Tasking Orders & Dynamic Retasking*
+
+> **Mandatory Doctrine & Advisory Statement:**  
+> The system provides advisory decision support only; a human commander approves every operational change. It contains no targeting, weapon-employment, or autonomous-engagement logic; all data is synthetic and notional.  
+> See our full transparency disclosures in [HONESTY.md](file:///D:/PROGRAMMING/projects/SIH-2026/Air-Power/docs/HONESTY.md) and governance rules in [RESPONSIBLE_USE.md](file:///D:/PROGRAMMING/projects/SIH-2026/Air-Power/docs/RESPONSIBLE_USE.md).
 
 Welcome, Evaluators and Jury Members. This guide is tailored to help you navigate, audit, and evaluate the AIR POWER system in under 5 minutes, mapping every competition rubric item to verifiable codebase artifacts.
 

@@ -1,8 +1,12 @@
-AIR POWER: Autonomous Decision Support Framework for Air Tasking Orders
+AIR POWER: Advisory Decision Support Framework for Air Tasking Orders
 Copyright 2026 The AIR POWER Contributors (Smart India Hackathon 2026, Problem SIH 26250)
 
 ================================================================================
-CRITICAL NOTICE: NOTIONAL / UNCLASSIFIED / SYNTHETIC DATA STATEMENT
+CRITICAL NOTICE: ADVISORY DECISION SUPPORT & NOTIONAL DATA STATEMENT
+================================================================================
+The system provides advisory decision support only. A human approves every change.
+It contains no targeting, weapon-employment, or autonomous-engagement logic.
+All data is synthetic and notional.
 ================================================================================
 
 1. UNCLASSIFIED & NOTIONAL NATURE:
