@@ -98,6 +98,7 @@ export class AlnsTacticalOptimizer {
     );
 
     const calcObjective = (sorties: Sortie[]): number => {
+      if (sorties.length === 0) return targetsList.length > 0 ? -100000 : 0;
       let prioSum = 0;
       let riskSum = 0;
       let fuelSum = 0;
@@ -189,9 +190,11 @@ export class AlnsTacticalOptimizer {
         calls: 0,
         wins: 0,
         fn: (sorties) => {
+          const allPkgs = new Set(sorties.map((s) => s.packageId));
+          if (allPkgs.size <= 1) return { kept: sorties, removed: [] };
           const randomBase = bases[Math.floor(rng() * bases.length)];
           const pkgsToDrop = new Set(sorties.filter((s) => s.originBaseId === randomBase?.id).map((s) => s.packageId));
-          if (pkgsToDrop.size === 0) return { kept: sorties, removed: [] };
+          if (pkgsToDrop.size === 0 || pkgsToDrop.size >= allPkgs.size) return { kept: sorties, removed: [] };
           const kept = sorties.filter((s) => !pkgsToDrop.has(s.packageId));
           const removed = sorties.filter((s) => pkgsToDrop.has(s.packageId));
           return { kept, removed };
