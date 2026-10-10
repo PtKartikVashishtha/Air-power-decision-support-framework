@@ -30,6 +30,15 @@ export interface AlnsOperatorStat {
   weight: number;
 }
 
+function createPrng(seed?: number) {
+  if (seed === undefined) return Math.random;
+  let s = (seed >>> 0) || 123456789;
+  return function () {
+    s = (s * 16807 + 0) % 2147483647;
+    return (s - 1) / 2147483646;
+  };
+}
+
 export class AlnsTacticalOptimizer {
   private verifier = new IndependentPlanVerifier();
   public operatorStats: AlnsOperatorStat[] = [];
@@ -55,6 +64,7 @@ export class AlnsTacticalOptimizer {
     const allowMultiWave = options.allowMultiWave !== false;
     const maxIterations = options.maxIterations || 80;
     const timeLimitMs = options.timeLimitMs || 150;
+    const rng = createPrng(options.seed);
 
     // Weights tuned to military doctrine
     let wPrio = 1.0;
@@ -107,6 +117,7 @@ export class AlnsTacticalOptimizer {
     let currentSorties = [...initialSorties];
     let bestObjective = t0Objective;
     let currentObjective = t0Objective;
+    let alnsSeq = initialSorties.length + 1;
 
     // 2. Initialize Package-Aware ALNS Destroy & Repair Operators with Adaptive Weights
     const destroyOps: Array<{ name: string; weight: number; score: number; calls: number; wins: number; fn: (sorties: Sortie[]) => { kept: Sortie[]; removed: Sortie[] } }> = [
@@ -119,10 +130,10 @@ export class AlnsTacticalOptimizer {
         fn: (sorties) => {
           const packages = Array.from(new Set(sorties.map((s) => s.packageId)));
           if (packages.length <= 1) return { kept: sorties, removed: [] };
-          const removeCount = Math.min(2, Math.floor(packages.length * 0.3));
+          const removeCount = Math.min(2, Math.floor(packages.length * 0.25));
           const removedPackages = new Set<string>();
           for (let i = 0; i < removeCount; i++) {
-            const pick = packages[Math.floor(Math.random() * packages.length)];
+            const pick = packages[Math.floor(rng() * packages.length)];
             if (pick) removedPackages.add(pick);
           }
           const kept = sorties.filter((s) => !removedPackages.has(s.packageId));
@@ -151,13 +162,34 @@ export class AlnsTacticalOptimizer {
         },
       },
       {
+        name: 'lowestPriorityPackageDestroy',
+        weight: 1.2,
+        score: 0,
+        calls: 0,
+        wins: 0,
+        fn: (sorties) => {
+          const targetPriorityMap = new Map(targetsList.map((t) => [t.id, t.priority]));
+          const pkgPrioMap = new Map<string, number>();
+          for (const s of sorties) {
+            pkgPrioMap.set(s.packageId, targetPriorityMap.get(s.targetRequestId) || 0);
+          }
+          const sortedPkgs = Array.from(pkgPrioMap.entries()).sort((a, b) => a[1] - b[1]);
+          if (sortedPkgs.length <= 1) return { kept: sorties, removed: [] };
+          const removeCount = Math.min(2, Math.floor(sortedPkgs.length * 0.25));
+          const removedPkgs = new Set(sortedPkgs.slice(0, removeCount).map((p) => p[0]));
+          const kept = sorties.filter((s) => !removedPkgs.has(s.packageId));
+          const removed = sorties.filter((s) => removedPkgs.has(s.packageId));
+          return { kept, removed };
+        },
+      },
+      {
         name: 'clusterBasePackageDestroy',
         weight: 1.0,
         score: 0,
         calls: 0,
         wins: 0,
         fn: (sorties) => {
-          const randomBase = bases[Math.floor(Math.random() * bases.length)];
+          const randomBase = bases[Math.floor(rng() * bases.length)];
           const pkgsToDrop = new Set(sorties.filter((s) => s.originBaseId === randomBase?.id).map((s) => s.packageId));
           if (pkgsToDrop.size === 0) return { kept: sorties, removed: [] };
           const kept = sorties.filter((s) => !pkgsToDrop.has(s.packageId));
@@ -175,12 +207,9 @@ export class AlnsTacticalOptimizer {
         calls: 0,
         wins: 0,
         fn: (kept) => {
-          const usedTails = new Set(kept.map((s) => s.aircraftTail));
-          const usedPilots = new Set(kept.map((s) => s.pilotId));
           const coveredTargets = new Set(kept.map((s) => s.targetRequestId));
           const uncovered = targetsList.filter((t) => !coveredTargets.has(t.id)).sort((a, b) => b.priority - a.priority);
           const repaired = [...kept];
-          let rSeq = 1;
 
           for (const target of uncovered) {
             const rolesNeeded: Array<{ role: Sortie['role']; munType?: string }> = [];
@@ -197,79 +226,202 @@ export class AlnsTacticalOptimizer {
             const candidatePkgSorties: Sortie[] = [];
             let pkgFeasible = true;
             const openBases = bases.filter((b) => b.currentWeatherStatus !== 'CLOSED');
+            const totCandidates = [
+              Math.round((target.totStartMinutes + target.totEndMinutes) / 2),
+              target.totStartMinutes,
+              target.totEndMinutes,
+            ];
 
-            for (const slot of rolesNeeded) {
-              let assigned = false;
-              for (const base of openBases) {
-                const plane = aircraftList.find(
-                  (a) => a.baseId === base.id && a.status === 'FMC' && a.roles.includes(slot.role) && !usedTails.has(a.tailNumber)
-                );
-                if (!plane) continue;
+            let scheduledTot: number | null = null;
+            for (const candTot of totCandidates) {
+              candidatePkgSorties.length = 0;
+              pkgFeasible = true;
+              const trialPlan = [...repaired];
 
-                const pilot = pilotsList.find(
-                  (p) => p.baseId === base.id && p.status === 'READY' && p.typeRating === plane.model && !usedPilots.has(p.id) && p.fatigueScore <= 60
-                );
-                if (!pilot) continue;
+              for (const slot of rolesNeeded) {
+                let assigned = false;
+                for (const base of openBases) {
+                  const distKm = haversineDistanceKm(base.location, target.location);
+                  const candidatePlanes = aircraftList.filter((a) => a.baseId === base.id && a.status === 'FMC' && a.roles.includes(slot.role));
 
-                usedTails.add(plane.tailNumber);
-                usedPilots.add(pilot.id);
+                  for (const plane of candidatePlanes) {
+                    if (distKm * 2 > plane.combatRadiusKm * 1.8) continue;
+                    const fltMin = Math.round((distKm / plane.cruiseSpeedKmh) * 60);
+                    const dep = Math.max(0, candTot - fltMin);
+                    const rec = candTot + fltMin;
+                    const turnaround = plane.turnaroundTimeMinutes || 35;
 
-                const distKm = haversineDistanceKm(base.location, target.location);
-                const fltMin = Math.round((distKm / plane.cruiseSpeedKmh) * 60);
-                const dep = Math.max(0, target.totStartMinutes - fltMin);
-                const rec = target.totStartMinutes + fltMin;
+                    let planeFree = true;
+                    for (const st of trialPlan.filter((s) => s.aircraftTail === plane.tailNumber)) {
+                      if (dep < st.recoveryTimeMinutes + turnaround && rec > st.depTimeMinutes - turnaround) {
+                        planeFree = false;
+                        break;
+                      }
+                    }
+                    if (!planeFree) continue;
 
-                candidatePkgSorties.push({
-                  sortieId: `SRT-RPR-${Date.now().toString().slice(-4)}-${rSeq}`,
-                  callsign: `VAYU-${pilot.callsign.split('-')[0]}-${rSeq}`,
-                  packageId: `PKG-RPR-${target.id}`,
-                  targetRequestId: target.id,
-                  role: slot.role,
-                  aircraftTail: plane.tailNumber,
-                  pilotId: pilot.id,
-                  originBaseId: base.id,
-                  recoveryBaseId: base.id,
-                  munitionLoadout: [{ munitionId: target.desiredMunitions[0] || 'MUN_SPICE2000', count: 2 }],
-                  depTimeMinutes: dep,
-                  totMinutes: target.totStartMinutes,
-                  recoveryTimeMinutes: rec,
-                  fuelPlannedKg: Math.round(distKm * 2 * 2.8),
-                  routeWaypoints: [base.location, target.location, base.location],
-                  expectedRiskScore: calculateRouteRisk([base.location, target.location], threatsList),
-                  status: 'SCHEDULED',
-                  isFrozen: false,
-                  justificationNotes: `ALNS package repair allocation.`,
-                });
-                rSeq++;
-                assigned = true;
-                break;
+                    const currentActiveTails = new Set(trialPlan.map((s) => s.aircraftTail));
+                    if (!currentActiveTails.has(plane.tailNumber)) {
+                      const maxActive = doctrine === 'MIN_RISK'
+                        ? Math.floor(aircraftList.filter((a) => a.status === 'FMC').length * 0.72)
+                        : doctrine === 'BALANCED_RESERVE'
+                        ? Math.floor(aircraftList.filter((a) => a.status === 'FMC').length * 0.85)
+                        : aircraftList.filter((a) => a.status === 'FMC').length;
+                      if (currentActiveTails.size >= maxActive) continue;
+                    }
+
+                    const hour = Math.floor(dep / 60);
+                    const hourlyDep = trialPlan.filter((s) => s.originBaseId === base.id && Math.floor(s.depTimeMinutes / 60) === hour).length;
+                    if (hourlyDep >= base.maxSortiePerHour) continue;
+
+                    const pilot = pilotsList.find((p) => {
+                      if (p.baseId !== base.id || p.status !== 'READY' || p.typeRating !== plane.model || p.fatigueScore > 65) return false;
+                      for (const st of trialPlan.filter((s) => s.pilotId === p.id)) {
+                        if (dep < st.recoveryTimeMinutes + 45 && rec > st.depTimeMinutes - 45) return false;
+                      }
+                      return true;
+                    });
+                    if (!pilot) continue;
+
+                    const desiredMunCat = slot.munType || 'PRECISION_GUIDED_BOMB';
+                    const mun = MUNITION_CATALOG.find((m) => m.category === desiredMunCat && m.compatibleModels.includes(plane.model));
+                    if (!mun) continue;
+
+                    const burnRate = AIRCRAFT_MODEL_SPECS[plane.model]?.burnRateKgPerKm || 2.5;
+                    const waypoints = [base.location, target.location, base.location];
+                    const sId = `SRT-${String(alnsSeq++).padStart(4, '0')}`;
+                    const newSortie: Sortie = {
+                      sortieId: sId,
+                      callsign: `VAYU-${pilot.callsign.split('-')[0]}-${alnsSeq}`,
+                      packageId: `PKG-RPR-${target.id}`,
+                      targetRequestId: target.id,
+                      role: slot.role,
+                      aircraftTail: plane.tailNumber,
+                      pilotId: pilot.id,
+                      originBaseId: base.id,
+                      recoveryBaseId: base.id,
+                      munitionLoadout: [{ munitionId: mun.id, count: 2 }],
+                      depTimeMinutes: dep,
+                      totMinutes: candTot,
+                      recoveryTimeMinutes: rec,
+                      fuelPlannedKg: Math.round(distKm * 2 * burnRate),
+                      routeWaypoints: waypoints,
+                      expectedRiskScore: calculateRouteRisk(waypoints, threatsList),
+                      status: 'SCHEDULED',
+                      isFrozen: false,
+                      justificationNotes: `ALNS package repair allocation.`,
+                    };
+
+                    candidatePkgSorties.push(newSortie);
+                    trialPlan.push(newSortie);
+                    assigned = true;
+                    break;
+                  }
+                  if (assigned) break;
+                }
+                if (!assigned) {
+                  pkgFeasible = false;
+                  break;
+                }
               }
-              if (!assigned) {
-                pkgFeasible = false;
+
+              if (pkgFeasible && candidatePkgSorties.length === rolesNeeded.length) {
+                scheduledTot = candTot;
                 break;
               }
             }
 
-            if (pkgFeasible && candidatePkgSorties.length === rolesNeeded.length) {
+            if (scheduledTot !== null && candidatePkgSorties.length === rolesNeeded.length) {
               repaired.push(...candidatePkgSorties);
-            } else {
-              for (const partial of candidatePkgSorties) {
-                usedTails.delete(partial.aircraftTail);
-                usedPilots.delete(partial.pilotId);
-              }
             }
           }
           return repaired;
         },
       },
       {
-        name: 'deepRiskMinPackageRepair',
-        weight: 1.0,
+        name: 'baseReassignmentRepair',
+        weight: 1.2,
         score: 0,
         calls: 0,
         wins: 0,
         fn: (kept) => {
-          return [...kept];
+          const packages = Array.from(new Set(kept.map((s) => s.packageId)));
+          if (packages.length === 0) return kept;
+          const pickPkg = packages[Math.floor(rng() * packages.length)]!;
+          const pkgSorties = kept.filter((s) => s.packageId === pickPkg);
+          const targetId = pkgSorties[0]?.targetRequestId;
+          const target = targetsList.find((t) => t.id === targetId);
+          if (!target) return kept;
+
+          const curOrigin = pkgSorties[0]?.originBaseId;
+          const remaining = kept.filter((s) => s.packageId !== pickPkg);
+
+          for (const altBase of bases) {
+            if (altBase.id === curOrigin || altBase.currentWeatherStatus === 'CLOSED') continue;
+            const dist = haversineDistanceKm(altBase.location, target.location);
+            const candidatePlanes = aircraftList.filter((a) => a.baseId === altBase.id && a.status === 'FMC');
+            const candidatePilots = pilotsList.filter((p) => p.baseId === altBase.id && p.status === 'READY');
+
+            let feasible = true;
+            const newPkg: Sortie[] = [];
+            const usedTails = new Set<string>();
+            const usedPilots = new Set<string>();
+
+            for (const s of pkgSorties) {
+              const plane = candidatePlanes.find((a) => {
+                if (!a.roles.includes(s.role) || usedTails.has(a.tailNumber)) return false;
+                if (a.combatRadiusKm * 1.8 < dist * 2) return false;
+                const flightMin = Math.round((dist / a.cruiseSpeedKmh) * 60);
+                const dep = Math.max(0, s.totMinutes - flightMin);
+                const rec = s.totMinutes + flightMin;
+                const turnaround = a.turnaroundTimeMinutes || 35;
+                for (const prev of remaining.filter((st) => st.aircraftTail === a.tailNumber)) {
+                  if (dep < prev.recoveryTimeMinutes + turnaround && rec > prev.depTimeMinutes - turnaround) return false;
+                }
+                return true;
+              });
+              if (!plane) { feasible = false; break; }
+
+              const flightMin = Math.round((dist / plane.cruiseSpeedKmh) * 60);
+              const dep = Math.max(0, s.totMinutes - flightMin);
+              const rec = s.totMinutes + flightMin;
+
+              const pilot = candidatePilots.find((p) => {
+                if (p.typeRating !== plane.model || usedPilots.has(p.id)) return false;
+                for (const prev of remaining.filter((st) => st.pilotId === p.id)) {
+                  if (dep < prev.recoveryTimeMinutes + 45 && rec > prev.depTimeMinutes - 45) return false;
+                }
+                return true;
+              });
+              if (!pilot) { feasible = false; break; }
+
+              const munItem = MUNITION_CATALOG.find((m) => m.category === 'PRECISION_GUIDED_BOMB' && m.compatibleModels.includes(plane.model));
+              if (!munItem) { feasible = false; break; }
+
+              usedTails.add(plane.tailNumber);
+              usedPilots.add(pilot.id);
+
+              const burnRate = AIRCRAFT_MODEL_SPECS[plane.model]?.burnRateKgPerKm || 2.5;
+              newPkg.push({
+                ...s,
+                originBaseId: altBase.id,
+                recoveryBaseId: altBase.id,
+                aircraftTail: plane.tailNumber,
+                pilotId: pilot.id,
+                depTimeMinutes: dep,
+                recoveryTimeMinutes: rec,
+                fuelPlannedKg: Math.round(dist * 2 * burnRate),
+                expectedRiskScore: calculateRouteRisk([altBase.location, target.location, altBase.location], threatsList),
+                routeWaypoints: [altBase.location, target.location, altBase.location],
+                munitionLoadout: [{ munitionId: munItem.id, count: 2 }],
+              });
+            }
+
+            if (feasible && newPkg.length === pkgSorties.length) {
+              return remaining.concat(newPkg);
+            }
+          }
+          return kept;
         },
       },
     ];
@@ -284,7 +436,7 @@ export class AlnsTacticalOptimizer {
 
       // Roulette wheel selection for destroy
       const totalDestroyW = destroyOps.reduce((acc, d) => acc + d.weight, 0);
-      let rD = Math.random() * totalDestroyW;
+      let rD = rng() * totalDestroyW;
       let dOp = destroyOps[0]!;
       for (const op of destroyOps) {
         if (rD <= op.weight) {
@@ -296,7 +448,7 @@ export class AlnsTacticalOptimizer {
 
       // Roulette wheel selection for repair
       const totalRepairW = repairOps.reduce((acc, r) => acc + r.weight, 0);
-      let rR = Math.random() * totalRepairW;
+      let rR = rng() * totalRepairW;
       let rOp = repairOps[0]!;
       for (const op of repairOps) {
         if (rR <= op.weight) {
@@ -324,7 +476,9 @@ export class AlnsTacticalOptimizer {
         threatsList
       );
       if (candAudit.totalViolations > 0) {
-        continue; // Strictly reject infeasible moves mid-search
+        dOp.weight = Math.max(0.1, dOp.weight * 0.95);
+        rOp.weight = Math.max(0.1, rOp.weight * 0.95);
+        continue;
       }
 
       const candidateObj = calcObjective(candidateSorties);
@@ -337,7 +491,7 @@ export class AlnsTacticalOptimizer {
         accepted = true;
       } else {
         const acceptProb = Math.exp(delta / Math.max(0.001, temperature));
-        if (Math.random() < acceptProb) {
+        if (rng() < acceptProb) {
           accepted = true;
         }
       }
@@ -349,7 +503,7 @@ export class AlnsTacticalOptimizer {
         if (candidateObj > bestObjective) {
           bestSorties = candidateSorties;
           bestObjective = candidateObj;
-          dOp.score += 33; // Global improvement
+          dOp.score += 33;
           rOp.score += 33;
           dOp.wins++;
           rOp.wins++;
@@ -440,9 +594,9 @@ export class AlnsTacticalOptimizer {
     const activeTails = new Set(bestSorties.map((s) => s.aircraftTail));
     const strategicReserve = aircraftList.filter((a) => a.status === 'FMC').length - activeTails.size;
     const solveTimeMs = Date.now() - startTime;
-
+    const planIdSuffix = options.seed !== undefined ? `SEED-${options.seed}` : Date.now().toString().slice(-6);
     return {
-      id: `PLAN-COA-${doctrine}-${Date.now().toString().slice(-6)}`,
+      id: `PLAN-COA-${doctrine}-${planIdSuffix}`,
       name: `Operation Plan ${doctrine.replace('_', ' ')}`,
       description: `Optimized multi-sector strike plan focusing on ${doctrine.toLowerCase().replace('_', ' ')}.`,
       doctrineFocus: doctrine,
@@ -459,7 +613,7 @@ export class AlnsTacticalOptimizer {
         solveTimeMs,
         solverUsed: 'ANYTIME_ALNS_VAYU_TS',
       },
-      createdAt: new Date().toISOString(),
+      createdAt: options.seed !== undefined ? '2026-10-10T12:00:00.000Z' : new Date().toISOString(),
       commanderApproved: false,
     };
   }
@@ -486,7 +640,7 @@ export class AlnsTacticalOptimizer {
 
     const aircraftSortieTimeline = new Map<string, Array<{ dep: number; rec: number }>>();
     const pilotSortieTimeline = new Map<string, Array<{ dep: number; rec: number; dutyHours: number }>>();
-    const stockInventory = new Map(munitionList.map((m) => [`${m.baseId}_${m.munitionId}`, m.quantity]));
+    const stockInventory = new Map((munitionList || []).map((m) => [`${m.baseId}_${m.munitionId}`, m.quantity]));
     const baseHourlySorties = new Map<string, number>();
 
     const sortedTargets = [...targetsList].sort((a, b) => b.priority - a.priority || a.totStartMinutes - b.totStartMinutes);

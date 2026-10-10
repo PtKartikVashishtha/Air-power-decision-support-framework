@@ -5,7 +5,7 @@ export class WorldClock {
   private isRunning = false;
   private speedMultiplier = 1; // 1x, 5x, 15x, 60x
   private listeners: ClockTickListener[] = [];
-  private intervalTimer: NodeJS.Timeout | null = null;
+  private intervalTimer: ReturnType<typeof setInterval> | null = null;
   private tickIntervalMs = 1000; // wall-clock 1 second
 
   constructor(initialMinutes = 0) {

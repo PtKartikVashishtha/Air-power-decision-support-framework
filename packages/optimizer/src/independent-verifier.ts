@@ -61,7 +61,7 @@ export class IndependentPlanVerifier {
     const pilotMap = new Map(pilotsList.map((p) => [p.id, p]));
     const baseMap = new Map(basesList.map((b) => [b.id, b]));
     const targetMap = new Map(targetsList.map((t) => [t.id, t]));
-    const stockAvailable = new Map(munitionsStockList.map((m) => [`${m.baseId}_${m.munitionId}`, m.quantity]));
+    const stockAvailable = new Map((munitionsStockList || []).map((m) => [`${m.baseId}_${m.munitionId}`, m.quantity]));
 
     // Track rule audit statuses
     const passed = {
