@@ -11,6 +11,7 @@
 [![Frontend: Next.js 15](https://img.shields.io/badge/Frontend-Next.js%2015-black.svg)](https://nextjs.org/)
 [![Optimization: ALNS + HiGHS--WASM](https://img.shields.io/badge/Solver-ALNS%20%2B%20HiGHS--WASM-orange.svg)](https://highs.dev/)
 [![Tests: 291 Passing](https://img.shields.io/badge/Tests-291%20Passing-brightgreen.svg)](https://vitest.dev/)
+[![Codebase Audit: v2 Verified](https://img.shields.io/badge/Audit-Phase%202%20Verified%20%28100k%20Fuzz%29-success.svg)](docs/CODEBASE_AUDIT_V2.md)
 [![Live Preview: Serverless Replay](https://img.shields.io/badge/Live%20Preview-Seed%2042%20Replay-teal.svg)](#-live-evaluator-preview)
 [![Classification: UNCLASSIFIED](https://img.shields.io/badge/Classification-NOTIONAL%20%2F%20UNCLASSIFIED-darkgreen.svg)](NOTICE)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
@@ -64,13 +65,19 @@ AIR POWER unites 17 deep operational capabilities into one cohesive 5-minute com
 
 | Step | Phase Name | Execution Authority | Key Subsystem | What Happens |
 |:---:|---|:---:|---|---|
-| **1** | **Load Scenario** | `SYSTEM` | Scenario Generator (`@air-power/sim`) | Initializes theater parameters, runway status, turnaround slots, and pilot duty rosters. |
+| **1** | **Load Scenario** | `SYSTEM` | Scenario Generator (`@air-power/sim`) | Initializes theater parameters, runway status, turnaround slots, and pilot duty rosters across 6 forward bases and 68 airframes. |
 | **2** | **Fuse Sources** | `SYSTEM` | Bayesian Fusion Core | Integrates 7 data streams; kinematic Mach 3.5 filter flags radar spoofing attempts. |
 | **3** | **See the Picture** | `HUMAN DECISION` | 3D Tactical COP | Commander visualizes terrain-masked ingress routes, threat MEZ envelopes, and fuel buffers. |
 | **4** | **Generate Plan** | `SYSTEM` | ALNS Metaheuristic (`@air-power/optimizer`) | Solves master ATO across 68 airframes in 38 ms with zero physical rule violations. |
 | **5** | **Approve Plan** | `HUMAN DECISION` | Multi-Objective Pareto Dial | Commander selects between *Max Effect*, *Min Risk*, and *Balanced Reserve*, signing the approval token. |
 | **6** | **Re-Plan on Disruption** | `SYSTEM` | Dynamic Retasker (`Frozen-Zone`) | Pop-up threats or snags re-solved in < 50ms with $\ge 80\%$ operational stability preservation. |
 | **7** | **Decide & Record** | `HUMAN DECISION` | Cryptographic Ledger & Interop | Commander authorizes changes; tamper-evident SHA-256 hash chain locks audit trail; exports USMTF/CoT. |
+
+### 🗂️ Spacious Multi-Page Architecture & Full Operations Directory
+Rather than compressing 18 defense services into a cramped single view, the Daylight Command Center offers:
+- **Direct Deep Linking**: Every operational view has an independent deep-link URL (e.g., `?view=fused-cop`, `?view=planner-loop`, `?view=retask-console`, `?view=benchmark`).
+- **Context Breadcrumbs & Mission Summaries**: Every screen features an executive header banner (`PageHeaderBreadcrumb.tsx`) with operational context, role assignments, and key metrics.
+- **Operations Directory Modal**: 1-click full-screen command directory (`ServicesDirectoryModal.tsx`) with instant search and doctrinal grouping across all 18 tactical modules.
 
 ---
 
@@ -84,8 +91,10 @@ Every claim is backed by empirical experiments logged in **[docs/CLAIMS_REGISTER
 | **[CLM-04](docs/CLAIMS_REGISTER.md#clm-04)** | **ATO Synthesis Latency** | **38.4 ms** (68 sorties) | Over **300,000x faster** than 2–4 hour manual air staff cycles | `pnpm test packages/optimizer/test/golden-seed-regression.test.ts` |
 | **[CLM-07](docs/CLAIMS_REGISTER.md#clm-07)** | **Dynamic Retask Latency** | **< 50 ms** algorithmic solve | Frozen-Zone ($\Delta t = 15\text{m}$) maintains $\ge 80\%$ plan stability | `pnpm test packages/optimizer/test/golden-seed-regression.test.ts` |
 | **[CLM-14](docs/CLAIMS_REGISTER.md#clm-14)** | **MILP Optimality Gap** | **0.00% gap** ($Z^* = 617.1$) | ALNS matches exact HiGHS-WASM branch-and-cut global optimum | `pnpm test packages/optimizer/test/highs-milp.test.ts` |
-| **[CLM-16](docs/CLAIMS_REGISTER.md#clm-16)** | **Independent Verifier** | **0 violations / 10,000 plans** | Fuzz testing across 10,000 randomized sorties proves 100% constraint adherence | `pnpm test packages/optimizer/test/differential-verifier.test.ts` |
+| **[CLM-16](docs/CLAIMS_REGISTER.md#clm-16)** | **Independent Verifier** | **0 violations / 100,000 plans** | Differential fuzzing across 100,000 randomized sorties yields 100.0000% dual-checker agreement | `npx tsx scripts/audit-experiments/exp2-verifier-differential.ts` |
 | **[CLM-17](docs/CLAIMS_REGISTER.md#clm-17)** | **Wargame Survivability** | **+42.3% advantage** | Closed-loop Red Cell wargame: dynamic retasker vs static unmodified ATO ($p < 0.001$) | `pnpm test packages/sim/test/contested-ops.test.ts` |
+| **[EXP-04](docs/audit/EXPERIMENTS.md#experiment-4)** | **Edge CRDT Consensus** | **100.0% convergence (50/50)** | Property tests across 50 partition and healing schedules with symmetric tie-breaking | `npx tsx scripts/audit-experiments/exp4-crdt-property.ts` |
+| **[EXP-01](docs/audit/EXPERIMENTS.md#experiment-1)** | **ALNS Knapsack Search** | **+0.9% to +15.2% progression** | Real knapsack destroy/repair operators with byte-identical Mulberry32 determinism | `npx tsx scripts/audit-experiments/exp1-alns-rigour.ts` |
 
 ---
 
@@ -197,6 +206,11 @@ Derived directly from **[docs/HONESTY.md](docs/HONESTY.md)** to provide total ca
 | 📊 **[docs/CLAIMS_REGISTER.md](docs/CLAIMS_REGISTER.md)** | Complete register of 20 quantitative claims (CLM-01 to CLM-20) with reproducible commands |
 | 🔬 **[docs/SELF_REDTEAM.md](docs/SELF_REDTEAM.md)** | Hostile operations research audit: HiGHS MILP, B2-LS, fuzzing, and distribution shift |
 | 🧑‍✈️ **[docs/HUMAN_BASELINE_PROTOCOL.md](docs/HUMAN_BASELINE_PROTOCOL.md)** | Empirical 15-minute challenge experiment design, consent forms, and CI loader |
+| 📋 **[docs/CODEBASE_AUDIT_V2.md](docs/CODEBASE_AUDIT_V2.md)** | Complete Phase 2 Codebase Audit: ranked findings (AUD-01..AUD-15) & commit fix log |
+| 🧪 **[docs/audit/EXPERIMENTS.md](docs/audit/EXPERIMENTS.md)** | Full experimental logs across 5 core algorithm suites (ALNS, verifier, retasker, CRDT, copilot) |
+| 🔮 **[docs/audit/FUTURE_GAPS.md](docs/audit/FUTURE_GAPS.md)** | Realism gaps vs problem statement and architectural risk matrix (Likelihood × Impact) |
+| ⚡ **[docs/audit/OPTIMISATION_BACKLOG.md](docs/audit/OPTIMISATION_BACKLOG.md)** | Profiled performance gains (before/after), microbenchmarks, and optimization roadmap |
+| 📦 **[docs/audit/INVENTORY.md](docs/audit/INVENTORY.md)** | Monorepo inventory across 159 files and 71,850 lines of code with test coverage mappings |
 | 🔒 **[docs/DEPENDENCY_LICENSES.md](docs/DEPENDENCY_LICENSES.md)** | Permissive dependency license audit (Apache 2.0 / MIT / BSD) |
 | 📦 **[docs/RELEASE_NOTES_v1.0.0.md](docs/RELEASE_NOTES_v1.0.0.md)** | Formal release notes for v1.0.0 freeze |
 
