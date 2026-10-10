@@ -103,3 +103,15 @@ coverage/
 *.sublime-workspace
 .DS_Store
 Thumbs.db
+
+# --- 11. LaTeX Architecture Document (local working copy only) ---
+# Source and all build artifacts kept local; share the compiled PDF separately
+docs/ARCHITECTURE_DOCUMENT.tex
+docs/ARCHITECTURE_DOCUMENT.pdf
+docs/ARCHITECTURE_DOCUMENT.aux
+docs/ARCHITECTURE_DOCUMENT.log
+docs/ARCHITECTURE_DOCUMENT.out
+docs/ARCHITECTURE_DOCUMENT.synctex.gz
+docs/ARCHITECTURE_DOCUMENT.fls
+docs/ARCHITECTURE_DOCUMENT.fdb_latexmk
+
