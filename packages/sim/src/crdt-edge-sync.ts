@@ -62,6 +62,7 @@ export class EdgeCrdtSyncNode {
   private vectorClock: VectorClock = { hq: 0, ambala: 0, jodhpur: 0 };
   private eventLog: CrdtEvent[] = [];
   private committedSorties: Map<string, Sortie> = new Map();
+  private sortieCommittedByEvent: Map<string, CrdtEvent> = new Map();
 
   constructor(nodeId: 'CAOC_AIR_HQ' | 'BASE_AMBALA' | 'BASE_JODHPUR') {
     this.nodeId = nodeId;
@@ -106,6 +107,7 @@ export class EdgeCrdtSyncNode {
     // Apply to local state
     if (opType === 'LOCAL_SCRAMBLE_SORTIE' && payload.sortie) {
       this.committedSorties.set(payload.sortie.sortieId, payload.sortie);
+      this.sortieCommittedByEvent.set(payload.sortie.sortieId, event);
     }
 
     return event;
@@ -145,20 +147,56 @@ export class EdgeCrdtSyncNode {
         );
 
         if (conflictingLocal) {
-          // Conflict Resolution Doctrine: Edge node physical launch beats HQ hypothetical plan!
-          const edgeWins = evt.originNodeId !== 'CAOC_AIR_HQ';
-          if (edgeWins) {
+          const localEvt = this.sortieCommittedByEvent.get(conflictingLocal.sortieId);
+          const remoteIsEdge = evt.originNodeId !== 'CAOC_AIR_HQ';
+          const localIsEdge = localEvt ? localEvt.originNodeId !== 'CAOC_AIR_HQ' : false;
+
+          let remoteWins = false;
+          let rationale = '';
+
+          if (remoteIsEdge && !localIsEdge) {
+            // Edge physical execution beats HQ hypothetical plan
+            remoteWins = true;
+            rationale = `Forward Edge Base ${evt.originNodeId} physical sortie execution supersedes HQ hypothetical allocation.`;
+          } else if (!remoteIsEdge && localIsEdge) {
+            remoteWins = false;
+            rationale = `Local forward edge base execution supersedes remote HQ hypothetical allocation.`;
+          } else {
+            // Symmetric tie-breaking across edge nodes or HQ nodes:
+            const rTime = new Date(evt.timestampIso).getTime();
+            const lTime = localEvt ? new Date(localEvt.timestampIso).getTime() : 0;
+            if (rTime !== lTime) {
+              remoteWins = rTime > lTime;
+              rationale = `More recent timestamp (${rTime} vs ${lTime}) wins.`;
+            } else {
+              // Deterministic lexicographical tie-break on event ID
+              remoteWins = evt.eventId.localeCompare(localEvt?.eventId || '') > 0;
+              rationale = `Deterministic lexicographical tie-breaker on EventId.`;
+            }
+          }
+
+          if (remoteWins) {
             this.committedSorties.delete(conflictingLocal.sortieId);
+            this.sortieCommittedByEvent.delete(conflictingLocal.sortieId);
             this.committedSorties.set(remoteSortie.sortieId, remoteSortie);
+            this.sortieCommittedByEvent.set(remoteSortie.sortieId, evt);
             conflicts.push({
               conflictType: 'AIRFRAME_CONCURRENT_ALLOCATION',
               description: `Airframe ${remoteSortie.aircraftTail} assigned to both ${conflictingLocal.sortieId} and ${remoteSortie.sortieId}.`,
               winnerEventId: evt.eventId,
-              rationale: `Forward Edge Base ${evt.originNodeId} physical sortie execution supersedes HQ hypothetical allocation.`,
+              rationale,
+            });
+          } else {
+            conflicts.push({
+              conflictType: 'AIRFRAME_CONCURRENT_ALLOCATION',
+              description: `Airframe ${remoteSortie.aircraftTail} assigned to both ${conflictingLocal.sortieId} and ${remoteSortie.sortieId}.`,
+              winnerEventId: localEvt?.eventId || 'LOCAL',
+              rationale,
             });
           }
         } else {
           this.committedSorties.set(remoteSortie.sortieId, remoteSortie);
+          this.sortieCommittedByEvent.set(remoteSortie.sortieId, evt);
         }
       }
     }
