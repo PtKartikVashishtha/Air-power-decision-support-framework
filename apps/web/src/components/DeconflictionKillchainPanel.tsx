@@ -166,30 +166,30 @@ export const DeconflictionKillchainPanel: React.FC = () => {
               </div>
               <div className="w-full bg-surface-container-lowest p-space-xs border border-outline-variant shadow-xs">
                 <svg className="w-full h-24" fill="none" viewBox="0 0 340 96" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M 10 20 L 330 20" stroke="#cbd5e1" stroke-dasharray="2 2" stroke-width="1"></path>
-                  <path d="M 10 50 L 330 50" stroke="#cbd5e1" stroke-dasharray="2 2" stroke-width="1"></path>
-                  <path d="M 10 80 L 330 80" stroke="#cbd5e1" stroke-dasharray="2 2" stroke-width="1"></path>
-                  <text fill="#74777e" font-family="JetBrains Mono" font-size="8" x="12" y="15">FL300</text>
-                  <text fill="#74777e" font-family="JetBrains Mono" font-size="8" x="12" y="45">FL240</text>
-                  <text fill="#74777e" font-family="JetBrains Mono" font-size="8" x="12" y="75">FL180</text>
-                  <line stroke="#006398" stroke-width="2" x1="40" x2="160" y1="20" y2="48"></line>
+                  <path d="M 10 20 L 330 20" stroke="#cbd5e1" strokeDasharray="2 2" strokeWidth="1"></path>
+                  <path d="M 10 50 L 330 50" stroke="#cbd5e1" strokeDasharray="2 2" strokeWidth="1"></path>
+                  <path d="M 10 80 L 330 80" stroke="#cbd5e1" strokeDasharray="2 2" strokeWidth="1"></path>
+                  <text fill="#74777e" fontFamily="JetBrains Mono" fontSize="8" x="12" y="15">FL300</text>
+                  <text fill="#74777e" fontFamily="JetBrains Mono" fontSize="8" x="12" y="45">FL240</text>
+                  <text fill="#74777e" fontFamily="JetBrains Mono" fontSize="8" x="12" y="75">FL180</text>
+                  <line stroke="#006398" strokeWidth="2" x1="40" x2="160" y1="20" y2="48"></line>
                   <circle cx="40" cy="20" fill="#006398" r="3"></circle>
-                  <text fill="#006398" font-family="JetBrains Mono" font-size="8" x="45" y="18">TIGER-11 (H+01:42)</text>
-                  <line stroke="#ba1a1a" stroke-width="2" x1="80" x2="160" y1="80" y2="52"></line>
+                  <text fill="#006398" fontFamily="JetBrains Mono" fontSize="8" x="45" y="18">TIGER-11 (H+01:42)</text>
+                  <line stroke="#ba1a1a" strokeWidth="2" x1="80" x2="160" y1="80" y2="52"></line>
                   <circle cx="80" cy="80" fill="#ba1a1a" r="3"></circle>
-                  <text fill="#ba1a1a" font-family="JetBrains Mono" font-size="8" x="85" y="76">JAGUAR-02 (H+01:42)</text>
-                  <rect fill="#ffdad6" fill-opacity="0.6" height="22" width="22" x="150" y="38"></rect>
+                  <text fill="#ba1a1a" fontFamily="JetBrains Mono" fontSize="8" x="85" y="76">JAGUAR-02 (H+01:42)</text>
+                  <rect fill="#ffdad6" fillOpacity="0.6" height="22" width="22" x="150" y="38"></rect>
                   <circle cx="160" cy="50" fill="#ba1a1a" r="5"></circle>
-                  <circle cx="160" cy="50" r="10" stroke="#ba1a1a" stroke-dasharray="2 2"></circle>
-                  <text fill="#ba1a1a" font-family="JetBrains Mono" font-size="8" font-weight="bold" x="180" y="46">
+                  <circle cx="160" cy="50" r="10" stroke="#ba1a1a" strokeDasharray="2 2"></circle>
+                  <text fill="#ba1a1a" fontFamily="JetBrains Mono" fontSize="8" fontWeight="bold" x="180" y="46">
                     PINCH: WP KILO
                   </text>
-                  <text fill="#ba1a1a" font-family="JetBrains Mono" font-size="7" x="180" y="56">
+                  <text fill="#ba1a1a" fontFamily="JetBrains Mono" fontSize="7" x="180" y="56">
                     &lt;1.2NM / 400ft
                   </text>
-                  <line stroke="#006398" stroke-dasharray="3 3" stroke-width="1.5" x1="160" x2="310" y1="48" y2="48"></line>
-                  <line stroke="#74777e" stroke-dasharray="3 3" stroke-width="1.5" x1="160" x2="310" y1="52" y2="70"></line>
-                  <text fill="#006398" font-family="JetBrains Mono" font-size="8" x="240" y="42">CORRIDOR-ALPHA</text>
+                  <line stroke="#006398" strokeDasharray="3 3" strokeWidth="1.5" x1="160" x2="310" y1="48" y2="48"></line>
+                  <line stroke="#74777e" strokeDasharray="3 3" strokeWidth="1.5" x1="160" x2="310" y1="52" y2="70"></line>
+                  <text fill="#006398" fontFamily="JetBrains Mono" fontSize="8" x="240" y="42">CORRIDOR-ALPHA</text>
                 </svg>
               </div>
             </div>
@@ -421,19 +421,19 @@ export const DeconflictionKillchainPanel: React.FC = () => {
               </div>
               <div className="w-full bg-surface-container-lowest p-space-xs border border-outline-variant shadow-xs">
                 <svg className="w-full h-20" fill="none" viewBox="0 0 340 80" xmlns="http://www.w3.org/2000/svg">
-                  <rect fill="none" height="40" rx="20" stroke="#006398" stroke-width="2" width="200" x="70" y="20"></rect>
+                  <rect fill="none" height="40" rx="20" stroke="#006398" strokeWidth="2" width="200" x="70" y="20"></rect>
                   <circle cx="70" cy="40" fill="#006398" r="3"></circle>
                   <circle cx="270" cy="40" fill="#006398" r="3"></circle>
-                  <text fill="#43474d" font-family="JetBrains Mono" font-size="8" x="60" y="15">ANCHOR WEST (31.10N)</text>
-                  <text fill="#43474d" font-family="JetBrains Mono" font-size="8" x="210" y="15">ANCHOR EAST (31.15N)</text>
+                  <text fill="#43474d" fontFamily="JetBrains Mono" fontSize="8" x="60" y="15">ANCHOR WEST (31.10N)</text>
+                  <text fill="#43474d" fontFamily="JetBrains Mono" fontSize="8" x="210" y="15">ANCHOR EAST (31.15N)</text>
                   <polygon fill="#001428" points="170,17 180,20 170,23"></polygon>
-                  <text fill="#001428" font-family="JetBrains Mono" font-size="9" font-weight="bold" x="145" y="32">
+                  <text fill="#001428" fontFamily="JetBrains Mono" fontSize="9" fontWeight="bold" x="145" y="32">
                     CAMEL-01 [280 KTAS]
                   </text>
-                  <path d="M 20 70 L 65 45" stroke="#74777e" stroke-dasharray="2 2" stroke-width="1.5"></path>
-                  <text fill="#74777e" font-family="JetBrains Mono" font-size="7" x="15" y="76">INGRESS DELTA</text>
-                  <path d="M 275 45 L 320 70" stroke="#74777e" stroke-dasharray="2 2" stroke-width="1.5"></path>
-                  <text fill="#74777e" font-family="JetBrains Mono" font-size="7" x="260" y="76">EGRESS TANGO</text>
+                  <path d="M 20 70 L 65 45" stroke="#74777e" strokeDasharray="2 2" strokeWidth="1.5"></path>
+                  <text fill="#74777e" fontFamily="JetBrains Mono" fontSize="7" x="15" y="76">INGRESS DELTA</text>
+                  <path d="M 275 45 L 320 70" stroke="#74777e" strokeDasharray="2 2" strokeWidth="1.5"></path>
+                  <text fill="#74777e" fontFamily="JetBrains Mono" fontSize="7" x="260" y="76">EGRESS TANGO</text>
                 </svg>
               </div>
             </div>

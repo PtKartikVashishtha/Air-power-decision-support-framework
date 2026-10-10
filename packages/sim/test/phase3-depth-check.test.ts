@@ -168,7 +168,13 @@ describe('Phase 4: Depth-Check & Verification on All Phase-3 Features', () => {
       totMinutes: 90,
       recoveryTimeMinutes: 120,
       fuelPlannedKg: 4000,
-      routeWaypoints: [{ lat: 30.3, lon: 76.8 }, { lat: 32.4, lon: 74.1 }],
+      routeWaypoints: [{
+        lat: 30.3, lon: 76.8,
+        altM: 0
+      }, {
+        lat: 32.4, lon: 74.1,
+        altM: 0
+      }],
       expectedRiskScore: 30,
       status: 'SCHEDULED',
       munitionLoadout: [],

@@ -9,6 +9,7 @@ interface GuidedHomeExperienceProps {
   locale: SupportedLocale;
   onNavigateToScreen: (tabIndex: number) => void;
   onOpenAssumptions: () => void;
+  onOpenDirectory?: () => void;
 }
 
 export const GuidedHomeExperience: React.FC<GuidedHomeExperienceProps> = ({
@@ -17,6 +18,7 @@ export const GuidedHomeExperience: React.FC<GuidedHomeExperienceProps> = ({
   locale,
   onNavigateToScreen,
   onOpenAssumptions,
+  onOpenDirectory,
 }) => {
   // Live Operational State Derivations
   const isScenarioLoaded = Boolean(fusedPicture && (fusedPicture.aircraft?.length || 0) > 0);
@@ -210,6 +212,18 @@ export const GuidedHomeExperience: React.FC<GuidedHomeExperienceProps> = ({
       tag: 'LOGISTICS',
       desc: 'Turnaround maintenance windows (45-60 min), pilot duty rest (8h rest), and pylon munition compatibility.',
     },
+    {
+      title: 'Closed-Loop Wargame Simulator',
+      tabIdx: 7,
+      tag: 'ADVERSARY',
+      desc: 'Multi-turn Lanchester attrition, weapon exchange ratios, and base cratering timeline modeling.',
+    },
+    {
+      title: 'Direct Sortie Constructor',
+      tabIdx: 2,
+      tag: 'TACTICAL',
+      desc: 'Direct package constructor for specialized missions, escort pairing, and TOT synchronization.',
+    },
   ];
 
   return (
@@ -383,16 +397,28 @@ export const GuidedHomeExperience: React.FC<GuidedHomeExperienceProps> = ({
         </div>
       </section>
 
-      {/* 4. Advanced Capabilities: 10 Deep-Dive Modules */}
+      {/* 4. Advanced Capabilities: 11 Deep-Dive Modules */}
       <section className="space-y-3" aria-label="Advanced Command Capabilities">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <h2 className="font-label-caps text-sm text-primary uppercase font-bold tracking-wider flex items-center gap-2">
             <span className="material-symbols-outlined text-[18px] text-primary">hub</span>
-            <span>Advanced Capabilities // 10 Deep-Dive Specialized Subsystems</span>
+            <span>Advanced Capabilities // 11 Deep-Dive Specialized Subsystems</span>
           </h2>
-          <span className="font-label-data-sm text-[10px] text-on-surface-variant font-mono">
-            ACCESSIBLE VIA &quot;MORE OPERATIONS&quot; MENU
-          </span>
+          <div className="flex items-center gap-2">
+            {onOpenDirectory && (
+              <button
+                onClick={onOpenDirectory}
+                className="px-2.5 py-1 bg-sky-50 text-sky-800 hover:bg-sky-100 border border-sky-300 font-label-caps text-[10px] uppercase font-bold rounded flex items-center gap-1 transition-colors"
+                type="button"
+              >
+                <span className="material-symbols-outlined text-[13px]">apps</span>
+                <span>Open Full Directory (18)</span>
+              </button>
+            )}
+            <span className="font-label-data-sm text-[10px] text-on-surface-variant font-mono">
+              ACCESSIBLE VIA &quot;MORE SERVICES&quot; MENU
+            </span>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5">

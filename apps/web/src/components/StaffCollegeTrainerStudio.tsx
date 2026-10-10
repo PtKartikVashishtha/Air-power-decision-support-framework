@@ -386,9 +386,9 @@ export const StaffCollegeTrainerStudio: React.FC<StaffCollegeTrainerStudioProps>
                     SPECIFIC DOCTRINE CRITIQUES & REMEDIAL GUIDANCE ({gradeReport.critiques.length})
                   </h4>
                   <div className="flex flex-col gap-2">
-                    {gradeReport.critiques.map((critique: any) => (
+                    {gradeReport.critiques.map((critique: any, idx: number) => (
                       <div
-                        key={critique.id}
+                        key={`${critique.id}-${idx}`}
                         className={`p-3 border text-[11px] font-mono ${
                           critique.severity === 'CRITICAL'
                             ? 'bg-rose-50/50 border-rose-300'

@@ -28,8 +28,35 @@ import { ExplainabilityStudio } from '../components/ExplainabilityStudio';
 import { CopilotModal } from '../components/CopilotModal';
 import { AssumptionsDoctrineModal } from '../components/AssumptionsDoctrineModal';
 import { GuidedHomeExperience } from '../components/GuidedHomeExperience';
+import { ServicesDirectoryModal } from '../components/ServicesDirectoryModal';
+import { PageHeaderBreadcrumb } from '../components/PageHeaderBreadcrumb';
 import { initPreviewInterceptor, isPreviewEnvironment } from '../lib/preview-interceptor';
 import seed42PreviewData from '../data/seed42-preview.json';
+
+const TAB_SLUG_MAP: Record<number, string> = {
+  99: 'home',
+  0: 'cop',
+  1: 'resources',
+  2: 'mission-planner',
+  3: 'pil',
+  4: 'coa',
+  5: 'retasking',
+  6: 'deconfliction',
+  7: 'wargame',
+  8: 'export',
+  9: 'benchmarks',
+  10: 'challenge',
+  11: 'predictive',
+  12: 'whatif',
+  13: 'audit',
+  14: 'contested',
+  15: 'trainer',
+  16: 'xai',
+};
+
+const SLUG_TAB_MAP: Record<string, number> = Object.fromEntries(
+  Object.entries(TAB_SLUG_MAP).map(([idx, slug]) => [slug, Number(idx)])
+);
 
 export default function AirPowerDashboard() {
   const [activeTab, setActiveTab] = useState(99); // Default to Guided 7-Step Home Experience
@@ -46,8 +73,9 @@ export default function AirPowerDashboard() {
   const [isAssumptionsOpen, setIsAssumptionsOpen] = useState(false);
   const [isResettingDemo, setIsResettingDemo] = useState(false);
   const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
+  const [isServicesDirectoryOpen, setIsServicesDirectoryOpen] = useState(false);
 
-  // Core Screens for the Curated Evaluation Story
+  // Core Screens for the Curated Evaluation Story (7 Screens)
   const coreStoryTabs = [
     { label: `⭐ ${t('TAB_HOME', locale)}`, idx: 99, key: 'home', desc: '7-Step Guided Operational Flow' },
     { label: `1. ${t('TAB_COP', locale)}`, idx: 0, key: 'cop', desc: '3D/2D Fused Picture' },
@@ -58,22 +86,35 @@ export default function AirPowerDashboard() {
     { label: `6. ${t('TAB_CONTESTED', locale)}`, idx: 14, key: 'contested', desc: 'Cut the Link (CRDT)' },
   ];
 
-  // Deep-Dive Operational Screens under "More Operations" Menu
+  // Deep-Dive Operational Screens under "More Services" Menu (11 Screens)
   const moreScreens = [
-    { label: t('TAB_RES', locale), idx: 1, key: 'res', tag: 'Turnarounds & Munitions' },
-    { label: t('TAB_MP', locale), idx: 2, key: 'mp', tag: 'Direct Sortie Constructor' },
-    { label: t('TAB_DECONF', locale), idx: 6, key: 'deconf', tag: '4D Spatial & Airway Coordination' },
-    { label: t('TAB_WARGAME', locale), idx: 7, key: 'wargame', tag: 'Closed-Loop Attrition Simulator' },
-    { label: t('TAB_EXPORT', locale), idx: 8, key: 'export', tag: 'USMTF / CoT XML / GeoJSON / KML' },
-    { label: t('TAB_CHALLENGE', locale), idx: 10, key: 'challenge', tag: '3-Min Human vs AI Challenge' },
-    { label: t('TAB_PRED', locale), idx: 11, key: 'pred', tag: 'Brier Score & Conformal Intervals' },
-    { label: t('TAB_WHATIF', locale), idx: 12, key: 'whatif', tag: 'Dynamic Doctrine Weight Tweaking' },
-    { label: t('TAB_AUDIT', locale), idx: 13, key: 'audit', tag: 'SHA-256 Tamper-Evident Ledger' },
-    { label: t('TAB_TRAINER', locale), idx: 15, key: 'trainer', tag: 'DSSC Evaluator & Counterfactual AAR' },
+    { label: t('TAB_RES', locale), idx: 1, key: 'res', tag: 'Turnarounds & Munitions', icon: 'inventory_2', code: 'OPS-01' },
+    { label: t('TAB_MP', locale), idx: 2, key: 'mp', tag: 'Direct Sortie Constructor', icon: 'edit_calendar', code: 'OPS-02' },
+    { label: t('TAB_DECONF', locale), idx: 6, key: 'deconf', tag: '4D Spatial & Airway Coordination', icon: 'alt_route', code: 'OPS-03' },
+    { label: t('TAB_WARGAME', locale), idx: 7, key: 'wargame', tag: 'Closed-Loop Attrition Simulator', icon: 'sports_esports', code: 'OPS-04' },
+    { label: t('TAB_EXPORT', locale), idx: 8, key: 'export', tag: 'USMTF / CoT XML / GeoJSON / KML', icon: 'file_download', code: 'OPS-05' },
+    { label: t('TAB_CHALLENGE', locale), idx: 10, key: 'challenge', tag: '3-Min Human vs AI Challenge', icon: 'timer', code: 'OPS-06' },
+    { label: t('TAB_PRED', locale), idx: 11, key: 'pred', tag: 'Brier Score & Conformal Intervals', icon: 'analytics', code: 'OPS-07' },
+    { label: t('TAB_WHATIF', locale), idx: 12, key: 'whatif', tag: 'Dynamic Doctrine Weight Tweaking', icon: 'science', code: 'OPS-08' },
+    { label: t('TAB_AUDIT', locale), idx: 13, key: 'audit', tag: 'SHA-256 Tamper-Evident Ledger', icon: 'lock_clock', code: 'OPS-09' },
+    { label: t('TAB_TRAINER', locale), idx: 15, key: 'trainer', tag: 'DSSC Evaluator & Counterfactual AAR', icon: 'school', code: 'OPS-10' },
+    { label: t('TAB_XAI', locale), idx: 16, key: 'xai', tag: '21 Decision Reason Codes & XAI', icon: 'psychology', code: 'OPS-11' },
   ];
 
   const isMoreActive = moreScreens.some((s) => s.idx === activeTab);
   const activeMoreLabel = moreScreens.find((s) => s.idx === activeTab)?.label;
+
+  const handleNavigateTab = (tabIdx: number) => {
+    setActiveTab(tabIdx);
+    setIsMoreMenuOpen(false);
+    setIsServicesDirectoryOpen(false);
+    if (typeof window !== 'undefined') {
+      const slug = TAB_SLUG_MAP[tabIdx] || 'home';
+      const url = new URL(window.location.href);
+      url.searchParams.set('view', slug);
+      window.history.replaceState(null, '', url.toString());
+    }
+  };
 
   const navRef = React.useRef<HTMLElement>(null);
   const handleNavScroll = (delta: number) => {
@@ -89,9 +130,14 @@ export default function AirPowerDashboard() {
     setIsPreviewMode(isPreview);
 
     if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const viewParam = params.get('view');
+      if (viewParam && SLUG_TAB_MAP[viewParam] !== undefined) {
+        setActiveTab(SLUG_TAB_MAP[viewParam]);
+      }
+
       (window as any).__SET_ACTIVE_TAB = (idx: number) => {
-        setActiveTab(idx);
-        setIsMoreMenuOpen(false);
+        handleNavigateTab(idx);
       };
     }
     fetchInitialData(isPreview);
@@ -182,7 +228,7 @@ export default function AirPowerDashboard() {
       if (res.ok) {
         setCurrentPlan(await res.json());
       }
-      setActiveTab(3);
+      handleNavigateTab(3);
     } catch (err) {
       console.error('Reset failed', err);
     } finally {
@@ -311,6 +357,16 @@ export default function AirPowerDashboard() {
 
             <div className="flex items-center gap-1 shrink-0">
               <button
+                onClick={() => setIsServicesDirectoryOpen(true)}
+                className="h-6.5 px-2 bg-sky-50 text-sky-800 hover:bg-sky-100 border border-sky-300 font-headline-md text-[10px] uppercase tracking-wider font-bold whitespace-nowrap shrink-0 flex items-center gap-1"
+                type="button"
+                title="Browse All 18 Operations & Analytical Services Directory"
+              >
+                <span className="material-symbols-outlined text-[13px]">apps</span>
+                <span>All 18 Services</span>
+              </button>
+
+              <button
                 onClick={() => setIsAssumptionsOpen(true)}
                 className="h-6.5 px-2 bg-surface-container-lowest text-primary border border-outline-variant font-headline-md text-[10px] uppercase tracking-wider hover:bg-surface-container-high transition-colors font-bold whitespace-nowrap shrink-0 flex items-center gap-1"
                 type="button"
@@ -348,10 +404,10 @@ export default function AirPowerDashboard() {
         </div>
 
         {/* Secondary Tab Navigation Bar with Responsive Scroll Chevrons */}
-        <div className="relative w-full max-w-full min-w-0 flex items-center bg-surface-container-lowest border-t border-outline-variant/30 overflow-hidden">
+        <div className="relative w-full max-w-full min-w-0 flex items-stretch bg-surface-container-lowest border-t border-outline-variant/30">
           <button
             onClick={() => handleNavScroll(-220)}
-            className="h-8.5 px-2 bg-surface-container-low hover:bg-surface-container text-on-surface border-r border-outline-variant flex items-center justify-center shrink-0 z-10 transition-colors"
+            className="h-9 px-2 bg-surface-container-low hover:bg-surface-container text-on-surface border-r border-outline-variant flex items-center justify-center shrink-0 z-10 transition-colors"
             type="button"
             title="Scroll Tabs Left"
           >
@@ -360,16 +416,16 @@ export default function AirPowerDashboard() {
 
           <nav
             ref={navRef}
-            className="h-8.5 flex-1 min-w-0 flex items-stretch gap-0 overflow-x-auto scroll-smooth no-scrollbar"
+            className="h-9 flex-1 min-w-0 flex items-stretch gap-0 overflow-x-auto scroll-smooth no-scrollbar"
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
-            {/* Primary 6-Screen Curated 5-Minute Story Flow */}
+            {/* Primary 7-Screen Curated 5-Minute Story Flow */}
             {coreStoryTabs.map((tab) => {
               const isActive = activeTab === tab.idx;
               return (
                 <button
                   key={tab.key}
-                  onClick={() => setActiveTab(tab.idx)}
+                  onClick={() => handleNavigateTab(tab.idx)}
                   className={`h-full px-3.5 flex items-center font-label-caps text-[11px] uppercase tracking-wider border-r border-outline-variant/40 transition-colors whitespace-nowrap shrink-0 ${
                     isActive
                       ? 'bg-surface-container-high text-primary border-b-2 border-secondary font-bold'
@@ -381,53 +437,6 @@ export default function AirPowerDashboard() {
                 </button>
               );
             })}
-
-            {/* More Screens Dropdown Menu */}
-            <div className="relative flex items-center shrink-0">
-              <button
-                onClick={() => setIsMoreMenuOpen(!isMoreMenuOpen)}
-                className={`h-full px-3 flex items-center gap-1 font-label-caps text-[11px] uppercase tracking-wider border-r border-outline-variant/40 transition-colors whitespace-nowrap shrink-0 ${
-                  isMoreActive
-                    ? 'bg-primary-container text-on-primary font-bold'
-                    : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low font-semibold'
-                }`}
-                type="button"
-                title="Deep-Dive Operations & Additional Subsystems"
-              >
-                <span>{isMoreActive ? `MORE: ${activeMoreLabel}` : 'MORE OPERATIONS (11)'}</span>
-                <span className="material-symbols-outlined text-[14px]">
-                  {isMoreMenuOpen ? 'arrow_drop_up' : 'arrow_drop_down'}
-                </span>
-              </button>
-
-              {isMoreMenuOpen && (
-                <div
-                  className="absolute top-full left-0 mt-0.5 w-72 bg-surface-container-lowest border border-outline-variant shadow-xl z-50 py-1"
-                  style={{ backdropFilter: 'blur(16px)' }}
-                >
-                  <div className="px-3 py-1 text-[9px] font-label-caps text-on-surface-variant uppercase font-bold border-b border-outline-variant/30">
-                    Additional Command Views
-                  </div>
-                  {moreScreens.map((s) => (
-                    <button
-                      key={s.key}
-                      onClick={() => {
-                        setActiveTab(s.idx);
-                        setIsMoreMenuOpen(false);
-                      }}
-                      className={`w-full text-left px-3 py-1.5 flex items-center justify-between text-xs transition-colors ${
-                        activeTab === s.idx
-                          ? 'bg-surface-container-high text-primary font-bold'
-                          : 'text-on-surface hover:bg-surface-container-low'
-                      }`}
-                    >
-                      <span className="font-medium text-[11px]">{s.label}</span>
-                      <span className="text-[9px] text-on-surface-variant font-mono">{s.tag}</span>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
           </nav>
 
           <button
@@ -438,6 +447,101 @@ export default function AirPowerDashboard() {
           >
             <span className="material-symbols-outlined text-[16px]">chevron_right</span>
           </button>
+
+          {/* More Screens Menu Trigger (Positioned outside scrolling nav so it never gets clipped!) */}
+          <div className="relative flex items-stretch shrink-0 border-l border-outline-variant/40 bg-surface-container-lowest">
+            <button
+              onClick={() => setIsMoreMenuOpen(!isMoreMenuOpen)}
+              className={`h-full px-3.5 flex items-center gap-1.5 font-label-caps text-[11px] uppercase tracking-wider transition-colors whitespace-nowrap shrink-0 font-bold ${
+                isMoreActive
+                  ? 'bg-sky-700 text-white'
+                  : 'text-slate-800 hover:text-sky-800 hover:bg-slate-100'
+              }`}
+              type="button"
+              title="Deep-Dive Operations & Additional Subsystems"
+            >
+              <span className="material-symbols-outlined text-[14px]">
+                {isMoreActive ? 'tune' : 'dashboard_customize'}
+              </span>
+              <span>{isMoreActive ? `OPS: ${activeMoreLabel}` : 'MORE SERVICES (11)'}</span>
+              <span className="material-symbols-outlined text-[14px]">
+                {isMoreMenuOpen ? 'arrow_drop_up' : 'arrow_drop_down'}
+              </span>
+            </button>
+
+            {/* Unclipped Floating Dropdown Menu */}
+            {isMoreMenuOpen && (
+              <>
+                <div
+                  className="fixed inset-0 z-40"
+                  onClick={() => setIsMoreMenuOpen(false)}
+                />
+                <div
+                  className="absolute top-full right-0 mt-0.5 w-80 bg-white border border-slate-300 shadow-2xl rounded-b-md z-50 py-1"
+                  style={{ maxHeight: 'calc(100vh - 120px)', overflowY: 'auto' }}
+                >
+                  <div className="px-3 py-1.5 flex items-center justify-between border-b border-slate-100 bg-slate-50">
+                    <span className="text-[10px] font-mono font-bold text-slate-500 uppercase">
+                      Deep-Dive Operations (11)
+                    </span>
+                    <button
+                      onClick={() => {
+                        setIsMoreMenuOpen(false);
+                        setIsServicesDirectoryOpen(true);
+                      }}
+                      className="text-[10px] font-bold text-sky-700 hover:underline flex items-center gap-0.5"
+                      type="button"
+                    >
+                      <span>Full Directory</span>
+                      <span className="material-symbols-outlined text-[11px]">open_in_new</span>
+                    </button>
+                  </div>
+                  <div className="py-1">
+                    {moreScreens.map((s) => {
+                      const isCurrent = activeTab === s.idx;
+                      return (
+                        <button
+                          key={s.key}
+                          onClick={() => {
+                            handleNavigateTab(s.idx);
+                            setIsMoreMenuOpen(false);
+                          }}
+                          className={`w-full text-left px-3 py-2 flex items-center justify-between text-xs transition-colors ${
+                            isCurrent
+                              ? 'bg-sky-50 text-sky-800 font-bold border-l-2 border-sky-600'
+                              : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900'
+                          }`}
+                        >
+                          <div className="flex items-center gap-2 min-w-0">
+                            <span className="material-symbols-outlined text-[15px] text-slate-400">
+                              {s.icon}
+                            </span>
+                            <span className="font-medium text-[11px] truncate">{s.label}</span>
+                          </div>
+                          <span className="text-[9px] text-slate-400 font-mono shrink-0">
+                            {s.code}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <div className="p-2 border-t border-slate-100 bg-slate-50">
+                    <button
+                      onClick={() => {
+                        setIsMoreMenuOpen(false);
+                        setIsServicesDirectoryOpen(true);
+                      }}
+                      className="w-full py-1.5 bg-sky-50 hover:bg-sky-100 text-sky-800 border border-sky-200 rounded text-center text-xs font-bold transition-colors flex items-center justify-center gap-1.5"
+                      type="button"
+                    >
+                      <span className="material-symbols-outlined text-[14px]">apps</span>
+                      <span>All 18 Operations Directory</span>
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
         </div>
       </header>
 
@@ -445,29 +549,22 @@ export default function AirPowerDashboard() {
       <main className="flex-1 p-gutter-desktop max-w-[1600px] mx-auto w-full">
         {fusedPicture ? (
           <>
+            <PageHeaderBreadcrumb
+              activeTab={activeTab}
+              onNavigateHome={() => handleNavigateTab(99)}
+              onOpenDirectory={() => setIsServicesDirectoryOpen(true)}
+              locale={locale}
+            />
+
             {activeTab === 99 && (
               <GuidedHomeExperience
                 fusedPicture={fusedPicture}
                 currentPlan={currentPlan}
                 locale={locale}
-                onNavigateToScreen={(tabIdx) => setActiveTab(tabIdx)}
+                onNavigateToScreen={(tabIdx) => handleNavigateTab(tabIdx)}
                 onOpenAssumptions={() => setIsAssumptionsOpen(true)}
+                onOpenDirectory={() => setIsServicesDirectoryOpen(true)}
               />
-            )}
-            {activeTab !== 99 && (
-              <div className="mb-3 flex items-center justify-between bg-surface-container-low px-3 py-1.5 border border-outline-variant font-label-caps text-[10px] text-on-surface-variant">
-                <button
-                  onClick={() => setActiveTab(99)}
-                  className="flex items-center gap-1.5 text-secondary hover:text-primary transition font-bold uppercase"
-                  type="button"
-                >
-                  <span className="material-symbols-outlined text-[14px]">arrow_back</span>
-                  <span>Return to 7-Step Mission Story Overview</span>
-                </button>
-                <span className="hidden md:inline-block font-mono text-[9px] uppercase">
-                  HITL DOCTRINE // ADVISORY DECISION SUPPORT
-                </span>
-              </div>
             )}
             {activeTab === 0 && (
               <TacticalMap fusedPicture={fusedPicture} currentPlan={currentPlan} />
@@ -574,6 +671,15 @@ export default function AirPowerDashboard() {
       <AssumptionsDoctrineModal
         isOpen={isAssumptionsOpen}
         onClose={() => setIsAssumptionsOpen(false)}
+      />
+
+      {/* All 18 Operations / Services Directory Modal */}
+      <ServicesDirectoryModal
+        isOpen={isServicesDirectoryOpen}
+        onClose={() => setIsServicesDirectoryOpen(false)}
+        onSelectService={(idx) => handleNavigateTab(idx)}
+        activeTab={activeTab}
+        locale={locale}
       />
     </div>
   );
