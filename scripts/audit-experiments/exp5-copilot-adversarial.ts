@@ -1,49 +1,18 @@
 import { TacticalCopilotEngine, TacticalContextState } from '../../packages/optimizer/src/copilot-engine';
-import { PlanCOA, Airbase, Aircraft, Sortie } from '../../packages/shared/src';
+import { generateSyntheticScenario } from '../../packages/sim/src';
+import { AlnsTacticalOptimizer } from '../../packages/optimizer/src/alns-optimizer';
 
 function createMockContext(): TacticalContextState {
-  const bases: Airbase[] = [
-    { id: 'BASE_BHUJ', name: 'Bhuj AFS', location: { lat: 23.25, lon: 69.67 }, runwayCount: 2, capacity: 24, fuelStockLitres: 400000, currentWeather: 'CLEAR' },
-    { id: 'BASE_NALIYA', name: 'Naliya AFS', location: { lat: 23.26, lon: 68.90 }, runwayCount: 1, capacity: 16, fuelStockLitres: 250000, currentWeather: 'CLEAR' },
-  ];
-  const aircraft: Aircraft[] = [
-    { id: 'AC-01', tailNumber: 'SB021', type: 'SU_30_MKI', baseId: 'BASE_BHUJ', status: 'FMC', fuelCapacityLitres: 9400, combatRadiusKm: 1500, hardpoints: [] },
-    { id: 'AC-02', tailNumber: 'SB022', type: 'SU_30_MKI', baseId: 'BASE_BHUJ', status: 'FMC', fuelCapacityLitres: 9400, combatRadiusKm: 1500, hardpoints: [] },
-  ];
-  const plan: PlanCOA = {
-    id: 'COA-TEST',
-    name: 'Balanced Tactical Strike',
-    doctrine: 'BALANCED',
-    objectiveScore: 100,
-    sorties: [
-      {
-        id: 'S-01',
-        sortieId: 'SRT-0001',
-        packageId: 'PKG-01',
-        aircraftId: 'AC-01',
-        tailNumber: 'SB021',
-        pilotId: 'P-01',
-        originBaseId: 'BASE_BHUJ',
-        recoveryBaseId: 'BASE_BHUJ',
-        targetId: 'TGT-01',
-        role: 'STRIKE',
-        takeoffTime: 100,
-        landingTime: 190,
-        fuelRequiredLitres: 6000,
-        routeWaypoints: [],
-      },
-    ],
-    kpis: {
-      targetCoveragePct: 100,
-      totalFuelLitres: 6000,
-      expectedLossRatePct: 2.1,
-      crewUtilizationPct: 75,
-      survivabilityScorePct: 98,
-    },
-    hardViolationsCount: 0,
-    softPenaltiesCount: 0,
+  const sc = generateSyntheticScenario(42);
+  const opt = new AlnsTacticalOptimizer();
+  const plan = opt.solve(sc.bases, sc.aircraft, sc.pilots, sc.munitionStocks, sc.targetRequests, sc.threats, { seed: 42 });
+  return {
+    currentPlan: plan,
+    bases: sc.bases,
+    aircraft: sc.aircraft,
+    activeSorties: plan.sorties,
+    simTimeMinutes: 120,
   };
-  return { currentPlan: plan, bases, aircraft, activeSorties: plan.sorties, simTimeMinutes: 120 };
 }
 
 async function runAdversarialCopilotSweep() {
