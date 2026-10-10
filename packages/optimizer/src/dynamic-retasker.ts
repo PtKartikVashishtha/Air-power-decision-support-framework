@@ -143,12 +143,28 @@ export class DynamicRetaskingEngine {
         (t) => t.isTimeSensitive || t.category === 'TIME_SENSITIVE_TARGET_CONVOY' || t.priority >= 90
       );
       if (tstTarget) {
-        const availableSpareAircraft = modifiedAircraft.filter(
-          (a) => a.status === 'FMC' && !usedTails.has(a.tailNumber)
-        );
-        const availableSparePilots = pilotsList.filter(
-          (p) => !survivingSorties.some((s) => s.pilotId === p.id)
-        );
+        const tstWindowStart = Math.max(0, tstTarget.totStartMinutes - 60);
+        const tstWindowEnd = tstTarget.totEndMinutes + 60;
+
+        const availableSpareAircraft = modifiedAircraft.filter((a) => {
+          if (a.status !== 'FMC') return false;
+          return !survivingSorties.some(
+            (s) =>
+              s.aircraftTail === a.tailNumber &&
+              s.depTimeMinutes < tstWindowEnd + (a.turnaroundTimeMinutes || 35) &&
+              s.recoveryTimeMinutes > tstWindowStart - (a.turnaroundTimeMinutes || 35)
+          );
+        });
+
+        const availableSparePilots = pilotsList.filter((p) => {
+          if (p.status !== 'READY' || p.fatigueScore > 65) return false;
+          return !survivingSorties.some(
+            (s) =>
+              s.pilotId === p.id &&
+              s.depTimeMinutes < tstWindowEnd + 45 &&
+              s.recoveryTimeMinutes > tstWindowStart - 45
+          );
+        });
 
         if (availableSpareAircraft.length > 0) {
           const tstPlan = this.optimizer.solve(

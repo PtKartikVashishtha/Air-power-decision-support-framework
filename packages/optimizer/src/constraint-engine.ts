@@ -62,14 +62,14 @@ export class TacticalConstraintEngine {
           `Pilot ${pilot.callsign} type rating (${pilot.typeRating}) does not match aircraft model (${ac.model}).`
         );
       }
-      if (pilot.fatigueScore > 75) {
+      if (pilot.fatigueScore > 65) {
         hardViolations.push(
-          `Pilot ${pilot.callsign} exceeds maximum allowable fatigue limit (Score: ${pilot.fatigueScore}/100 > 75).`
+          `Pilot ${pilot.callsign} exceeds maximum allowable fatigue limit (Score: ${pilot.fatigueScore}/100 > 65).`
         );
-      } else if (pilot.fatigueScore > 60) {
+      } else if (pilot.fatigueScore > 50) {
         softWarnings.push(`Pilot ${pilot.callsign} approaching fatigue threshold (${pilot.fatigueScore}/100).`);
       }
-      if (pilot.dutyHoursLast24h >= 12) {
+      if (pilot.dutyHoursLast24h > 12) {
         hardViolations.push(`Pilot ${pilot.callsign} exceeds mandatory 12-hour crew rest window.`);
       }
     }
@@ -87,7 +87,7 @@ export class TacticalConstraintEngine {
     if (ac && target && origBase) {
       const oneWayKm = haversineDistanceKm(origBase.location, target.location);
       const totalMissionDistKm = oneWayKm * 2; // Ingress + Egress
-      if (totalMissionDistKm > ac.combatRadiusKm * 2) {
+      if (totalMissionDistKm > ac.combatRadiusKm * 2.2) {
         hardViolations.push(
           `Mission distance (${Math.round(totalMissionDistKm)} km) exceeds aircraft unrefueled combat radius (${ac.combatRadiusKm * 2} km). Tanker required.`
         );
