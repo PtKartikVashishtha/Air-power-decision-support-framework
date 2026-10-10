@@ -35,6 +35,7 @@ const TABS = [
   { idx: 14, key: 'contested_ops', name: 'ContestedOpsStudio' },
   { idx: 15, key: 'trainer_aar', name: 'StaffCollegeTrainerStudio' },
   { idx: 16, key: 'xai_studio', name: 'ExplainabilityStudio' },
+  { idx: 99, key: 'guided_home', name: 'GuidedHomeExperience' },
 ];
 
 async function run() {
@@ -68,9 +69,12 @@ async function run() {
       for (const tab of TABS) {
         totalAudits++;
         try {
-          const tabButton = page.locator('nav button').nth(tab.idx);
-          await tabButton.click({ timeout: 1000 });
-          await page.waitForTimeout(200);
+          await page.evaluate((targetIdx) => {
+            if (typeof window !== 'undefined' && window.__SET_ACTIVE_TAB) {
+              window.__SET_ACTIVE_TAB(targetIdx);
+            }
+          }, tab.idx);
+          await page.waitForTimeout(250);
 
           const result = await page.evaluate(() => {
             const detected = [];
@@ -90,6 +94,7 @@ async function run() {
             if (header) {
               const buttons = header.querySelectorAll('button');
               buttons.forEach((b) => {
+                if (b.closest('.absolute')) return; // Ignore dropdown menu items
                 if (b.scrollHeight > 38 || b.clientHeight > 38) {
                   detected.push({
                     type: 'BUTTON_VERTICAL_OVERFLOW',

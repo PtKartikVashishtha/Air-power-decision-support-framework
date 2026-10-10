@@ -27,9 +27,10 @@ import { StaffCollegeTrainerStudio } from '../components/StaffCollegeTrainerStud
 import { ExplainabilityStudio } from '../components/ExplainabilityStudio';
 import { CopilotModal } from '../components/CopilotModal';
 import { AssumptionsDoctrineModal } from '../components/AssumptionsDoctrineModal';
+import { GuidedHomeExperience } from '../components/GuidedHomeExperience';
 
 export default function AirPowerDashboard() {
-  const [activeTab, setActiveTab] = useState(3); // Default to Planner-in-the-Loop Studio for flagship daylight view
+  const [activeTab, setActiveTab] = useState(99); // Default to Guided 7-Step Home Experience
   const [fusedPicture, setFusedPicture] = useState<FusedOperationalPicture | null>(null);
   const [currentPlan, setCurrentPlan] = useState<PlanCOA | null>(null);
   const [clockMinutes, setClockMinutes] = useState(255); // H+04:15 default
@@ -43,8 +44,9 @@ export default function AirPowerDashboard() {
   const [isResettingDemo, setIsResettingDemo] = useState(false);
   const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
 
-  // 6 Core Screens for the Curated 5-Minute Evaluation Story
+  // Core Screens for the Curated Evaluation Story
   const coreStoryTabs = [
+    { label: `⭐ ${t('TAB_HOME', locale)}`, idx: 99, key: 'home', desc: '7-Step Guided Operational Flow' },
     { label: `1. ${t('TAB_COP', locale)}`, idx: 0, key: 'cop', desc: '3D/2D Fused Picture' },
     { label: `2. ${t('TAB_PIL', locale)}`, idx: 3, key: 'pil', desc: 'ATO Synthesis' },
     { label: `3. ${t('TAB_RETASK', locale)}`, idx: 5, key: 'retask', desc: 'Inject & Retask Diff' },
@@ -79,6 +81,12 @@ export default function AirPowerDashboard() {
 
   // Initial data loading & SSE stream
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      (window as any).__SET_ACTIVE_TAB = (idx: number) => {
+        setActiveTab(idx);
+        setIsMoreMenuOpen(false);
+      };
+    }
     fetchInitialData();
 
     // Setup SSE connection
@@ -416,6 +424,30 @@ export default function AirPowerDashboard() {
       <main className="flex-1 p-gutter-desktop max-w-[1600px] mx-auto w-full">
         {fusedPicture ? (
           <>
+            {activeTab === 99 && (
+              <GuidedHomeExperience
+                fusedPicture={fusedPicture}
+                currentPlan={currentPlan}
+                locale={locale}
+                onNavigateToScreen={(tabIdx) => setActiveTab(tabIdx)}
+                onOpenAssumptions={() => setIsAssumptionsOpen(true)}
+              />
+            )}
+            {activeTab !== 99 && (
+              <div className="mb-3 flex items-center justify-between bg-surface-container-low px-3 py-1.5 border border-outline-variant font-label-caps text-[10px] text-on-surface-variant">
+                <button
+                  onClick={() => setActiveTab(99)}
+                  className="flex items-center gap-1.5 text-secondary hover:text-primary transition font-bold uppercase"
+                  type="button"
+                >
+                  <span className="material-symbols-outlined text-[14px]">arrow_back</span>
+                  <span>Return to 7-Step Mission Story Overview</span>
+                </button>
+                <span className="hidden md:inline-block font-mono text-[9px] uppercase">
+                  HITL DOCTRINE // ADVISORY DECISION SUPPORT
+                </span>
+              </div>
+            )}
             {activeTab === 0 && (
               <TacticalMap fusedPicture={fusedPicture} currentPlan={currentPlan} />
             )}

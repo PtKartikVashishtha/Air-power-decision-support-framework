@@ -13,6 +13,16 @@ export const MILITARY_DICTIONARY: Record<string, { en: string; hi: string }> = {
     en: 'CLASSIFICATION: NOTIONAL / TRAINING DATA ONLY — UNCLASSIFIED DEFENCE SIMULATION (SIH-26250)',
     hi: 'वर्गीकरण: केवल काल्पनिक / प्रशिक्षण डेटा — अवर्गीकृत रक्षा सिमुलेशन (SIH-26250)',
   },
+  TAB_HOME: { en: '7-STEP GUIDED FLOW', hi: '७-चरणीय निर्देशित प्रवाह' },
+  STEP_1: { en: '1. Load Scenario', hi: '१. परिदृश्य लोड करें' },
+  STEP_2: { en: '2. Fuse Sources', hi: '२. डेटा स्रोत संलयन' },
+  STEP_3: { en: '3. See the Picture', hi: '३. समग्र चित्र देखें' },
+  STEP_4: { en: '4. Generate Plan', hi: '४. कार्य आदेश निर्माण' },
+  STEP_5: { en: '5. Approve Plan', hi: '५. कमांडर अनुमोदन' },
+  STEP_6: { en: '6. Re-plan on Disruption', hi: '६. व्यवधान पर पुनर्योजना' },
+  STEP_7: { en: '7. Decide & Record', hi: '७. निर्णय एवं रिकॉर्ड' },
+  SYSTEM_TAG: { en: 'SYSTEM', hi: 'सिस्टम' },
+  HUMAN_DECISION_TAG: { en: 'HUMAN DECISION', hi: 'मानव निर्णय' },
 
   // Tabs
   TAB_COP: { en: 'COMMON OPERATING PICTURE', hi: 'सामान्य प्रचालन चित्र (COP)' },
