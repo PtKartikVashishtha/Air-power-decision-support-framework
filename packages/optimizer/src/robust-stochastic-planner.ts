@@ -128,9 +128,14 @@ export class RobustStochasticPlanner {
     const lowIdx = Math.max(0, Math.floor(robustScores.length * 0.05));
     const highIdx = Math.min(robustScores.length - 1, Math.ceil(robustScores.length * 0.95));
 
+    const rawLow = robustScores[lowIdx] ?? robustNominalScore * 0.85;
+    const rawHigh = robustScores[highIdx] ?? robustNominalScore;
+    const minScore = Math.min(rawLow, rawHigh);
+    const maxScore = Math.max(rawLow, rawHigh);
+
     const conformalInterval = {
-      lowerBoundScore: Math.round((robustScores[lowIdx] || robustNominalScore * 0.85) * 10) / 10,
-      upperBoundScore: Math.round((robustScores[highIdx] || robustNominalScore) * 10) / 10,
+      lowerBoundScore: Math.round(minScore * 10) / 10,
+      upperBoundScore: Math.round(maxScore * 10) / 10,
       coverageConfidencePercent: 90,
     };
 
