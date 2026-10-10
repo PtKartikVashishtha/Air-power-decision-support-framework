@@ -270,6 +270,7 @@ export const SortieSchema = z.object({
   status: SortieStatusEnum.default('SCHEDULED'),
   isFrozen: z.boolean().default(false), // Committed or Airborne sorties cannot be mutated arbitrarily
   justificationNotes: z.string().optional(),
+  reasonCode: z.string().optional(), // Stable reason code (e.g. PRIMARY_STRIKE_MATCH, FAST_QRA_SCRAMBLE)
 });
 export type Sortie = z.infer<typeof SortieSchema>;
 
@@ -316,6 +317,7 @@ export const SortieDiffItemSchema = z.object({
   callsign: z.string(),
   changeType: SortieDiffChangeTypeEnum,
   reason: z.string(),
+  reasonCode: z.string().optional(),
   previousState: SortieSchema.optional(),
   newState: SortieSchema.optional(),
   impactAssessment: z.string(),

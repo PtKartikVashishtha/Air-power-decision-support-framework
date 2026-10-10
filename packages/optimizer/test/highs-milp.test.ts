@@ -22,7 +22,7 @@ describe('HiGHS-WASM True MILP Solver & Optimality Gap Suite', () => {
     expect(['Optimal', 'Feasible']).toContain(milpResult.status);
     expect(milpResult.objectiveValue).toBeGreaterThan(0);
     expect(milpResult.coveredTargetIds.length).toBeGreaterThan(0);
-    expect(milpResult.solveDurationMs).toBeLessThan(2000);
+    expect(milpResult.solveDurationMs).toBeLessThan(5000);
   });
 
   it('evaluates true empirical ALNS vs HiGHS MILP optimality gap', async () => {

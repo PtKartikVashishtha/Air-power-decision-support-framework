@@ -103,6 +103,7 @@ export class DynamicRetaskingEngine {
             callsign: s.callsign,
             changeType: 'REROUTED',
             reason: `Airframe ${aogTail} grounded (AOG). Substituted reserve airframe ${candidateSpare.tailNumber} at ${s.originBaseId}.`,
+            reasonCode: 'AIRFRAME_AOG_SWAP',
             previousState: s,
             newState: rerouted,
             impactAssessment: `Combat sortie preserved via hot-spare airframe substitution.`,
@@ -113,6 +114,7 @@ export class DynamicRetaskingEngine {
             callsign: s.callsign,
             changeType: 'CANCELLED',
             reason: `Airframe ${aogTail} grounded (AOG) with zero available spares at ${s.originBaseId}.`,
+            reasonCode: 'AIRFRAME_UNSERVICEABLE',
             previousState: s,
             impactAssessment: `Sortie cancelled to maintain fleet airworthiness limits.`,
           });
@@ -124,6 +126,7 @@ export class DynamicRetaskingEngine {
           callsign: s.callsign,
           changeType: 'CANCELLED',
           reason: `Airbase ${closedBaseId} closure prevents scheduled departure/recovery.`,
+          reasonCode: 'RUNWAY_WEATHER_MINIMA',
           previousState: s,
           impactAssessment: `Sortie cancelled due to runway unserviceability.`,
         });
@@ -166,6 +169,7 @@ export class DynamicRetaskingEngine {
               callsign: newS.callsign,
               changeType: 'ADDED',
               reason: `Rapid reaction package scrambled for Time-Sensitive Target ${tstTarget.id}.`,
+              reasonCode: 'TST_HIGH_PRIORITY_TASK',
               newState: newS,
               impactAssessment: `Immediate interdiction package established against emerging high-value threat.`,
             });

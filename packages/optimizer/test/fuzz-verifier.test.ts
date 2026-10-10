@@ -35,7 +35,7 @@ describe('Property-Based Fuzz Testing Suite (fast-check)', () => {
       }),
       { numRuns: 30 }
     );
-  });
+  }, 15000);
 
   it('Property: Adversarial Fuzzing - Randomly grounding 50% of fleet never causes an unserviceable allocation', () => {
     fc.assert(

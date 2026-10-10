@@ -118,6 +118,7 @@ FUEL & RISK PARAMETERS:
 - PLANNED FUEL BURN   : ${sortie.fuelPlannedKg} kg
 - EXPECTED THREAT RISK: ${sortie.expectedRiskScore} / 100
 - FROZEN ZONE STATUS  : ${sortie.isFrozen ? 'LOCKED / COMMITTED' : 'FLEXIBLE'}
+- ALLOCATION REASON   : ${sortie.reasonCode || 'PRIMARY_STRIKE_MATCH'}
 ${sortie.justificationNotes ? `\nOPERATIONAL JUSTIFICATION:\n${sortie.justificationNotes}` : ''}
 ======================================================================
 `;

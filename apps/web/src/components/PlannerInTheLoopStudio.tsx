@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { PlanCOA, Sortie, FusedOperationalPicture } from '@air-power/shared';
+import { ReasonCodeChip } from './ReasonCodeChip';
 
 interface PlannerInTheLoopStudioProps {
   currentPlan: PlanCOA | null;
@@ -314,6 +315,7 @@ export const PlannerInTheLoopStudio: React.FC<PlannerInTheLoopStudioProps> = ({
                   <th className="py-2.5 px-space-md">Munition Loadout</th>
                   <th className="py-2.5 px-space-md">TOT Window</th>
                   <th className="py-2.5 px-space-md">Turnaround Status</th>
+                  <th className="py-2.5 px-space-md">Reason Code</th>
                   <th className="py-2.5 px-space-md text-right">Stability</th>
                 </tr>
               </thead>
@@ -367,6 +369,9 @@ export const PlannerInTheLoopStudio: React.FC<PlannerInTheLoopStudioProps> = ({
                         <span className="inline-flex items-center gap-space-xs bg-surface-container text-on-primary-fixed-variant px-space-sm py-0.5 font-label-data-sm text-[10px] font-bold uppercase">
                           FMC • 45m Buffer
                         </span>
+                      </td>
+                      <td className="py-2.5 px-space-md">
+                        <ReasonCodeChip code={s.reasonCode || 'PRIMARY_STRIKE_MATCH'} />
                       </td>
                       <td className="py-2.5 px-space-md text-right">
                         {isFrozen ? (

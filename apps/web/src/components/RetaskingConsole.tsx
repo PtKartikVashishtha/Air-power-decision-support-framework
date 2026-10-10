@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { PlanCOA, RetaskingDiffReport, TacticalInject } from '@air-power/shared';
+import { PlanCOA, RetaskingDiffReport, TacticalInject, mapViolationToReasonCode } from '@air-power/shared';
 import { Panel, TruncatedText } from './primitives/LayoutPrimitives';
+import { ReasonCodeChip } from './ReasonCodeChip';
 
 interface RetaskingConsoleProps {
   currentPlan: PlanCOA | null;
@@ -175,7 +176,10 @@ export const RetaskingConsole: React.FC<RetaskingConsoleProps> = ({
                           <span className="font-bold text-primary shrink-0">{c.callsign}</span>
                           <TruncatedText text={c.impactAssessment} className="text-on-surface-variant text-[11px]" />
                         </div>
-                        <span className="text-on-surface-variant text-[10px] shrink-0">{c.reason}</span>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <ReasonCodeChip code={c.reasonCode || mapViolationToReasonCode(c.reason)} />
+                          <span className="text-on-surface-variant text-[10px] hidden lg:inline">{c.reason}</span>
+                        </div>
                       </div>
                     ))}
                   </div>

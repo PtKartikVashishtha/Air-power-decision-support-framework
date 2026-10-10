@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { FusedOperationalPicture } from '@air-power/shared';
 import { Panel, TruncatedText } from './primitives/LayoutPrimitives';
+import { ReasonCodeChip } from './ReasonCodeChip';
 
 interface AuditTrailViewProps {
   fusedPicture: FusedOperationalPicture;
@@ -138,6 +139,7 @@ export const AuditTrailView: React.FC<AuditTrailViewProps> = ({ fusedPicture }) 
                   <th className="py-2 px-3 whitespace-nowrap">TIMESTAMP</th>
                   <th className="py-2 px-3 whitespace-nowrap">ACTOR ROLE</th>
                   <th className="py-2 px-3 whitespace-nowrap">ACTION</th>
+                  <th className="py-2 px-3 whitespace-nowrap">REASON CODE</th>
                   <th className="py-2 px-3 whitespace-nowrap">BLOCK HASH</th>
                   <th className="py-2 px-3 whitespace-nowrap">PREVIOUS HASH</th>
                 </tr>
@@ -149,6 +151,9 @@ export const AuditTrailView: React.FC<AuditTrailViewProps> = ({ fusedPicture }) 
                     <td className="py-2 px-3 text-on-surface-variant whitespace-nowrap">{ev.timestampIso.slice(11, 19)}Z</td>
                     <td className="py-2 px-3 font-bold text-primary whitespace-nowrap">{ev.actorRole}</td>
                     <td className="py-2 px-3 font-bold text-emerald-800 whitespace-nowrap">{ev.action}</td>
+                    <td className="py-2 px-3 whitespace-nowrap">
+                      <ReasonCodeChip code={ev.reasonCode || (ev.action === 'APPROVE_PLAN' ? 'COMMANDER_AUTHORIZED' : ev.action === 'DYNAMIC_RETASK' ? 'POPUP_THREAT_DIVERT' : 'PRIMARY_STRIKE_MATCH')} />
+                    </td>
                     <td className="py-2 px-3 text-on-surface-variant font-mono text-[10px] whitespace-nowrap">0x{ev.hash}</td>
                     <td className="py-2 px-3 text-on-surface-variant font-mono text-[10px] whitespace-nowrap">0x{ev.prevHash}</td>
                   </tr>

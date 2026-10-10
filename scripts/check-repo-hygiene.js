@@ -26,6 +26,7 @@ const ESSENTIAL_EVALUATOR_FILES = [
   'docs/DECISIONS.md',
   'docs/HONESTY.md',
   'docs/RESPONSIBLE_USE.md',
+  'docs/REASON_CODES.md',
 ];
 
 const INTERNAL_FORBIDDEN_FILES = [
