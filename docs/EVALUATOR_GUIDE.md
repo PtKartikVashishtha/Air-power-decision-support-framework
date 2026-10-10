@@ -50,15 +50,23 @@ pnpm run demo
 - **Human-in-the-Loop Approval Doctrine**: `apps/web/src/components/PlannerInTheLoopStudio.tsx`
 - **USMTF ATO/ACO Standard Military Text Generation**: `packages/shared/src/military-text-formatter.ts`
 
-### C. Scalability & Software Engineering
+### C. Flagship Defense & Joint C2 Capabilities
+- **Real Offline 3D MapLibre COP & Terrain Routing**: `apps/web/src/components/OfflineMapLibreCOP.tsx`, `packages/optimizer/src/route-planner.ts` (30–75% risk reduction via terrain defilade masking).
+- **Pareto Commander Intent Dial & Matheuristic LNS**: `packages/optimizer/src/pareto-engine.ts`, `matheuristic-lns.ts` (Fix-and-optimise with HiGHS-WASM sub-neighborhoods).
+- **Contested Ops & Edge CRDT Sync**: `packages/sim/src/crdt-edge-sync.ts`, `spoof-detection.ts`, `red-cell-wargame.ts` (Deterministic forward-base sync under network blackout).
+- **Staff College Trainer & Counterfactual AAR**: `packages/sim/src/staff-college-trainer.ts`, `after-action-review.ts` (Plan grading A..F, 12h replay, counterfactual what-if simulation).
+- **White-Box Explainability & Bilingual Toggle**: `packages/optimizer/src/assignment-explainer.ts`, `packages/shared/src/i18n.ts` (Sortie rationale cards, SHAP-lite attribution, English/Hindi).
+- **Joint C2 Interoperability & Cursor-on-Target (CoT 2.0)**: `packages/shared/src/tactical-interop.ts` (CoT XML parser/generator, RFC 7946 GeoJSON, KML 2.2, OpenAPI 3.0).
+
+### D. Scalability & Software Engineering
 - **End-to-End TypeScript / Node.js Monorepo**: Zero Python in runtime path.
 - **WASM Acceleration**: `highs@1.15.3` pure WebAssembly C++ solver called from Node.js.
 - **Reproducible Benchmark Suite**: `benchmarks/run-benchmark.ts` (`pnpm run benchmark`).
 - **Repository Hygiene Verification**: `scripts/check-repo-hygiene.js` (`pnpm run hygiene`).
 
-### D. User Interface & Human Factors
-- **Elite Defense Daylight Command Aesthetics**: Clear readability under daylight operations, zero dark-mode eye strain, crisp military typography (JetBrains Mono / Inter).
-- **Automated Overflow Verification**: Passes 5 viewports (1280x720 to 2560x1440) across 100%, 125%, 150% zoom (`scripts/verify-layout-overflow.js`).
+### E. User Interface & Human Factors
+- **Elite Defense Command Center Aesthetics**: Responsive dark glassmorphism, crisp military typography (JetBrains Mono / Inter), bilingual English/Hindi toggle.
+- **Automated Overflow Verification**: Passes 255 configurations across 17 tactical screens, 5 viewports (1280x720 to 2560x1440), and 100%, 125%, 150% zoom (`scripts/verify-layout-overflow.js`).
 - **Tactical AI Copilot**: Handles Hinglish, typos, and natural military slang with 100% safety isolation (`packages/optimizer/src/copilot-engine.ts`).
 
 ---
@@ -66,7 +74,7 @@ pnpm run demo
 ## 4. Key Verification Commands
 
 ```bash
-# 1. Full automated unit & property tests (239 tests)
+# 1. Full automated unit & property tests (272 tests across 20 test files)
 pnpm test
 
 # 2. Cross-file number & claim consistency audit
@@ -78,7 +86,7 @@ pnpm run hygiene
 # 4. 100-seed Monte Carlo statistical benchmark
 pnpm run benchmark
 
-# 5. Playwright offline layout overflow verification
+# 5. Playwright offline layout overflow verification (255 screen configurations)
 pnpm run e2e
 ```
 
@@ -90,6 +98,8 @@ pnpm run e2e
 |---|---|---|
 | **Optimization Solver** | **100% Real**: Pure ALNS heuristic + HiGHS-WASM C++ MILP solving live in Node.js. | None |
 | **Independent Verifier** | **100% Real**: Evaluates raw physical rules on every generated sortie. | None |
+| **Tactical Interoperability** | **100% Real**: Real CoT 2.0 XML, RFC 7946 GeoJSON, KML 2.2, OpenAPI 3.0 export and ingest. | None |
 | **Geographic Coordinates** | Realistic Western Sector border coordinates. | **100% Notional**: De-identified synthetic terrain data. |
 | **Airframes & Weapons** | Realistic IAF aircraft types (Su-30, Rafale, Tejas) & payloads. | **100% Unclassified**: Synthetic tail numbers and nominal unclassified tables. |
 | **Data Streams** | Real JSON REST & SSE streaming over Fastify. | Simulated sensors (Radar, ELINT, UAV, Satellite feeds). |
+
