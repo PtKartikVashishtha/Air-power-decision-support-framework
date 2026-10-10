@@ -11,6 +11,10 @@ AGENTS.md
 CONTEXT.md
 docs/PROMPT_HISTORY.md
 docs/SIH_PRESENTATION_KIT.md
+docs/GIT_HISTORY_AUDIT.md
+docs/COPILOT_DIAGNOSIS.md
+docs/AUDIT_REPORT.md
+docs/PERF_REPORT.md
 .local/
 .agents/
 .gemini/
@@ -18,7 +22,7 @@ docs/SIH_PRESENTATION_KIT.md
 docs/*prompt*.md
 docs/*PROMPT*.md
 
-# --- 2. Temporary Scratch Files & Internal Notes ---
+# --- 2. Temporary Scratch Files, Intermediate Notes & Internal Docs ---
 scratch/
 scratchpad*
 *.draft.md
@@ -26,6 +30,21 @@ scratchpad*
 *.bak
 *.swp
 *~
+docs/scratch/
+docs/notes/
+docs/internal/
+docs/drafts/
+docs/demo-rehearsal/
+docs/*diagnosis*.md
+docs/*DIAGNOSIS*.md
+docs/*.notes.md
+docs/*.scratch.md
+docs/*.working.md
+docs/*.draft.md
+docs/*.tmp.md
+scripts/*diag*.js
+scripts/inspect-*.js
+scripts/temp-*.js
 
 # --- 3. Dependencies & Package Stores ---
 node_modules/
