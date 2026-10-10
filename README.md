@@ -13,9 +13,16 @@
 [![Tests: 282 Passing](https://img.shields.io/badge/Tests-282%20Passing-brightgreen.svg)](https://vitest.dev/)
 [![Classification: UNCLASSIFIED](https://img.shields.io/badge/Classification-NOTIONAL%20%2F%20UNCLASSIFIED-darkgreen.svg)](NOTICE)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+[![Release: v1.0.0](https://img.shields.io/badge/Release-v1.0.0-purple.svg)](docs/RELEASE_NOTES_v1.0.0.md)
 
 > **CRITICAL CLASSIFICATION BANNER**: **NOTIONAL / TRAINING DATA ONLY — UNCLASSIFIED SIMULATION**  
 > All airframes, units, coordinates, and weapon tables are synthetic approximations for academic evaluation. Zero access to classified defense systems. See [NOTICE](NOTICE) for full statement.
+
+---
+
+![AIR POWER Flagship Command Center](docs/media/flagship_cop.png)
+
+> 📹 **Evaluator Demo Video**: [5-Minute Walkthrough Video Script & Timings](docs/DEMO_VIDEO_SCRIPT.md) *(Stored outside git repository; full narration and step-by-step cues provided)*.
 
 ---
 
@@ -23,10 +30,12 @@
 - 🧭 **[Evaluator Guide (60s Tour & 5-Min Walkthrough)](docs/EVALUATOR_GUIDE.md)**
 - 📋 **[Implementation Status Matrix (Real vs Simulated)](docs/IMPLEMENTATION_STATUS.md)**
 - 📊 **[Claims & Scientific Evidence Register](docs/CLAIMS_REGISTER.md)**
+- 🎬 **[5-Minute Rehearsal & Reliability Harness](docs/REHEARSAL_AND_RELIABILITY.md)**
+- 📄 **[12-Slide Defence Command Deck (PDF)](docs/AIR_POWER_12_SLIDE_DECK.pdf)** \| **[(Interactive HTML Deck)](docs/AIR_POWER_12_SLIDE_DECK.html)**
+- 📦 **[v1.0.0 Release Notes](docs/RELEASE_NOTES_v1.0.0.md)**
 - 🛡️ **[Self-Red-Team Hostile OR Audit Report](docs/SELF_REDTEAM.md)**
 - 🧑‍✈️ **[Human Operator Baseline Protocol](docs/HUMAN_BASELINE_PROTOCOL.md)**
 - 🏛️ **[Architecture Decision Records (ADRs)](docs/DECISIONS.md)**
-- 🖥️ **[12-Slide Defense Command Deck (HTML)](docs/AIR_POWER_12_SLIDE_DECK.html)**
 
 ---
 
