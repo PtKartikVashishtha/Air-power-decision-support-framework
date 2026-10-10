@@ -1,6 +1,8 @@
 # AIR POWER: Claims & Scientific Evidence Register
 *Single Source of Provenance for All Quantitative Statements and Benchmarks*
 
+> **Mandatory Advisory Positioning**: AIR POWER provides **advisory decision support only**. A human commander approves every operational change. The system contains **no targeting, weapon-employment, or autonomous-engagement logic**. All airbases, assets, and threat envelopes are synthetic approximations developed for unclassified evaluation.
+
 This register indexes every quantitative claim made in the user interface, presentation kit, technical documentation, and submission materials. **Rule: No claim may be presented without an entry in this register.**
 
 ---

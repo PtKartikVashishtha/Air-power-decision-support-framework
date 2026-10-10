@@ -26,15 +26,17 @@ pnpm run demo
 
 ---
 
-## 2. 5-Minute Evaluator Path
+## 2. 5-Minute Evaluator Path (Guided 7-Step Home Flow)
 
-| Minute | What to Inspect | Screen / Action | Rubric Criteria |
+When opening `http://localhost:3002`, the platform immediately boots into the **7-Step Guided Operational Flow** (`/`), tracing the full commander mission lifecycle:
+
+| Minute | Operational Step | What to Inspect | Rubric Criteria |
 |---|---|---|---|
-| **00:00–01:00** | **Common Operating Picture & Triple COAs** | Open `http://localhost:3002`, view **Tactical Map (COP)** and **COA Comparison Studio**. Notice the 3 distinct non-dominated doctrine options (Max Effect, Min Risk, Balanced Reserve). | Innovation, Military Doctrine |
-| **01:00–02:00** | **Anytime Solver & Constraint Verifier** | Navigate to **Mission Planner**. Click "GENERATE MASTER ATO". Solve completes in **< 50 ms** across 68 airframes, 30 targets. Verify zero hard constraint violations. | Feasibility, Algorithm Depth |
-| **02:00–03:00** | **Dynamic Retasking & Frozen Horizon** | Navigate to **Dynamic Retasking Console**. Inject a pop-up SAM or AOG snag. Notice the **Frozen Horizon** protection and instant hot-spare airframe substitution ($\ge 80\%$ plan stability). | Operational Impact, Resilience |
-| **03:00–04:00** | **Empirical Benchmarks & True MILP** | Navigate to **Benchmark Evidence Harness**. Compare ALNS against B1 (Human Staff), B2 (Priority Greedy), **B2-LS (Strong Greedy 2-Opt)**, and **HiGHS-WASM True MILP**. Notice value delivered per sortie ($18.03$ pts/sortie). | Scientific Rigour, OR Defensibility |
-| **04:00–05:00** | **Human Challenge & Copilot** | Navigate to **Manual Challenge Mode** to experience the 15-minute spreadsheet planning challenge. Open the **Tactical Copilot** (bottom right) and test natural language commands in Hindi/English. | Human-in-the-Loop, UI Excellence |
+| **00:00–01:00** | **Step 1–3: Picture & Readiness** | Step 1 (Load Scenario), Step 2 (Fuse Sources with Bayesian decay), Step 3 (See 3D Terrain Picture). View airbase turnaround capacity and threat MEZ envelopes. | Defense Doctrine, Data Fusion |
+| **01:00–02:00** | **Step 4: Generate Master ATO** | Step 4 (Generate Plan). Anytime ALNS synthesizes 86 sorties across 68 airframes in **< 50 ms** satisfying 12 hard physical rules. Each assignment features a stable reason code chip. | Algorithm Depth, Scalability |
+| **02:00–03:00** | **Step 5: Commander Approval** | Step 5 (Approve Plan). Explore the 3 non-dominated Courses of Action on the Pareto Dial (*Max Effect*, *Min Risk*, *Balanced Reserve*). Commander signs digital approval token. | Human-in-the-Loop, Multi-Objective OR |
+| **03:00–04:00** | **Step 6: Re-Plan on Disruption** | Step 6 (Re-plan on Disruption). Inject a mobile SAM relocation or runway closure; < 50ms re-solve preserves frozen zone ($\Delta t = 15\text{m}$) with $\ge 80\%$ stability. | Operational Resilience, Stability |
+| **04:00–05:00** | **Step 7: Decide & Record** | Step 7 (Decide & Record). Cryptographic SHA-256 tamper-evident ledger locks audit trail; export valid MIL-STD USMTF ATO, CoT 2.0 XML, and GeoJSON. | Interoperability, Auditability |
 
 ---
 
@@ -43,6 +45,8 @@ pnpm run demo
 ### A. Algorithmic Innovation & Optimization Depth
 - **Anytime ALNS Solver**: `packages/optimizer/src/alns-optimizer.ts`
 - **True HiGHS-WASM Exact MILP Solver**: `packages/optimizer/src/highs-milp-solver.ts`
+- **Solver Choice & Rationale (vs CP-SAT)**: `docs/SOLVER_CHOICE.md`
+- **Stable Reason Code Catalogue (21 Codes)**: `packages/shared/src/reason-codes.ts`, `docs/REASON_CODES.md`
 - **Strongest Heuristic Baseline B2-LS (2-Opt)**: `packages/optimizer/src/baselines.ts`
 - **Independent Hard Constraint Verifier**: `packages/optimizer/src/independent-verifier.ts`
 - **10,000 Random Plan Differential Fuzz Tests**: `packages/optimizer/test/differential-verifier.test.ts`
