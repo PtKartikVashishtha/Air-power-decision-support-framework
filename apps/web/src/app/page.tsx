@@ -41,6 +41,34 @@ export default function AirPowerDashboard() {
   const [isCopilotOpen, setIsCopilotOpen] = useState(false);
   const [isAssumptionsOpen, setIsAssumptionsOpen] = useState(false);
   const [isResettingDemo, setIsResettingDemo] = useState(false);
+  const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
+
+  // 6 Core Screens for the Curated 5-Minute Evaluation Story
+  const coreStoryTabs = [
+    { label: `1. ${t('TAB_COP', locale)}`, idx: 0, key: 'cop', desc: '3D/2D Fused Picture' },
+    { label: `2. ${t('TAB_PIL', locale)}`, idx: 3, key: 'pil', desc: 'ATO Synthesis' },
+    { label: `3. ${t('TAB_RETASK', locale)}`, idx: 5, key: 'retask', desc: 'Inject & Retask Diff' },
+    { label: `4. ${t('TAB_COA', locale)}`, idx: 4, key: 'coa', desc: 'COA & Pareto Dial' },
+    { label: `5. ${t('TAB_BENCH', locale)}`, idx: 9, key: 'bench', desc: 'Benchmark Evidence' },
+    { label: `6. ${t('TAB_CONTESTED', locale)}`, idx: 14, key: 'contested', desc: 'Cut the Link (CRDT)' },
+  ];
+
+  // Deep-Dive Operational Screens under "More Operations" Menu
+  const moreScreens = [
+    { label: t('TAB_RES', locale), idx: 1, key: 'res', tag: 'Turnarounds & Munitions' },
+    { label: t('TAB_MP', locale), idx: 2, key: 'mp', tag: 'Direct Sortie Constructor' },
+    { label: t('TAB_DECONF', locale), idx: 6, key: 'deconf', tag: '4D Spatial & Airway Coordination' },
+    { label: t('TAB_WARGAME', locale), idx: 7, key: 'wargame', tag: 'Closed-Loop Attrition Simulator' },
+    { label: t('TAB_EXPORT', locale), idx: 8, key: 'export', tag: 'USMTF / CoT XML / GeoJSON / KML' },
+    { label: t('TAB_CHALLENGE', locale), idx: 10, key: 'challenge', tag: '3-Min Human vs AI Challenge' },
+    { label: t('TAB_PRED', locale), idx: 11, key: 'pred', tag: 'Brier Score & Conformal Intervals' },
+    { label: t('TAB_WHATIF', locale), idx: 12, key: 'whatif', tag: 'Dynamic Doctrine Weight Tweaking' },
+    { label: t('TAB_AUDIT', locale), idx: 13, key: 'audit', tag: 'SHA-256 Tamper-Evident Ledger' },
+    { label: t('TAB_TRAINER', locale), idx: 15, key: 'trainer', tag: 'DSSC Evaluator & Counterfactual AAR' },
+  ];
+
+  const isMoreActive = moreScreens.some((s) => s.idx === activeTab);
+  const activeMoreLabel = moreScreens.find((s) => s.idx === activeTab)?.label;
 
   const navRef = React.useRef<HTMLElement>(null);
   const handleNavScroll = (delta: number) => {
@@ -154,26 +182,6 @@ export default function AirPowerDashboard() {
       setIsResettingDemo(false);
     }
   };
-
-  const navTabs = [
-    { label: t('TAB_COP', locale), key: 'cop' },
-    { label: t('TAB_RES', locale), key: 'res' },
-    { label: t('TAB_MP', locale), key: 'mp' },
-    { label: t('TAB_PIL', locale), key: 'pil' },
-    { label: t('TAB_COA', locale), key: 'coa' },
-    { label: t('TAB_RETASK', locale), key: 'retask' },
-    { label: t('TAB_DECONF', locale), key: 'deconf' },
-    { label: t('TAB_WARGAME', locale), key: 'wargame' },
-    { label: t('TAB_EXPORT', locale), key: 'export' },
-    { label: t('TAB_BENCH', locale), key: 'bench' },
-    { label: t('TAB_CHALLENGE', locale), key: 'challenge' },
-    { label: t('TAB_PRED', locale), key: 'pred' },
-    { label: t('TAB_WHATIF', locale), key: 'whatif' },
-    { label: t('TAB_AUDIT', locale), key: 'audit' },
-    { label: t('TAB_CONTESTED', locale), key: 'contested' },
-    { label: t('TAB_TRAINER', locale), key: 'trainer' },
-    { label: t('TAB_XAI', locale), key: 'xai' },
-  ];
 
   const formatClockTime = (mins: number) => {
     const h = Math.floor(mins / 60);
@@ -326,22 +334,71 @@ export default function AirPowerDashboard() {
             className="h-8.5 flex-1 min-w-0 flex items-stretch gap-0 overflow-x-auto scroll-smooth no-scrollbar"
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
-            {navTabs.map((tab, idx) => {
-              const isActive = activeTab === idx;
+            {/* Primary 6-Screen Curated 5-Minute Story Flow */}
+            {coreStoryTabs.map((tab) => {
+              const isActive = activeTab === tab.idx;
               return (
                 <button
                   key={tab.key}
-                  onClick={() => setActiveTab(idx)}
+                  onClick={() => setActiveTab(tab.idx)}
                   className={`h-full px-3.5 flex items-center font-label-caps text-[11px] uppercase tracking-wider border-r border-outline-variant/40 transition-colors whitespace-nowrap shrink-0 ${
                     isActive
                       ? 'bg-surface-container-high text-primary border-b-2 border-secondary font-bold'
                       : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low font-semibold'
                   }`}
+                  title={tab.desc}
                 >
-                  {tab.label}
+                  <span>{tab.label}</span>
                 </button>
               );
             })}
+
+            {/* More Screens Dropdown Menu */}
+            <div className="relative flex items-center shrink-0">
+              <button
+                onClick={() => setIsMoreMenuOpen(!isMoreMenuOpen)}
+                className={`h-full px-3 flex items-center gap-1 font-label-caps text-[11px] uppercase tracking-wider border-r border-outline-variant/40 transition-colors whitespace-nowrap shrink-0 ${
+                  isMoreActive
+                    ? 'bg-primary-container text-on-primary font-bold'
+                    : 'text-on-surface-variant hover:text-on-surface hover:bg-surface-container-low font-semibold'
+                }`}
+                type="button"
+                title="Deep-Dive Operations & Additional Subsystems"
+              >
+                <span>{isMoreActive ? `MORE: ${activeMoreLabel}` : 'MORE OPERATIONS (11)'}</span>
+                <span className="material-symbols-outlined text-[14px]">
+                  {isMoreMenuOpen ? 'arrow_drop_up' : 'arrow_drop_down'}
+                </span>
+              </button>
+
+              {isMoreMenuOpen && (
+                <div
+                  className="absolute top-full left-0 mt-0.5 w-72 bg-surface-container-lowest border border-outline-variant shadow-xl z-50 py-1"
+                  style={{ backdropFilter: 'blur(16px)' }}
+                >
+                  <div className="px-3 py-1 text-[9px] font-label-caps text-on-surface-variant uppercase font-bold border-b border-outline-variant/30">
+                    Additional Command Views
+                  </div>
+                  {moreScreens.map((s) => (
+                    <button
+                      key={s.key}
+                      onClick={() => {
+                        setActiveTab(s.idx);
+                        setIsMoreMenuOpen(false);
+                      }}
+                      className={`w-full text-left px-3 py-1.5 flex items-center justify-between text-xs transition-colors ${
+                        activeTab === s.idx
+                          ? 'bg-surface-container-high text-primary font-bold'
+                          : 'text-on-surface hover:bg-surface-container-low'
+                      }`}
+                    >
+                      <span className="font-medium text-[11px]">{s.label}</span>
+                      <span className="text-[9px] text-on-surface-variant font-mono">{s.tag}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </nav>
 
           <button

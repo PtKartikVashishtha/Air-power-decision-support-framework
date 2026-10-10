@@ -11,6 +11,7 @@
     "benchmark": "tsx benchmarks/run-benchmark.ts",
     "demo": "pnpm --filter @air-power/api dev",
     "check:consistency": "node scripts/check-number-consistency.js",
+    "demo:rehearse": "node scripts/demo-rehearsal.js",
     "hygiene": "node scripts/check-repo-hygiene.js",
     "stop": "powershell -Command \"Stop-Process -Id (Get-NetTCPConnection -LocalPort 3001,3002 -State Listen -ErrorAction SilentlyContinue).OwningProcess -Force -ErrorAction SilentlyContinue\"",
     "lint": "eslint . --ext .ts,.tsx"
