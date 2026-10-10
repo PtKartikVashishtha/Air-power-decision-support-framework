@@ -24,10 +24,11 @@ const simTime = 40;
 const aogInject: TacticalInject = {
   id: 'INJ-AOG-1',
   type: 'AIRCRAFT_AOG_SNAG',
-  name: 'Airframe Hydraulic Failure',
+  simTimeMinutes: 40,
+  title: 'Airframe Hydraulic Failure',
   description: 'Sudden hydraulic leak on aircraft',
   payload: { tailNumber: initialPlan.sorties[0]!.aircraftTail },
-  timestamp: new Date().toISOString(),
+  acknowledged: false,
 };
 
 const resultAOG = engine.retaskPlan(
@@ -59,10 +60,11 @@ if (frozenRespected) console.log('   PASSED: Every frozen sortie is strictly <= 
 const weatherInject: TacticalInject = {
   id: 'INJ-WX-1',
   type: 'BASE_WEATHER_CLOSURE',
-  name: 'Squall Line over Base Ambala',
+  simTimeMinutes: 40,
+  title: 'Squall Line over Base Ambala',
   description: 'Sub-minima weather closure',
   payload: { baseId: 'BASE_AMBALA' },
-  timestamp: new Date().toISOString(),
+  acknowledged: false,
 };
 
 const resultWX = engine.retaskPlan(
@@ -86,7 +88,8 @@ console.log(`   Stability index: ${resultWX.diffReport.stabilityIndex}%`);
 const tstInject: TacticalInject = {
   id: 'INJ-TST-1',
   type: 'NEW_HIGH_VALUE_TST',
-  name: 'High Value Convoy Detected',
+  simTimeMinutes: 40,
+  title: 'High Value Convoy Detected',
   description: 'Pop-up TST request',
   payload: {
     target: {
@@ -104,7 +107,7 @@ const tstInject: TacticalInject = {
       status: 'PENDING',
     },
   },
-  timestamp: new Date().toISOString(),
+  acknowledged: false,
 };
 
 const targetsWithTst = [tstInject.payload.target, ...sc.targetRequests];

@@ -1,5 +1,5 @@
 import { TacticalCopilotEngine, TacticalContextState } from '../../packages/optimizer/src/copilot-engine';
-import { PlanCOA, Airbase, Aircraft, Sortie } from '@air-power/shared';
+import { PlanCOA, Airbase, Aircraft, Sortie } from '../../packages/shared/src';
 
 function createMockContext(): TacticalContextState {
   const bases: Airbase[] = [

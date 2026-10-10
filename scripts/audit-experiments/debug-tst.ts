@@ -11,7 +11,8 @@ const initialPlan = opt.solve(sc.bases, sc.aircraft, sc.pilots, sc.munitionStock
 const tstInject: TacticalInject = {
   id: 'INJ-TST-1',
   type: 'NEW_HIGH_VALUE_TST',
-  name: 'High Value Convoy Detected',
+  simTimeMinutes: 40,
+  title: 'High Value Convoy Detected',
   description: 'Pop-up TST request',
   payload: {
     target: {
@@ -29,7 +30,7 @@ const tstInject: TacticalInject = {
       status: 'PENDING',
     },
   },
-  timestamp: new Date().toISOString(),
+  acknowledged: false,
 };
 
 const targetsWithTst = [tstInject.payload.target, ...sc.targetRequests];
