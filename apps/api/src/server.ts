@@ -958,7 +958,17 @@ fastify.get('/api/xai/sensitivity-tornado', async () => {
 });
 
 // 23. SSE Live Stream for UI
+fastify.options('/api/stream', async (request, reply) => {
+  reply.header('Access-Control-Allow-Origin', '*');
+  reply.header('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  reply.header('Access-Control-Allow-Headers', '*');
+  return reply.status(204).send();
+});
+
 fastify.get('/api/stream', (request, reply) => {
+  reply.raw.setHeader('Access-Control-Allow-Origin', '*');
+  reply.raw.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  reply.raw.setHeader('Access-Control-Allow-Headers', '*');
   reply.raw.setHeader('Content-Type', 'text/event-stream');
   reply.raw.setHeader('Cache-Control', 'no-cache');
   reply.raw.setHeader('Connection', 'keep-alive');
