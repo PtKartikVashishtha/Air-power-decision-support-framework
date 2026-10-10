@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-10T15:58:29.324Z",
+  "generatedAt": "2026-10-10T16:11:56.155Z",
   "seed": 42,
   "mode": "STATIC_RECORDED_REPLAY",
   "fusedPicture": {
@@ -126,7 +126,7 @@
         "turnaroundTimeMinutes": 45,
         "flightHoursTotal": 1333,
         "snagDescription": "Hydraulic actuator pressure loss during pre-flight",
-        "turnaroundEta": "2026-10-10T16:43:29.050Z"
+        "turnaroundEta": "2026-10-10T16:56:55.892Z"
       },
       {
         "tailNumber": "SB-102",
@@ -428,7 +428,7 @@
         "turnaroundTimeMinutes": 45,
         "flightHoursTotal": 639,
         "snagDescription": "Hydraulic actuator pressure loss during pre-flight",
-        "turnaroundEta": "2026-10-10T16:43:29.051Z"
+        "turnaroundEta": "2026-10-10T16:56:55.893Z"
       },
       {
         "tailNumber": "SB-117",
@@ -470,7 +470,7 @@
         "turnaroundTimeMinutes": 45,
         "flightHoursTotal": 1105,
         "snagDescription": "Hydraulic actuator pressure loss during pre-flight",
-        "turnaroundEta": "2026-10-10T16:43:29.051Z"
+        "turnaroundEta": "2026-10-10T16:56:55.893Z"
       },
       {
         "tailNumber": "SB-119",
@@ -812,7 +812,7 @@
         "turnaroundTimeMinutes": 45,
         "flightHoursTotal": 997,
         "snagDescription": "Hydraulic actuator pressure loss during pre-flight",
-        "turnaroundEta": "2026-10-10T16:43:29.051Z"
+        "turnaroundEta": "2026-10-10T16:56:55.893Z"
       },
       {
         "tailNumber": "SB-136",
@@ -834,7 +834,7 @@
         "turnaroundTimeMinutes": 45,
         "flightHoursTotal": 916,
         "snagDescription": "Hydraulic actuator pressure loss during pre-flight",
-        "turnaroundEta": "2026-10-10T16:43:29.051Z"
+        "turnaroundEta": "2026-10-10T16:56:55.893Z"
       },
       {
         "tailNumber": "RB-137",
@@ -2902,8 +2902,8 @@
         "lethalityScore": 95,
         "confidence": 96,
         "sourceSystem": "SATELLITE_ELINT_FUSION",
-        "firstDetectedAt": "2026-10-10T07:58:29.051Z",
-        "lastUpdatedAt": "2026-10-10T15:53:29.051Z",
+        "firstDetectedAt": "2026-10-10T08:11:55.894Z",
+        "lastUpdatedAt": "2026-10-10T16:06:55.894Z",
         "active": true
       },
       {
@@ -2920,8 +2920,8 @@
         "lethalityScore": 78,
         "confidence": 90,
         "sourceSystem": "AIRBORNE_RECCE_RADAR",
-        "firstDetectedAt": "2026-10-10T10:58:29.051Z",
-        "lastUpdatedAt": "2026-10-10T15:48:29.051Z",
+        "firstDetectedAt": "2026-10-10T11:11:55.894Z",
+        "lastUpdatedAt": "2026-10-10T16:01:55.894Z",
         "active": true
       },
       {
@@ -2938,8 +2938,8 @@
         "lethalityScore": 70,
         "confidence": 85,
         "sourceSystem": "SIGINT_DIRECTION_FINDER",
-        "firstDetectedAt": "2026-10-10T12:58:29.051Z",
-        "lastUpdatedAt": "2026-10-10T15:43:29.051Z",
+        "firstDetectedAt": "2026-10-10T13:11:55.894Z",
+        "lastUpdatedAt": "2026-10-10T15:56:55.894Z",
         "active": true
       },
       {
@@ -2956,8 +2956,8 @@
         "lethalityScore": 25,
         "confidence": 94,
         "sourceSystem": "ELINT_PAYLOAD",
-        "firstDetectedAt": "2026-10-10T03:58:29.051Z",
-        "lastUpdatedAt": "2026-10-10T15:38:29.051Z",
+        "firstDetectedAt": "2026-10-10T04:11:55.894Z",
+        "lastUpdatedAt": "2026-10-10T15:51:55.894Z",
         "active": true
       },
       {
@@ -2974,8 +2974,8 @@
         "lethalityScore": 40,
         "confidence": 88,
         "sourceSystem": "AIRBORNE_ESM_NETRA",
-        "firstDetectedAt": "2026-10-10T11:58:29.051Z",
-        "lastUpdatedAt": "2026-10-10T15:51:49.051Z",
+        "firstDetectedAt": "2026-10-10T12:11:55.894Z",
+        "lastUpdatedAt": "2026-10-10T16:05:15.894Z",
         "active": true
       },
       {
@@ -2992,8 +2992,8 @@
         "lethalityScore": 82,
         "confidence": 76,
         "sourceSystem": "RADAR_TRACK_CORRELATION",
-        "firstDetectedAt": "2026-10-10T15:28:29.051Z",
-        "lastUpdatedAt": "2026-10-10T15:55:29.051Z",
+        "firstDetectedAt": "2026-10-10T15:41:55.894Z",
+        "lastUpdatedAt": "2026-10-10T16:08:55.894Z",
         "active": true
       }
     ],
@@ -3924,7 +3924,7 @@
   },
   "coas": {
     "maxEffect": {
-      "id": "PLAN-COA-MAX_EFFECT-909104",
+      "id": "PLAN-COA-MAX_EFFECT-715940",
       "name": "Operation Plan MAX EFFECT",
       "description": "Optimized multi-sector strike plan focusing on max effect.",
       "doctrineFocus": "MAX_EFFECT",
@@ -7541,14 +7541,14 @@
         "strategicReserveAircraft": 4,
         "packageIntegrityPercent": 100,
         "hardConstraintViolations": 0,
-        "solveTimeMs": 52,
+        "solveTimeMs": 46,
         "solverUsed": "ANYTIME_ALNS_VAYU_TS"
       },
-      "createdAt": "2026-10-10T15:58:29.104Z",
+      "createdAt": "2026-10-10T16:11:55.940Z",
       "commanderApproved": false
     },
     "minRisk": {
-      "id": "PLAN-COA-MIN_RISK-909147",
+      "id": "PLAN-COA-MIN_RISK-715985",
       "name": "Operation Plan MIN RISK",
       "description": "Optimized multi-sector strike plan focusing on min risk.",
       "doctrineFocus": "MIN_RISK",
@@ -11469,14 +11469,14 @@
         "strategicReserveAircraft": 4,
         "packageIntegrityPercent": 100,
         "hardConstraintViolations": 0,
-        "solveTimeMs": 43,
+        "solveTimeMs": 45,
         "solverUsed": "ANYTIME_ALNS_VAYU_TS"
       },
-      "createdAt": "2026-10-10T15:58:29.147Z",
+      "createdAt": "2026-10-10T16:11:55.985Z",
       "commanderApproved": false
     },
     "balanced": {
-      "id": "PLAN-COA-BALANCED_RESERVE-909192",
+      "id": "PLAN-COA-BALANCED_RESERVE-716023",
       "name": "Operation Plan BALANCED RESERVE",
       "description": "Optimized multi-sector strike plan focusing on balanced reserve.",
       "doctrineFocus": "BALANCED_RESERVE",
@@ -15103,16 +15103,16 @@
         "strategicReserveAircraft": 6,
         "packageIntegrityPercent": 100,
         "hardConstraintViolations": 0,
-        "solveTimeMs": 45,
+        "solveTimeMs": 38,
         "solverUsed": "ANYTIME_ALNS_VAYU_TS"
       },
-      "createdAt": "2026-10-10T15:58:29.192Z",
+      "createdAt": "2026-10-10T16:11:56.023Z",
       "commanderApproved": false
     }
   },
   "retaskDiffReport": {
     "updatedPlan": {
-      "id": "PLAN-RETASKED-909192",
+      "id": "PLAN-RETASKED-716024",
       "name": "Operation Plan BALANCED RESERVE (Retasked post-SAM_POPUP)",
       "description": "Optimized multi-sector strike plan focusing on balanced reserve.",
       "doctrineFocus": "BALANCED_RESERVE",
@@ -18742,15 +18742,15 @@
         "solveTimeMs": 15,
         "solverUsed": "ANYTIME_ALNS_VAYU_TS"
       },
-      "createdAt": "2026-10-10T15:58:29.192Z",
+      "createdAt": "2026-10-10T16:11:56.024Z",
       "commanderApproved": false
     },
     "diffReport": {
-      "id": "DIFF-909192",
+      "id": "DIFF-716024",
       "triggerEvent": "Mobile SAM Battery Relocation (HQ-16)",
-      "originalPlanId": "PLAN-COA-BALANCED_RESERVE-909192",
-      "updatedPlanId": "PLAN-RETASKED-909192",
-      "timestamp": "2026-10-10T15:58:29.192Z",
+      "originalPlanId": "PLAN-COA-BALANCED_RESERVE-716023",
+      "updatedPlanId": "PLAN-RETASKED-716024",
+      "timestamp": "2026-10-10T16:11:56.024Z",
       "stabilityIndex": 100,
       "legacyStabilityIndex": 100,
       "preservedSortiesPercent": 100,
@@ -18912,12 +18912,12 @@
       },
       {
         "controllerName": "Reactive Dynamic Retasker",
-        "targetDestructionRatePercent": 89.8,
-        "aircraftSurvivabilityPercent": 89.8,
+        "targetDestructionRatePercent": 85.9,
+        "aircraftSurvivabilityPercent": 85.9,
         "packageIntegrityPercent": 88,
-        "effectiveScore": 89.8,
-        "winCountAgainstRedCell": 2,
-        "lossCountAgainstRedCell": 2
+        "effectiveScore": 85.9,
+        "winCountAgainstRedCell": 1,
+        "lossCountAgainstRedCell": 3
       },
       {
         "controllerName": "Robust Hedged Controller (Two-Stage)",
@@ -18925,11 +18925,11 @@
         "aircraftSurvivabilityPercent": 86,
         "packageIntegrityPercent": 96.5,
         "effectiveScore": 86,
-        "winCountAgainstRedCell": 0,
-        "lossCountAgainstRedCell": 4
+        "winCountAgainstRedCell": 1,
+        "lossCountAgainstRedCell": 3
       }
     ],
-    "dominantController": "Reactive Dynamic Retasker",
+    "dominantController": "Robust Hedged Controller (Two-Stage)",
     "tacticalLessonsLearned": [
       "Rigid static ATO plans suffer severe attrition (>35% casualty spike) when Red Cell ambushes transit corridors with mobile SAMs.",
       "Reactive retasking recovers 80% of lost effectiveness, but suffers a 30-second decision lag during which lead packages enter threat envelopes.",
