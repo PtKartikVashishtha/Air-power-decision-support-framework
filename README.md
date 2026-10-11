@@ -200,6 +200,7 @@ Derived directly from **[docs/HONESTY.md](docs/HONESTY.md)** to provide total ca
 | Document | Purpose & Contents |
 |---|---|
 | 🧭 **[docs/EVALUATOR_GUIDE.md](docs/EVALUATOR_GUIDE.md)** | 60-second quick tour, 5-minute scoring rubric mapping, architecture overview |
+| 🏛️ **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** | Comprehensive 4-Tier system architecture, 18 modules, mathematical model, and empirical benchmarks |
 | 🛡️ **[docs/HONESTY.md](docs/HONESTY.md)** | What is real vs simulated, data provenance, headline numbers, and what we do NOT claim |
 | ⚖️ **[docs/RESPONSIBLE_USE.md](docs/RESPONSIBLE_USE.md)** | Human-in-the-loop principle, commander authentication tokens, and misuse considerations |
 | 🏷️ **[docs/REASON_CODES.md](docs/REASON_CODES.md)** | Stable catalogue of 21 assignment, rejection, and retasking reason codes |
