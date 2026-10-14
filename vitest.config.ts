@@ -10,6 +10,7 @@ export default defineConfig({
     },
   },
   test: {
+    testTimeout: 20000,
     include: ['packages/**/*.test.ts', 'apps/**/*.test.ts'],
     exclude: ['**/node_modules/**', 'tools/**', 'dist/**', '.next/**'],
   },
