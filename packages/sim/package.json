@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@air-power/shared": "workspace:*",
+    "@air-power/optimizer": "workspace:*",
     "zod": "^3.24.2"
   },
   "devDependencies": {
