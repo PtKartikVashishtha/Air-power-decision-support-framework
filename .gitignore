@@ -1,136 +1,104 @@
-# ========================================================
-# AIR POWER - SIH 26250 EXCLUSION LIST (.gitignore)
-# ========================================================
-# Clearly grouped repository exclusions. Designed to maintain
-# professional evaluator visibility while keeping internal/agent
-# directives, local caches, and transient test traces local.
-# ========================================================
+# =============================================================================
+# AIR POWER (SIH 26250) — PRODUCTION & ARTIFACT GITIGNORE
+# =============================================================================
+# Cleanly grouped, path-scoped repository exclusions designed for professional
+# SIH defence evaluation. Keeps production tooling, video pipeline renders,
+# presentation generators, agent prompts, and test traces local to this machine.
+# =============================================================================
 
-# --- 1. Agent Directives & Prompt Histories ---
+# --- 1. Production Studio & Tooling (Video, Decks, Compiler, Diagnostics) ---
+/studio/
+/.local/
+/.archify/
+docs/cleanup/
+
+# --- 2. Agent Directives & Prompt Histories ---
 AGENTS.md
 CONTEXT.md
-docs/PROMPT_HISTORY.md
-docs/SIH_PRESENTATION_KIT.md
-docs/GIT_HISTORY_AUDIT.md
-docs/COPILOT_DIAGNOSIS.md
-docs/AUDIT_REPORT.md
-docs/PERF_REPORT.md
-.local/
-.agents/
-.gemini/
-/*prompt*.md
+*prompt*.md
 docs/*prompt*.md
 docs/*PROMPT*.md
+.agents/
+.gemini/
+.claude/
+.cursor/
 
-# --- 2. Temporary Scratch Files, Intermediate Notes & Internal Docs ---
+# --- 3. Rendered Video & Audio Deliverables ---
+*.mp4
+*.mkv
+*.mov
+*.webm
+*.avi
+*.wav
+*.mp3
+*.srt
+*.vtt
+/video/
+/video-studio/
+/out/
+recordings/
+videos/
+screencasts/
+
+# --- 4. Presentation Decks & Office Intermediates ---
+*.pptx
+*.ppt
+*.potx
+*.ppsx
+ppt/
+
+# --- 5. Dependencies & Package Stores ---
+node_modules/
+.pnpm-store/
+tools/
+
+# --- 6. Build Outputs & Compilation Caches ---
+dist/
+build/
+.next/
+/apps/web/out/
+/out/
+.turbo/
+.cache/
+*.tsbuildinfo
+next-env.d.ts
+
+# --- 7. Benchmark Raw Dumps (Summary JSON is kept) ---
+benchmarks/results/*.csv
+benchmarks/results/scale_benchmark_report.json
+benchmarks/results/solver-microbenchmark-results.json
+
+# --- 7. Test Reports, Coverage & Playwright Traces ---
+coverage/
+.vitest/
+test-results/
+playwright-report/
+blob-report/
+docs/bugs/
+docs/demo-rehearsal/
+
+# --- 8. Temporary Scratch Files & Editor Artifacts ---
 scratch/
 scratchpad*
 *.draft.md
 *.tmp*
 *.bak
 *.swp
+*.swo
 *~
-docs/scratch/
-docs/notes/
-docs/internal/
-docs/drafts/
-docs/demo-rehearsal/
-docs/*diagnosis*.md
-docs/*DIAGNOSIS*.md
-docs/*.notes.md
-docs/*.scratch.md
-docs/*.working.md
-docs/*.draft.md
-docs/*.tmp.md
-scripts/*diag*.js
-scripts/inspect-*.js
-scripts/temp-*.js
-
-# --- 3. Dependencies & Package Stores ---
-node_modules/
-.pnpm-store/
-
-# --- 4. Build Outputs & Compilation Caches ---
-dist/
-build/
-out/
-.next/
-.turbo/
-.cache/
-*.tsbuildinfo
-next-env.d.ts
-
-# --- 5. Media & Visual Regression Dumps (With Whitelist) ---
-# Ignore visual regression screenshot dumps and temp media:
-docs/bugs/
-test-results/
-playwright-report/
-blob-report/
-recordings/
-videos/
-screencasts/
-*.mp4
-*.mkv
-*.mov
-*.avi
-*.webm
-
-# Default ignore for bulk images, with explicit evaluator whitelist:
-*.png
-*.jpg
-*.jpeg
-
-# DO NOT OVER-IGNORE: Whitelist README assets, architecture diagrams, and web icons:
-!docs/media/**
-!docs/assets/**
-!apps/web/public/**
-
-# --- 6. Raw Benchmark Per-Seed Dumps & Profiling Traces ---
-benchmarks/results/*
-!benchmarks/results/benchmark-summary.json
-!benchmarks/results/optimality_gap.json
-benchmarks/human/raw/
-*.cpuprofile
-clinic/
-.clinic/
-
-# --- 7. Logs & Process Traces ---
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-
-# --- 8. Test Coverage Reports ---
-coverage/
-.nyc_output/
-*.lcov
+.DS_Store
+Thumbs.db
+.vscode/
 
 # --- 9. Environment & Secrets ---
 .env
 .env*.local
-.env.development.local
-.env.test.local
-.env.production.local
 *.pem
 *.key
 
-# --- 10. IDE, Editor & OS Artifacts ---
-.vscode/
-.idea/
-*.sublime-project
-*.sublime-workspace
-.DS_Store
-Thumbs.db
-
-# --- 11. LaTeX Architecture Document (local working copy only) ---
-# Source and all build artifacts kept local; share the compiled PDF separately
-docs/ARCHITECTURE_DOCUMENT.tex
-docs/ARCHITECTURE_DOCUMENT.pdf
-docs/ARCHITECTURE_DOCUMENT.aux
-docs/ARCHITECTURE_DOCUMENT.log
-docs/ARCHITECTURE_DOCUMENT.out
-docs/ARCHITECTURE_DOCUMENT.synctex.gz
-docs/ARCHITECTURE_DOCUMENT.fls
-docs/ARCHITECTURE_DOCUMENT.fdb_latexmk
-
+# --- 10. Evaluator Whitelist Exceptions ---
+# Explicitly preserve evaluator-facing visuals, architecture diagrams, and web assets:
+!docs/media/**
+!docs/diagrams/out/**
+!docs/diagrams/index.md
+!apps/web/public/**

@@ -17,6 +17,7 @@
     "stop": "powershell -Command \"Stop-Process -Id (Get-NetTCPConnection -LocalPort 3001,3002 -State Listen -ErrorAction SilentlyContinue).OwningProcess -Force -ErrorAction SilentlyContinue\"",
     "lint": "eslint . --ext .ts,.tsx"
   },
+
   "devDependencies": {
     "fast-check": "^4.10.2",
     "playwright": "^1.64.0",

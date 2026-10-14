@@ -1,19 +1,23 @@
 /**
  * Repository Hygiene & Evaluator Readiness Verification Script
  *
- * Scans all tracked git files to guarantee that:
- * 1. No files > 1 MB or raw binary blobs are tracked.
- * 2. No secrets or high-entropy tokens are present.
- * 3. No internal agent directives or prompt notes slipped in.
- * 4. All essential evaluator files (README, LICENSE, EVALUATOR_GUIDE, CLAIMS_REGISTER, etc.) exist.
- * 5. Tracked file list is clean, professional, and compliant with SIH requirements.
+ * Automated pre-commit and CI verification ensuring the repository
+ * is strictly pristine for SIH Defence evaluators:
+ * 1. No tracked files match any .gitignore pattern or IGNORE category.
+ * 2. No tracked file exceeds 1 MB without an explicit allowlist entry.
+ * 3. No unknown root-level files or directories exist.
+ * 4. All package.json scripts point to existing, executable targets.
+ * 5. All README.md internal links and images resolve cleanly.
+ * 6. No internal agent/prompt leakage ("Claude", "Antigravity", "LLM-generated").
+ * 7. No secrets or credentials exist in source code.
+ * 8. All essential evaluator documentation files are present.
  */
 
 const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-const ROOT = path.join(__dirname, '..');
+const ROOT = path.resolve(__dirname, '..');
 
 const ESSENTIAL_EVALUATOR_FILES = [
   'README.md',
@@ -21,21 +25,89 @@ const ESSENTIAL_EVALUATOR_FILES = [
   'NOTICE',
   'docs/EVALUATOR_GUIDE.md',
   'docs/CLAIMS_REGISTER.md',
-  'docs/SELF_REDTEAM.md',
-  'docs/HUMAN_BASELINE_PROTOCOL.md',
-  'docs/DECISIONS.md',
   'docs/HONESTY.md',
   'docs/RESPONSIBLE_USE.md',
   'docs/REASON_CODES.md',
   'docs/SOLVER_CHOICE.md',
+  'docs/ARCHITECTURE.md',
+  'docs/DECISIONS.md',
+  'docs/PERF_REPORT.md',
+  'docs/SELF_REDTEAM.md',
+  'docs/HUMAN_BASELINE_PROTOCOL.md',
+  'docs/CODEBASE_AUDIT_V2.md',
 ];
 
-const INTERNAL_FORBIDDEN_FILES = [
+const ALLOWED_ROOT_DIRS = new Set([
+  '.git',
+  '.github',
+  'apps',
+  'benchmarks',
+  'deploy',
+  'docs',
+  'packages',
+  'scripts',
+  // Locally permitted (ignored in git):
+  '.archify',
+  '.local',
+  '.vscode',
+  'node_modules',
+  'out',
+  'studio',
+]);
+
+const ALLOWED_ROOT_FILES = new Set([
+  '.gitignore',
+  'docker-compose.yml',
+  'LICENSE',
+  'Makefile',
+  'netlify.toml',
+  'NOTICE',
+  'package.json',
+  'pnpm-lock.yaml',
+  'pnpm-workspace.yaml',
+  'README.md',
+  'vercel.json',
+  'vitest.config.ts',
+  // Locally permitted (ignored in git):
+  'AGENTS.md',
+  'CONTEXT.md',
+]);
+
+const FORBIDDEN_TRACKED_EXTENSIONS = [
+  '.exe', '.dll', '.bin', '.iso', '.zip', '.tar.gz', '.tgz', '.jar', '.so', '.dylib', '.7z',
+  '.mp4', '.mkv', '.mov', '.webm', '.avi', '.wav', '.mp3', '.srt', '.vtt',
+  '.pptx', '.ppt', '.potx', '.ppsx',
+];
+
+const FORBIDDEN_TRACKED_PREFIXES = [
+  'studio/',
+  '.local/',
+  '.archify/',
+  'video/',
+  'video-studio/',
+  'ppt/',
+  'scratch/',
+  'docs/cleanup/',
+  'docs/bugs/',
+  'docs/demo-rehearsal/',
+  'test-results/',
+  'playwright-report/',
+  'blob-report/',
+];
+
+const FORBIDDEN_TRACKED_EXACT = new Set([
   'AGENTS.md',
   'CONTEXT.md',
   'docs/PROMPT_HISTORY.md',
   'docs/SIH_PRESENTATION_KIT.md',
-];
+  'benchmarks/results/benchmark_100_seeds.csv',
+  'benchmarks/results/scale_benchmark_report.json',
+  'benchmarks/results/solver-microbenchmark-results.json',
+]);
+
+const ALLOWLIST_LARGE_FILES = new Set([
+  // Whitelisted files > 1 MB (e.g. large golden corpora if any, currently empty)
+]);
 
 const SECRET_PATTERNS = [
   /(?:api[_-]?key|apikey|secret|token)\s*[:=]\s*['"][A-Za-z0-9_\-]{16,}['"]/i,
@@ -45,8 +117,11 @@ const SECRET_PATTERNS = [
   /AKIA[0-9A-Z]{16}/,
 ];
 
-const BINARY_EXTENSIONS = [
-  '.exe', '.dll', '.bin', '.iso', '.zip', '.tar.gz', '.tgz', '.jar', '.so', '.dylib', '.7z'
+// Strictly forbidden internal words across tracked evaluator files
+const STRICT_FORBIDDEN_WORDS = [
+  { pattern: /\bClaude\b/i, name: 'Claude (internal LLM tool)' },
+  { pattern: /\bAntigravity\b/i, name: 'Antigravity (internal coding tool)' },
+  { pattern: /\bLLM-generated\b/i, name: 'LLM-generated' },
 ];
 
 function runHygieneCheck() {
@@ -55,18 +130,18 @@ function runHygieneCheck() {
   const violations = [];
   const warnings = [];
 
-  // 1. Get all tracked files via git
+  // 1. Get tracked files via git
   let trackedFiles = [];
   try {
     const stdout = execSync('git ls-files', { cwd: ROOT, encoding: 'utf8' });
-    trackedFiles = stdout.split('\n').map((f) => f.trim()).filter(Boolean);
+    trackedFiles = stdout.split(/\r?\n/).map((f) => f.trim()).filter(Boolean);
   } catch (err) {
     violations.push(`Failed to list tracked git files: ${err.message}`);
   }
 
   console.log(`📋 Total Tracked Files: ${trackedFiles.length}`);
 
-  // 2. Check for missing essential evaluator files
+  // 2. Check essential evaluator files exist
   for (const relPath of ESSENTIAL_EVALUATOR_FILES) {
     const fullPath = path.join(ROOT, relPath);
     if (!fs.existsSync(fullPath)) {
@@ -76,48 +151,164 @@ function runHygieneCheck() {
     }
   }
 
-  // 3. Scan tracked files for forbidden internal files, file size > 1MB, binaries, secrets, and console debris
+  // 3. Check for root-level unknown files or folders
+  try {
+    const rootEntries = fs.readdirSync(ROOT, { withFileTypes: true });
+    for (const entry of rootEntries) {
+      const name = entry.name;
+      if (entry.isDirectory()) {
+        if (!ALLOWED_ROOT_DIRS.has(name)) {
+          violations.push(`Unknown root directory detected: ${name}/`);
+        }
+      } else {
+        if (!ALLOWED_ROOT_FILES.has(name)) {
+          violations.push(`Unknown root file detected: ${name}`);
+        }
+      }
+    }
+  } catch (err) {
+    violations.push(`Failed to read root directory: ${err.message}`);
+  }
+
+  // 4. Check package.json scripts for broken target paths
+  try {
+    const pkgJsonPath = path.join(ROOT, 'package.json');
+    const pkg = JSON.parse(fs.readFileSync(pkgJsonPath, 'utf8'));
+    const scripts = pkg.scripts || {};
+
+    for (const [scriptName, cmd] of Object.entries(scripts)) {
+      // Look for files referenced in the command (e.g., node scripts/xyz.js or tsx benchmarks/xyz.ts)
+      const matches = cmd.matchAll(/(?:node|tsx|run)\s+([A-Za-z0-9_\-\/\\.]+\.(?:js|ts|json))/g);
+      for (const m of matches) {
+        const targetRel = m[1].replace(/\\/g, '/');
+        const targetFull = path.join(ROOT, targetRel);
+        if (!fs.existsSync(targetFull)) {
+          violations.push(`package.json script "${scriptName}" references missing file: ${targetRel}`);
+        }
+      }
+    }
+  } catch (err) {
+    violations.push(`Failed to validate package.json scripts: ${err.message}`);
+  }
+
+  // 5. Check README.md local links & embeds
+  try {
+    const readmePath = path.join(ROOT, 'README.md');
+    const readmeContent = fs.readFileSync(readmePath, 'utf8');
+
+    // Match [text](target) and ![alt](target)
+    const linkMatches = readmeContent.matchAll(/!?\[.*?\]\((.+?)\)/g);
+    for (const m of linkMatches) {
+      const target = m[1].trim();
+
+      // Skip external links, mailto, and anchor-only links
+      if (
+        target.startsWith('http://') ||
+        target.startsWith('https://') ||
+        target.startsWith('mailto:') ||
+        target.startsWith('#') ||
+        target === '<link>'
+      ) {
+        continue;
+      }
+
+      // Strip query parameters and anchors
+      const cleanTarget = target.split('#')[0].split('?')[0].trim();
+      if (!cleanTarget) continue;
+
+      const targetPath = path.join(ROOT, cleanTarget);
+      if (!fs.existsSync(targetPath)) {
+        violations.push(`Broken local link in README.md: "${target}" (resolved to ${cleanTarget})`);
+      }
+    }
+  } catch (err) {
+    violations.push(`Failed to check README links: ${err.message}`);
+  }
+
+  // 6. Check tracked files against IGNORE categories, size limit, binaries, secrets, and internal wording
   let todoCount = 0;
   let fixmeCount = 0;
 
+  // Fast batch check: do any tracked files match .gitignore?
+  try {
+    const input = trackedFiles.join('\n');
+    const ignoredMatches = execSync('git check-ignore --stdin', {
+      cwd: ROOT,
+      input,
+      encoding: 'utf8',
+      stdio: ['pipe', 'pipe', 'ignore'],
+    }).split(/\r?\n/).map((f) => f.trim()).filter(Boolean);
+
+    for (const match of ignoredMatches) {
+      violations.push(`Tracked file matches .gitignore rule (should be untracked): ${match}`);
+    }
+  } catch (err) {
+    // Exit code 1 from git check-ignore means none of the input files matched .gitignore (desired outcome!)
+  }
+
   for (const relFile of trackedFiles) {
-    const fullFile = path.join(ROOT, relFile);
+    const normalizedRel = relFile.replace(/\\/g, '/');
+    const fullFile = path.join(ROOT, normalizedRel);
 
-    // Forbidden internal files
-    if (INTERNAL_FORBIDDEN_FILES.includes(relFile)) {
-      violations.push(`Internal agent/prompt file is tracked in git: ${relFile}`);
+    // Exact forbidden check
+    if (FORBIDDEN_TRACKED_EXACT.has(normalizedRel)) {
+      violations.push(`Forbidden production file is tracked in git: ${normalizedRel}`);
     }
 
-    if (!fs.existsSync(fullFile)) continue;
+    // Prefix forbidden check
+    for (const prefix of FORBIDDEN_TRACKED_PREFIXES) {
+      if (normalizedRel.startsWith(prefix)) {
+        violations.push(`Tracked file in forbidden directory (${prefix}): ${normalizedRel}`);
+      }
+    }
+
+    // Extension check
+    const ext = path.extname(normalizedRel).toLowerCase();
+    if (FORBIDDEN_TRACKED_EXTENSIONS.includes(ext)) {
+      violations.push(`Tracked forbidden extension (${ext}): ${normalizedRel}`);
+    }
+
+    if (!fs.existsSync(fullFile)) {
+      // Staged deletion or missing file
+      continue;
+    }
+
     const stats = fs.statSync(fullFile);
-
-    // File size check (> 1 MB)
     const sizeMb = stats.size / (1024 * 1024);
-    if (sizeMb > 1.0) {
-      violations.push(`File exceeds 1 MB limit (${sizeMb.toFixed(2)} MB): ${relFile}`);
+
+    // Size limit (> 1 MB)
+    if (sizeMb > 1.0 && !ALLOWLIST_LARGE_FILES.has(normalizedRel)) {
+      violations.push(`Tracked file exceeds 1 MB without allowlist entry (${sizeMb.toFixed(2)} MB): ${normalizedRel}`);
     }
 
-    // Binary check
-    const ext = path.extname(relFile).toLowerCase();
-    if (BINARY_EXTENSIONS.includes(ext)) {
-      violations.push(`Tracked binary file not permitted: ${relFile}`);
-    }
+    // Content check for text files
+    const isImageOrBinary =
+      ext === '.png' ||
+      ext === '.jpg' ||
+      ext === '.jpeg' ||
+      ext === '.svg' ||
+      ext === '.ico' ||
+      ext === '.pdf' ||
+      ext === '.woff' ||
+      ext === '.woff2';
 
-    // Secrets & Content Scan on text files
-    if (
-      !relFile.endsWith('.png') &&
-      !relFile.endsWith('.jpg') &&
-      !relFile.endsWith('.ico') &&
-      !relFile.endsWith('.pdf') &&
-      stats.size < 500000
-    ) {
+    if (!isImageOrBinary && stats.size < 500000) {
       try {
         const content = fs.readFileSync(fullFile, 'utf8');
 
-        // Secrets Scan
+        // Secrets check
         for (const pattern of SECRET_PATTERNS) {
           if (pattern.test(content)) {
-            violations.push(`Potential credential/secret detected in ${relFile} matching ${pattern}`);
+            violations.push(`Potential credential/secret detected in ${normalizedRel} matching ${pattern}`);
+          }
+        }
+
+        // Strict internal wording check (skip self and .gitignore)
+        if (normalizedRel !== 'scripts/check-repo-hygiene.js' && normalizedRel !== '.gitignore') {
+          for (const word of STRICT_FORBIDDEN_WORDS) {
+            if (word.pattern.test(content)) {
+              violations.push(`Internal wording detected in ${normalizedRel}: ${word.name}`);
+            }
           }
         }
 

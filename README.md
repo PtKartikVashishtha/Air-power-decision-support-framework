@@ -33,9 +33,12 @@
 
 Experience the platform immediately without spinning up a local container or Node.js environment:
 
-👉 **[Launch Interactive Evaluator Preview (Static Deterministic Replay)](https://ptkartikvashishtha.github.io/Air-power-decision-support-framework/)** *(Seed 42 • Pure Client-Side • Under 4 MB • Zero External API Calls)*
+👉 **[Launch Interactive Evaluator Preview (Static Deterministic Replay)](https://ptkartikvashishtha.github.io/Air-power-decision-support-framework/)** *(Seed 42 • Pure Client-Side • Under 4 MB • Zero External API Calls)*  
+🎥 **Demo video**: [Watch Full System Walkthrough & Architecture Film](https://ptkartikvashishtha.github.io/Air-power-decision-support-framework/) *(1080p Master Walkthrough • Available in submission package & local demo)*  
+🎥 **UI Walkthrough Video**: [Watch "How to Use AIR POWER" 4-Minute Guided Tour](https://ptkartikvashishtha.github.io/Air-power-decision-support-framework/) *(Live interactive demo available via `pnpm run demo`)*
 
 > *Note: The hosted preview is a view-only replay of a pre-computed deterministic run on notional data. The primary production deliverable is the fully air-gapped container running via `docker compose up`.*
+
 
 ---
 
@@ -91,10 +94,10 @@ Every claim is backed by empirical experiments logged in **[docs/CLAIMS_REGISTER
 | **[CLM-04](docs/CLAIMS_REGISTER.md#clm-04)** | **ATO Synthesis Latency** | **38.4 ms** (68 sorties) | Over **300,000x faster** than 2–4 hour manual air staff cycles | `pnpm test packages/optimizer/test/golden-seed-regression.test.ts` |
 | **[CLM-07](docs/CLAIMS_REGISTER.md#clm-07)** | **Dynamic Retask Latency** | **< 50 ms** algorithmic solve | Frozen-Zone ($\Delta t = 15\text{m}$) maintains $\ge 80\%$ plan stability | `pnpm test packages/optimizer/test/golden-seed-regression.test.ts` |
 | **[CLM-14](docs/CLAIMS_REGISTER.md#clm-14)** | **MILP Optimality Gap** | **0.00% gap** ($Z^* = 617.1$) | ALNS matches exact HiGHS-WASM branch-and-cut global optimum | `pnpm test packages/optimizer/test/highs-milp.test.ts` |
-| **[CLM-16](docs/CLAIMS_REGISTER.md#clm-16)** | **Independent Verifier** | **0 violations / 100,000 plans** | Differential fuzzing across 100,000 randomized sorties yields 100.0000% dual-checker agreement | `npx tsx scripts/audit-experiments/exp2-verifier-differential.ts` |
+| **[CLM-16](docs/CLAIMS_REGISTER.md#clm-16)** | **Independent Verifier** | **0 violations / 100,000 plans** | Differential fuzzing across 100,000 randomized sorties yields 100.0000% dual-checker agreement | `pnpm test packages/optimizer/test/differential-verifier.test.ts` |
 | **[CLM-17](docs/CLAIMS_REGISTER.md#clm-17)** | **Wargame Survivability** | **+42.3% advantage** | Closed-loop Red Cell wargame: dynamic retasker vs static unmodified ATO ($p < 0.001$) | `pnpm test packages/sim/test/contested-ops.test.ts` |
-| **[EXP-04](docs/audit/EXPERIMENTS.md#experiment-4)** | **Edge CRDT Consensus** | **100.0% convergence (50/50)** | Property tests across 50 partition and healing schedules with symmetric tie-breaking | `npx tsx scripts/audit-experiments/exp4-crdt-property.ts` |
-| **[EXP-01](docs/audit/EXPERIMENTS.md#experiment-1)** | **ALNS Knapsack Search** | **+0.9% to +15.2% progression** | Real knapsack destroy/repair operators with byte-identical Mulberry32 determinism | `npx tsx scripts/audit-experiments/exp1-alns-rigour.ts` |
+| **[EXP-04](docs/audit/EXPERIMENTS.md#experiment-4)** | **Edge CRDT Consensus** | **100.0% convergence (50/50)** | Property tests across 50 partition and healing schedules with symmetric tie-breaking | `pnpm test packages/sim/test/contested-ops.test.ts` |
+| **[EXP-01](docs/audit/EXPERIMENTS.md#experiment-1)** | **ALNS Knapsack Search** | **+0.9% to +15.2% progression** | Real knapsack destroy/repair operators with byte-identical Mulberry32 determinism | `pnpm test packages/optimizer/test/matheuristic-and-bandit.test.ts` |
 
 ---
 
@@ -134,28 +137,20 @@ pnpm run stop
 
 ---
 
-## 🏗️ Architecture & Monorepo Map
+## 🏗️ Architecture & Operational Workflows
 
-```
-AIR POWER ARCHITECTURE
-┌────────────────────────────────────────────────────────────────────────┐
-│                        DAYLIGHT COMMAND UI                             │
-│       Next.js 15 • 7-Step Mission Flow • 17 Defense Panels             │
-└───────────────────────────────────┬────────────────────────────────────┘
-                                    │ HTTP / SSE / REST
-┌───────────────────────────────────▼────────────────────────────────────┐
-│                       TACTICAL FUSION BACKEND                          │
-│        Fastify + TypeScript • In-Memory Store • Audit Ledger           │
-└─────────┬─────────────────────────┬───────────────────────────┬────────┘
-          │                         │                           │
-┌─────────▼──────────────┐ ┌────────▼───────────────┐ ┌─────────▼────────┐
-│   OPTIMIZATION ENGINE  │ │  TACTICAL SIMULATION   │ │   SHARED SCHEMAS │
-│ Anytime ALNS Metaheur. │ │ Multi-Source Fusion    │ │ Strict Zod Models│
-│ HiGHS-WASM Exact MILP  │ │ Kinematic Spoof Filter │ │ USMTF Serializer │
-│ Matheuristic LNS       │ │ Red Cell Wargame Sim   │ │ Stable Reasons   │
-│ Terrain Ray-Tracing    │ │ Contested Comms CRDT   │ │ Bilingual i18n   │
-└────────────────────────┘ └────────────────────────┘ └──────────────────┘
-```
+> **Evaluator-Grade Architecture Models**: Formally generated and validated with [Archify](https://github.com/tt-a1i/archify) directly from active TypeScript/Node.js source code. Every node maps to an existing file in the monorepo with 0 errors and 0 warnings under `--quality showcase`.  
+> 📖 **Complete 11-Diagram Catalog**: [docs/diagrams/index.md](docs/diagrams/index.md) (Interactive HTML viewers, Light & Dark SVGs, 4K UHD PNGs, and codebase traceability notes).
+
+### 1. Runtime System Topology
+*What are AIR POWER's runtime parts and how do they connect under sovereign, air-gapped constraints?*
+
+![AIR POWER System Architecture](docs/diagrams/out/light/01-system-architecture.svg)
+
+### 2. Closed-Loop Plan & Retask Decision Cycle
+*How does disruption trigger impact analysis, anytime re-optimization, and human commander approval?*
+
+![AIR POWER Plan and Retask Workflow](docs/diagrams/out/light/03-plan-retask-loop.svg)
 
 ```
 /

@@ -38,6 +38,9 @@ When opening `http://localhost:3002`, the platform immediately boots into the **
 | **03:00–04:00** | **Step 6: Re-Plan on Disruption** | Step 6 (Re-plan on Disruption). Inject a mobile SAM relocation or runway closure; < 50ms re-solve preserves frozen zone ($\Delta t = 15\text{m}$) with $\ge 80\%$ stability. | Operational Resilience, Stability |
 | **04:00–05:00** | **Step 7: Decide & Record** | Step 7 (Decide & Record). Cryptographic SHA-256 tamper-evident ledger locks audit trail; export valid MIL-STD USMTF ATO, CoT 2.0 XML, and GeoJSON. | Interoperability, Auditability |
 
+#### Closed-Loop Operational Workflow (Verified Archify Model)
+![Closed-Loop Operational Workflow](../docs/diagrams/out/light/03-plan-retask-loop.svg)
+
 ---
 
 ## 3. Rubric Item Mapping & Evidence Directory
@@ -71,6 +74,9 @@ When opening `http://localhost:3002`, the platform immediately boots into the **
 - **WASM Acceleration**: `highs@1.15.3` pure WebAssembly C++ solver called from Node.js.
 - **Reproducible Benchmark Suite**: `benchmarks/run-benchmark.ts` (`pnpm run benchmark`).
 - **Repository Hygiene Verification**: `scripts/check-repo-hygiene.js` (`pnpm run hygiene`).
+- **Verified Architecture Models**: 11 validated diagrams in [`docs/diagrams/index.md`](file:///D:/PROGRAMMING/projects/SIH-2026/Air-Power/docs/diagrams/index.md).
+
+![AIR POWER System Architecture](../docs/diagrams/out/light/01-system-architecture.svg)
 
 ### E. User Interface & Human Factors
 - **Elite Defense Command Center Aesthetics**: Responsive dark glassmorphism, crisp military typography (JetBrains Mono / Inter), bilingual English/Hindi toggle.
@@ -81,8 +87,10 @@ When opening `http://localhost:3002`, the platform immediately boots into the **
 
 ## 4. Key Verification Commands
 
+![AIR POWER Evidence Pipeline](../docs/diagrams/out/light/11-evidence-pipeline.svg)
+
 ```bash
-# 1. Full automated unit & property tests (272 tests across 20 test files)
+# 1. Full automated unit & property tests (291 tests across 23 test files)
 pnpm test
 
 # 2. Cross-file number & claim consistency audit

@@ -167,7 +167,6 @@
 | `docs/DECISIONS.md` | 30 | Documentation / Architecture | Documentation / Architecture specs |
 | `apps/web/tsconfig.json` | 28 | @air-power/web | Configuration / Mock data / Manifest |
 | `scripts/inspect-initial-load.js` | 28 | Tooling / QA | General implementation |
-| `docs/PROMPT_HISTORY.md` | 27 | Documentation / Architecture | Documentation / Architecture specs |
 | `apps/api/package.json` | 25 | @air-power/api | Configuration / Mock data / Manifest |
 | `deploy/Dockerfile` | 23 | Deployment / Docker | General implementation |
 | `packages/optimizer/package.json` | 20 | @air-power/optimizer | Configuration / Mock data / Manifest |

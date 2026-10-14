@@ -1,25 +1,25 @@
 {
   "sampleSize": 100,
-  "timestamp": "2026-10-10T18:58:41.974Z",
+  "timestamp": "2026-10-11T20:38:25.217Z",
   "independentAuditViolationsTotal": 0,
   "optimizer": {
     "coverage": {
-      "mean": 74.63,
-      "std": 4.76,
-      "ciLower": 73.7,
-      "ciUpper": 75.56
+      "mean": 75.33,
+      "std": 4.42,
+      "ciLower": 74.47,
+      "ciUpper": 76.2
     },
     "efficiencyRatio": {
-      "mean": 18.12,
-      "std": 0.57,
-      "ciLower": 18.01,
-      "ciUpper": 18.24
+      "mean": 18.15,
+      "std": 0.54,
+      "ciLower": 18.04,
+      "ciUpper": 18.25
     },
     "solveTimeMs": {
-      "mean": 152.64,
-      "std": 10.73,
-      "ciLower": 150.54,
-      "ciUpper": 154.74
+      "mean": 152.15,
+      "std": 2.21,
+      "ciLower": 151.72,
+      "ciUpper": 152.59
     },
     "optimalityGapVsExactMilpPercent": 0
   },

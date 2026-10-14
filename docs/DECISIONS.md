@@ -27,3 +27,11 @@
 - **Context**: Jurors frequently query why an anytime metaheuristic was chosen over standard solvers like Google OR-Tools CP-SAT or Gurobi.
 - **Decision**: Standardize on an in-process Anytime ALNS metaheuristic with an embedded HiGHS-WASM branch-and-cut yardstick, evaluating CP-SAT solely as an offline research comparator. See comprehensive rationale in [docs/SOLVER_CHOICE.md](SOLVER_CHOICE.md).
 - **Consequences**: Zero Python runtime dependency, zero process boundary IPC latency, sub-50ms anytime feasibility under tactical mission injects, and verified 0.00% optimality gap against exact branch-and-cut up to N=16 targets.
+
+## ADR-005: Code-Backed Evaluator Diagram Generation via Archify (Pinned Commit 1c2b42d)
+- **Date**: 2026-10-15
+- **Status**: Accepted
+- **Context**: Defense evaluators require high-fidelity, verified visual architecture, dataflow, sequence, and workflow diagrams. Freeform drawings frequently rot, diverge from code, and hallucinate non-existent components.
+- **Decision**: Adopt the open-source MIT Archify diagram compiler (`tt-a1i/archify` @ commit `1c2b42d660e4a7571813fb43839c79e3e9ca7720` / tag `v3.1.0`) cloned locally into `tools/archify/` (gitignored). Diagrams are compiled from typed JSON sources backed by real repository module paths, validated fail-closed with `--quality showcase`, and exported into dual light/dark SVGs, 3000px PNGs, and interactive HTMLs with the mandatory "NOTIONAL / SYNTHETIC DATA · ADVISORY ONLY" banner.
+- **Consequences**: Pure Node.js local execution with zero cloud dependencies; automated CI check (`pnpm run diagrams:check`) guarantees 0 dead file paths, <=12 nodes per diagram, and strict alignment with `docs/IMPLEMENTATION_STATUS.md`.
+
