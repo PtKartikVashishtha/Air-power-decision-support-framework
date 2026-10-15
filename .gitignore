@@ -46,6 +46,9 @@ screencasts/
 *.potx
 *.ppsx
 ppt/
+slide_variants/
+docs/diagrams/out/slide_variants/
+
 
 # --- 5. Dependencies & Package Stores ---
 node_modules/
@@ -99,6 +102,6 @@ Thumbs.db
 # --- 10. Evaluator Whitelist Exceptions ---
 # Explicitly preserve evaluator-facing visuals, architecture diagrams, and web assets:
 !docs/media/**
-!docs/diagrams/out/**
+!docs/diagrams/out/dark/**
 !docs/diagrams/index.md
 !apps/web/public/**
