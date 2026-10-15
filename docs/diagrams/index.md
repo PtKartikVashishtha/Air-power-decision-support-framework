@@ -1,8 +1,10 @@
 # AIR POWER (SIH 26250) — System Architecture & Workflow Diagrams
 
-> **Verified Architecture Artifacts**: Generated directly from the active TypeScript/Node.js codebase. Validated at showcase quality with 0 errors and 0 warnings.
+> **Verified Architecture Artifacts**: Generated directly from the active TypeScript/Node.js codebase via [Archify](https://github.com/tt-a1i/archify). Validated at showcase quality with 0 errors and 0 warnings.
 >
 > **Doctrine Compliance**: Every component traces directly to an active file path in the repository. Adheres to strict human-in-the-loop doctrine, dual independent verifier constraints, and air-gapped sovereign execution.
+>
+> **Format & Theme**: Kept in elite tactical dark theme (`.svg` vector for documentation and web rendering, `.png` for high-resolution 4K briefing display).
 
 ---
 
@@ -10,33 +12,27 @@
 
 | # | Diagram | Type | Focus | Assets |
 |---|---------|------|-------|--------|
-| 1 | [01-system-architecture](#01-system-architecture) | `architecture` | Sovereign Runtime Topology | [Light SVG](./out/light/01-system-architecture.svg) · [Dark SVG](./out/dark/01-system-architecture.svg) |
-| 2 | [02-data-flow](#02-data-flow) | `dataflow` | Multi-Source Fusion & Pipeline | [Light SVG](./out/light/02-data-flow.svg) · [Dark SVG](./out/dark/02-data-flow.svg) |
-| 3 | [03-plan-retask-loop](#03-plan-retask-loop) | `workflow` | Closed-Loop Mission Cycle | [Light SVG](./out/light/03-plan-retask-loop.svg) · [Dark SVG](./out/dark/03-plan-retask-loop.svg) |
-| 4 | [04-generate-plan](#04-generate-plan) | `sequence` | ALNS Optimization Lifecycle | [Light SVG](./out/light/04-generate-plan.svg) · [Dark SVG](./out/dark/04-generate-plan.svg) |
-| 5 | [05-dynamic-retasking](#05-dynamic-retasking) | `sequence` | Pop-up Threat Re-allocation | [Light SVG](./out/light/05-dynamic-retasking.svg) · [Dark SVG](./out/dark/05-dynamic-retasking.svg) |
-| 6 | [06-sortie-lifecycle](#06-sortie-lifecycle) | `lifecycle` | Mission State Machine & SGR | [Light SVG](./out/light/06-sortie-lifecycle.svg) · [Dark SVG](./out/dark/06-sortie-lifecycle.svg) |
-| 7 | [07-degraded-link-edge](#07-degraded-link-edge) | `sequence` | Edge CRDT Vector Synchronization | [Light SVG](./out/light/07-degraded-link-edge.svg) · [Dark SVG](./out/dark/07-degraded-link-edge.svg) |
-| 8 | [08-copilot-pipeline](#08-copilot-pipeline) | `workflow` | Offline NLP & Intent Extraction | [Light SVG](./out/light/08-copilot-pipeline.svg) · [Dark SVG](./out/dark/08-copilot-pipeline.svg) |
-| 9 | [09-optimizer-internals](#09-optimizer-internals) | `workflow` | Destroy/Repair & Bandit Selection | [Light SVG](./out/light/09-optimizer-internals.svg) · [Dark SVG](./out/dark/09-optimizer-internals.svg) |
-| 10 | [10-monorepo-dependencies](#10-monorepo-dependencies) | `architecture` | Monorepo Structure & Boundaries | [Light SVG](./out/light/10-monorepo-dependencies.svg) · [Dark SVG](./out/dark/10-monorepo-dependencies.svg) |
-| 11 | [11-evidence-pipeline](#11-evidence-pipeline) | `workflow` | Verification & Benchmark Chain | [Light SVG](./out/light/11-evidence-pipeline.svg) · [Dark SVG](./out/dark/11-evidence-pipeline.svg) |
+| 1 | [01-system-architecture](#01-system-architecture) | `architecture` | Sovereign Runtime Topology | [Dark SVG](./out/dark/01-system-architecture.svg) · [PNG](./out/dark/01-system-architecture.png) |
+| 2 | [02-data-flow](#02-data-flow) | `dataflow` | Multi-Source Fusion & Pipeline | [Dark SVG](./out/dark/02-data-flow.svg) · [PNG](./out/dark/02-data-flow.png) |
+| 3 | [03-plan-retask-loop](#03-plan-retask-loop) | `workflow` | Closed-Loop Mission Cycle | [Dark SVG](./out/dark/03-plan-retask-loop.svg) · [PNG](./out/dark/03-plan-retask-loop.png) |
+| 4 | [04-generate-plan](#04-generate-plan) | `sequence` | ALNS Optimization Lifecycle | [Dark SVG](./out/dark/04-generate-plan.svg) · [PNG](./out/dark/04-generate-plan.png) |
+| 5 | [05-dynamic-retasking](#05-dynamic-retasking) | `sequence` | Pop-up Threat Re-allocation | [Dark SVG](./out/dark/05-dynamic-retasking.svg) · [PNG](./out/dark/05-dynamic-retasking.png) |
+| 6 | [06-sortie-lifecycle](#06-sortie-lifecycle) | `lifecycle` | Mission State Machine & SGR | [Dark SVG](./out/dark/06-sortie-lifecycle.svg) · [PNG](./out/dark/06-sortie-lifecycle.png) |
+| 7 | [07-degraded-link-edge](#07-degraded-link-edge) | `sequence` | Edge CRDT Vector Synchronization | [Dark SVG](./out/dark/07-degraded-link-edge.svg) · [PNG](./out/dark/07-degraded-link-edge.png) |
+| 8 | [08-copilot-pipeline](#08-copilot-pipeline) | `workflow` | Offline NLP & Intent Extraction | [Dark SVG](./out/dark/08-copilot-pipeline.svg) · [PNG](./out/dark/08-copilot-pipeline.png) |
+| 9 | [09-optimizer-internals](#09-optimizer-internals) | `workflow` | Destroy/Repair & Bandit Selection | [Dark SVG](./out/dark/09-optimizer-internals.svg) · [PNG](./out/dark/09-optimizer-internals.png) |
+| 10 | [10-monorepo-dependencies](#10-monorepo-dependencies) | `architecture` | Monorepo Structure & Boundaries | [Dark SVG](./out/dark/10-monorepo-dependencies.svg) · [PNG](./out/dark/10-monorepo-dependencies.png) |
+| 11 | [11-evidence-pipeline](#11-evidence-pipeline) | `workflow` | Verification & Benchmark Chain | [Dark SVG](./out/dark/11-evidence-pipeline.svg) · [PNG](./out/dark/11-evidence-pipeline.png) |
 
 ---
 
-## Gallery
+## Gallery (Tactical Dark Theme)
 
 ### 01-system-architecture
 
 **Focus**: Runtime system topology under sovereign, air-gapped constraints.
 
-**Links**: [Light SVG](./out/light/01-system-architecture.svg) · [Dark SVG](./out/dark/01-system-architecture.svg) · [High-Res PNG](./out/dark/01-system-architecture.png)
-
-#### Light Theme (Evaluator & Documentation)
-
-![01-system-architecture Light](./out/light/01-system-architecture.svg)
-
-#### Dark Theme (Operations Center & Video Studio)
+**Links**: [Dark SVG](./out/dark/01-system-architecture.svg) · [High-Res PNG](./out/dark/01-system-architecture.png)
 
 ![01-system-architecture Dark](./out/dark/01-system-architecture.svg)
 
@@ -46,13 +42,7 @@
 
 **Focus**: Multi-source telemetry ingestion, Bayesian confidence decay, and Mach 3.5 kinematic verification.
 
-**Links**: [Light SVG](./out/light/02-data-flow.svg) · [Dark SVG](./out/dark/02-data-flow.svg) · [High-Res PNG](./out/dark/02-data-flow.png)
-
-#### Light Theme (Evaluator & Documentation)
-
-![02-data-flow Light](./out/light/02-data-flow.svg)
-
-#### Dark Theme (Operations Center & Video Studio)
+**Links**: [Dark SVG](./out/dark/02-data-flow.svg) · [High-Res PNG](./out/dark/02-data-flow.png)
 
 ![02-data-flow Dark](./out/dark/02-data-flow.svg)
 
@@ -62,13 +52,7 @@
 
 **Focus**: Closed-loop commander decision cycle from telemetry to approval and cryptographic audit log.
 
-**Links**: [Light SVG](./out/light/03-plan-retask-loop.svg) · [Dark SVG](./out/dark/03-plan-retask-loop.svg) · [High-Res PNG](./out/dark/03-plan-retask-loop.png)
-
-#### Light Theme (Evaluator & Documentation)
-
-![03-plan-retask-loop Light](./out/light/03-plan-retask-loop.svg)
-
-#### Dark Theme (Operations Center & Video Studio)
+**Links**: [Dark SVG](./out/dark/03-plan-retask-loop.svg) · [High-Res PNG](./out/dark/03-plan-retask-loop.png)
 
 ![03-plan-retask-loop Dark](./out/dark/03-plan-retask-loop.svg)
 
@@ -78,13 +62,7 @@
 
 **Focus**: Anytime ALNS metaheuristic synthesis across 68 airframes, 12 hard physical rules, and Pareto trade-off dial.
 
-**Links**: [Light SVG](./out/light/04-generate-plan.svg) · [Dark SVG](./out/dark/04-generate-plan.svg) · [High-Res PNG](./out/dark/04-generate-plan.png)
-
-#### Light Theme (Evaluator & Documentation)
-
-![04-generate-plan Light](./out/light/04-generate-plan.svg)
-
-#### Dark Theme (Operations Center & Video Studio)
+**Links**: [Dark SVG](./out/dark/04-generate-plan.svg) · [High-Res PNG](./out/dark/04-generate-plan.png)
 
 ![04-generate-plan Dark](./out/dark/04-generate-plan.svg)
 
@@ -94,13 +72,7 @@
 
 **Focus**: Frozen-zone constrained sub-50ms replanning upon runway denial or pop-up SAM batteries.
 
-**Links**: [Light SVG](./out/light/05-dynamic-retasking.svg) · [Dark SVG](./out/dark/05-dynamic-retasking.svg) · [High-Res PNG](./out/dark/05-dynamic-retasking.png)
-
-#### Light Theme (Evaluator & Documentation)
-
-![05-dynamic-retasking Light](./out/light/05-dynamic-retasking.svg)
-
-#### Dark Theme (Operations Center & Video Studio)
+**Links**: [Dark SVG](./out/dark/05-dynamic-retasking.svg) · [High-Res PNG](./out/dark/05-dynamic-retasking.png)
 
 ![05-dynamic-retasking Dark](./out/dark/05-dynamic-retasking.svg)
 
@@ -110,13 +82,7 @@
 
 **Focus**: Operational state machine spanning mission tasking, turnaround cycles, pilot rest, and BDA verification.
 
-**Links**: [Light SVG](./out/light/06-sortie-lifecycle.svg) · [Dark SVG](./out/dark/06-sortie-lifecycle.svg) · [High-Res PNG](./out/dark/06-sortie-lifecycle.png)
-
-#### Light Theme (Evaluator & Documentation)
-
-![06-sortie-lifecycle Light](./out/light/06-sortie-lifecycle.svg)
-
-#### Dark Theme (Operations Center & Video Studio)
+**Links**: [Dark SVG](./out/dark/06-sortie-lifecycle.svg) · [High-Res PNG](./out/dark/06-sortie-lifecycle.png)
 
 ![06-sortie-lifecycle Dark](./out/dark/06-sortie-lifecycle.svg)
 
@@ -126,13 +92,7 @@
 
 **Focus**: Peer-to-peer state synchronization across disconnected forward airbases via CRDT vector clocks.
 
-**Links**: [Light SVG](./out/light/07-degraded-link-edge.svg) · [Dark SVG](./out/dark/07-degraded-link-edge.svg) · [High-Res PNG](./out/dark/07-degraded-link-edge.png)
-
-#### Light Theme (Evaluator & Documentation)
-
-![07-degraded-link-edge Light](./out/light/07-degraded-link-edge.svg)
-
-#### Dark Theme (Operations Center & Video Studio)
+**Links**: [Dark SVG](./out/dark/07-degraded-link-edge.svg) · [High-Res PNG](./out/dark/07-degraded-link-edge.png)
 
 ![07-degraded-link-edge Dark](./out/dark/07-degraded-link-edge.svg)
 
@@ -142,13 +102,7 @@
 
 **Focus**: Air-gapped natural language operator interface with 18 tactical intents and prompt-injection defense.
 
-**Links**: [Light SVG](./out/light/08-copilot-pipeline.svg) · [Dark SVG](./out/dark/08-copilot-pipeline.svg) · [High-Res PNG](./out/dark/08-copilot-pipeline.png)
-
-#### Light Theme (Evaluator & Documentation)
-
-![08-copilot-pipeline Light](./out/light/08-copilot-pipeline.svg)
-
-#### Dark Theme (Operations Center & Video Studio)
+**Links**: [Dark SVG](./out/dark/08-copilot-pipeline.svg) · [High-Res PNG](./out/dark/08-copilot-pipeline.png)
 
 ![08-copilot-pipeline Dark](./out/dark/08-copilot-pipeline.svg)
 
@@ -158,13 +112,7 @@
 
 **Focus**: Multi-armed bandit operator selection, ALNS ruin-and-recreate loops, and HiGHS-WASM sub-MIP re-optimization.
 
-**Links**: [Light SVG](./out/light/09-optimizer-internals.svg) · [Dark SVG](./out/dark/09-optimizer-internals.svg) · [High-Res PNG](./out/dark/09-optimizer-internals.png)
-
-#### Light Theme (Evaluator & Documentation)
-
-![09-optimizer-internals Light](./out/light/09-optimizer-internals.svg)
-
-#### Dark Theme (Operations Center & Video Studio)
+**Links**: [Dark SVG](./out/dark/09-optimizer-internals.svg) · [High-Res PNG](./out/dark/09-optimizer-internals.png)
 
 ![09-optimizer-internals Dark](./out/dark/09-optimizer-internals.svg)
 
@@ -174,13 +122,7 @@
 
 **Focus**: Monorepo packages, applications, and verification suites structure with strict unidirectional boundaries.
 
-**Links**: [Light SVG](./out/light/10-monorepo-dependencies.svg) · [Dark SVG](./out/dark/10-monorepo-dependencies.svg) · [High-Res PNG](./out/dark/10-monorepo-dependencies.png)
-
-#### Light Theme (Evaluator & Documentation)
-
-![10-monorepo-dependencies Light](./out/light/10-monorepo-dependencies.svg)
-
-#### Dark Theme (Operations Center & Video Studio)
+**Links**: [Dark SVG](./out/dark/10-monorepo-dependencies.svg) · [High-Res PNG](./out/dark/10-monorepo-dependencies.png)
 
 ![10-monorepo-dependencies Dark](./out/dark/10-monorepo-dependencies.svg)
 
@@ -202,13 +144,7 @@
 
 **Focus**: How quantitative proof is generated, independently verified, and checked across claims.
 
-**Links**: [Light SVG](./out/light/11-evidence-pipeline.svg) · [Dark SVG](./out/dark/11-evidence-pipeline.svg) · [High-Res PNG](./out/dark/11-evidence-pipeline.png)
-
-#### Light Theme (Evaluator & Documentation)
-
-![11-evidence-pipeline Light](./out/light/11-evidence-pipeline.svg)
-
-#### Dark Theme (Operations Center & Video Studio)
+**Links**: [Dark SVG](./out/dark/11-evidence-pipeline.svg) · [High-Res PNG](./out/dark/11-evidence-pipeline.png)
 
 ![11-evidence-pipeline Dark](./out/dark/11-evidence-pipeline.svg)
 

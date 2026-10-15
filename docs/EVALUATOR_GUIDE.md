@@ -39,7 +39,7 @@ When opening `http://localhost:3002`, the platform immediately boots into the **
 | **04:00–05:00** | **Step 7: Decide & Record** | Step 7 (Decide & Record). Cryptographic SHA-256 tamper-evident ledger locks audit trail; export valid MIL-STD USMTF ATO, CoT 2.0 XML, and GeoJSON. | Interoperability, Auditability |
 
 #### Closed-Loop Operational Workflow (Verified Archify Model)
-![Closed-Loop Operational Workflow](../docs/diagrams/out/light/03-plan-retask-loop.svg)
+![Closed-Loop Operational Workflow](diagrams/out/dark/03-plan-retask-loop.svg)
 
 ---
 
@@ -76,7 +76,7 @@ When opening `http://localhost:3002`, the platform immediately boots into the **
 - **Repository Hygiene Verification**: `scripts/check-repo-hygiene.js` (`pnpm run hygiene`).
 - **Verified Architecture Models**: 11 validated diagrams in [`docs/diagrams/index.md`](file:///D:/PROGRAMMING/projects/SIH-2026/Air-Power/docs/diagrams/index.md).
 
-![AIR POWER System Architecture](../docs/diagrams/out/light/01-system-architecture.svg)
+![AIR POWER System Architecture](diagrams/out/dark/01-system-architecture.svg)
 
 ### E. User Interface & Human Factors
 - **Elite Defense Command Center Aesthetics**: Responsive dark glassmorphism, crisp military typography (JetBrains Mono / Inter), bilingual English/Hindi toggle.
@@ -87,7 +87,7 @@ When opening `http://localhost:3002`, the platform immediately boots into the **
 
 ## 4. Key Verification Commands
 
-![AIR POWER Evidence Pipeline](../docs/diagrams/out/light/11-evidence-pipeline.svg)
+![AIR POWER Evidence Pipeline](diagrams/out/dark/11-evidence-pipeline.svg)
 
 ```bash
 # 1. Full automated unit & property tests (291 tests across 23 test files)

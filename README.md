@@ -18,6 +18,15 @@
 
 ---
 
+> [!TIP]
+> ### 📁 Official SIH Evaluation Submission Drive (Demo Video & Architecture Deliverables)
+> **Access the official evaluation package, demo video recordings, and comprehensive architecture document:**  
+> 🔗 **[AIR POWER Official Google Drive Submission Folder](https://drive.google.com/drive/folders/YOUR_DRIVE_FOLDER_LINK_HERE)**  
+> *(Contains: Full 1080p Master Demo Video • Architecture Document PDF • 6-Slide Official SIH Presentation Deck PDF • Offline Deployment Packages)*  
+> *Refer to this Drive link for high-definition video walkthroughs and formal PDF submissions.*
+
+---
+
 > [!IMPORTANT]
 > ### 🛡️ ADVISORY-ONLY DECISION SUPPORT & ETHICAL DEFENCE POSITIONING
 > **The AIR POWER platform provides advisory decision support only. A human commander approves every operational change, retasking diff, and mission divert. The system contains no targeting, weapon-employment, or autonomous-engagement logic. All airbases, combat airframes, flight corridors, and threat envelopes are strictly synthetic approximations developed for unclassified academic evaluation.**  
@@ -34,11 +43,10 @@
 Experience the platform immediately without spinning up a local container or Node.js environment:
 
 👉 **[Launch Interactive Evaluator Preview (Static Deterministic Replay)](https://ptkartikvashishtha.github.io/Air-power-decision-support-framework/)** *(Seed 42 • Pure Client-Side • Under 4 MB • Zero External API Calls)*  
-🎥 **Demo video**: [Watch Full System Walkthrough & Architecture Film](https://ptkartikvashishtha.github.io/Air-power-decision-support-framework/) *(1080p Master Walkthrough • Available in submission package & local demo)*  
+🎥 **Demo Video & Master Deliverables**: **[Official Google Drive Submission Folder](https://drive.google.com/drive/folders/YOUR_DRIVE_FOLDER_LINK_HERE)** *(1080p Master Walkthrough Video & Architecture Document PDF)*  
 🎥 **UI Walkthrough Video**: [Watch "How to Use AIR POWER" 4-Minute Guided Tour](https://ptkartikvashishtha.github.io/Air-power-decision-support-framework/) *(Live interactive demo available via `pnpm run demo`)*
 
 > *Note: The hosted preview is a view-only replay of a pre-computed deterministic run on notional data. The primary production deliverable is the fully air-gapped container running via `docker compose up`.*
-
 
 ---
 
@@ -140,17 +148,38 @@ pnpm run stop
 ## 🏗️ Architecture & Operational Workflows
 
 > **Evaluator-Grade Architecture Models**: Formally generated and validated with [Archify](https://github.com/tt-a1i/archify) directly from active TypeScript/Node.js source code. Every node maps to an existing file in the monorepo with 0 errors and 0 warnings under `--quality showcase`.  
-> 📖 **Complete 11-Diagram Catalog**: [docs/diagrams/index.md](docs/diagrams/index.md) (Interactive HTML viewers, Light & Dark SVGs, 4K UHD PNGs, and codebase traceability notes).
+> 📁 **Repository Location**: All high-resolution dark-theme diagrams are located under [`docs/diagrams/out/dark/`](docs/diagrams/out/dark/) in both vector SVG and 4K UHD PNG formats. (Per repository hygiene policy, only dark versions are tracked in git).  
+> 📖 **Complete 11-Diagram Catalog**: [docs/diagrams/index.md](docs/diagrams/index.md) (Full catalog, process flows, and codebase traceability notes).
 
-### 1. Runtime System Topology
-*What are AIR POWER's runtime parts and how do they connect under sovereign, air-gapped constraints?*
+### 1. Runtime System Topology & Component Model
+*What are AIR POWER's runtime parts and how do they connect under sovereign, air-gapped constraints?*  
+*Location: [`docs/diagrams/out/dark/01-system-architecture.svg`](docs/diagrams/out/dark/01-system-architecture.svg)*
 
-![AIR POWER System Architecture](docs/diagrams/out/light/01-system-architecture.svg)
+![AIR POWER System Architecture](docs/diagrams/out/dark/01-system-architecture.svg)
 
-### 2. Closed-Loop Plan & Retask Decision Cycle
-*How does disruption trigger impact analysis, anytime re-optimization, and human commander approval?*
+### 2. Multi-Source Ingestion & Kinematic Fusion Pipeline
+*How does AIR POWER fuse 7 disparate telemetry feeds and filter Mach 3.5 kinematic anomalies using Dempster-Shafer evidential reasoning?*  
+*Location: [`docs/diagrams/out/dark/02-data-flow.svg`](docs/diagrams/out/dark/02-data-flow.svg)*
 
-![AIR POWER Plan and Retask Workflow](docs/diagrams/out/light/03-plan-retask-loop.svg)
+![Multi-Source Ingestion & Fusion Pipeline](docs/diagrams/out/dark/02-data-flow.svg)
+
+### 3. Closed-Loop Plan & Retask Decision Cycle
+*How does an operational disruption trigger impact analysis, anytime re-optimization, and human commander approval?*  
+*Location: [`docs/diagrams/out/dark/03-plan-retask-loop.svg`](docs/diagrams/out/dark/03-plan-retask-loop.svg)*
+
+![AIR POWER Plan and Retask Workflow](docs/diagrams/out/dark/03-plan-retask-loop.svg)
+
+### 4. ALNS Optimization Engine Lifecycle
+*How does the Adaptive Large Neighborhood Search synthesize 86 sorties across 68 airframes in ≤ 50 ms under 12 hard physical rules?*  
+*Location: [`docs/diagrams/out/dark/04-generate-plan.svg`](docs/diagrams/out/dark/04-generate-plan.svg)*
+
+![ALNS Optimization Engine Lifecycle](docs/diagrams/out/dark/04-generate-plan.svg)
+
+### 5. Dynamic Retasking & Frozen Horizon Execution
+*How does pop-up threat handling preserve the $\Delta t = 15\text{m}$ frozen horizon while guaranteeing $\ge 80\%$ operational stability?*  
+*Location: [`docs/diagrams/out/dark/05-dynamic-retasking.svg`](docs/diagrams/out/dark/05-dynamic-retasking.svg)*
+
+![Dynamic Retasking & Frozen Horizon Execution](docs/diagrams/out/dark/05-dynamic-retasking.svg)
 
 ```
 /

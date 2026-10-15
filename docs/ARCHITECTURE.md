@@ -35,60 +35,44 @@ The platform executes entirely in **Node.js/TypeScript** (zero Python in the run
 ## 2. High-Level System Overview
 
 > **Verified Architecture Models**: Formally generated and validated via [Archify](https://github.com/tt-a1i/archify) at `--quality showcase` from active monorepo source files.  
-> 📖 **Complete 11-Diagram Architecture Catalog**: [`docs/diagrams/index.md`](file:///D:/PROGRAMMING/projects/SIH-2026/Air-Power/docs/diagrams/index.md) (Interactive HTML viewers, Light & Dark SVGs, 4K UHD PNGs, and codebase traceability notes).
+> 📖 **Complete 11-Diagram Architecture Catalog**: [`docs/diagrams/index.md`](diagrams/index.md) (Tactical Dark SVGs, 4K UHD PNGs, and codebase traceability notes).
 
 ### 2.1 Runtime Topology
-![AIR POWER System Architecture](../docs/diagrams/out/light/01-system-architecture.svg)
+![AIR POWER System Architecture](diagrams/out/dark/01-system-architecture.svg)
 
 ### 2.2 Dataflow Across 7 Operational Telemetry Families
-![AIR POWER Dataflow](../docs/diagrams/out/light/02-data-flow.svg)
+![AIR POWER Dataflow](diagrams/out/dark/02-data-flow.svg)
 
 ```mermaid
-graph TB
-    subgraph "COMMANDER INTERFACE"
-        UI["Daylight Command UI\nNext.js 15 · React 19\n18 Tactical Modules"]
+flowchart TD
+    subgraph SOURCES ["1. Ingestion: 7 Operational Data Families"]
+        DS["Telemetry Feeds\nAirframes · Crew Rosters · Munitions · Runways · Weather · Radar Tracks · Priority TST"]
     end
 
-    subgraph "TIER 2 — FUSION CORE"
-        API["Fastify API Gateway\nNode.js 22 LTS · SSE Streams"]
-        FUSE["Multi-Source Data Fusion\n7 Operational Data Families"]
-        SPOOF["Spoof Detection\nMach 3.5 Filter · Dempster-Shafer"]
+    subgraph TIER2 ["2. Processing: Fusion Core & Gateway"]
+        FUSE["Bayesian Fusion Core\nMulti-Source Temporal Confidence Decay"]
+        SPOOF["Mach 3.5 Kinematic Filter\nDempster-Shafer Sensor Spoof Detection"]
     end
 
-    subgraph "TIER 3 — OPTIMIZATION ENGINE"
-        ALNS["ALNS Metaheuristic\n≤ 50 ms · Destroy + Repair"]
-        MILP["HiGHS-WASM MILP\nBranch-and-Cut · 0.00% Gap"]
-        TERRAIN["3D Terrain A* Router\n4/3-Earth Radar Refraction"]
-        VERIF["Independent Verifier\n100k Differential Fuzz · 0 Errors"]
-        PARETO["Pareto Engine\n4-Objective Commander Dial"]
+    subgraph TIER3 ["3. Optimization: ALNS Solver Core"]
+        ALNS["ALNS Metaheuristic Engine\n≤ 50 ms Anytime Synthesis & Matheuristic LNS"]
+        VERIF["Independent Dual Verifier\n12-Rule Hard Physical Constraints Gate"]
     end
 
-    subgraph "TIER 4 — EDGE AND INTEROP"
-        CRDT["CRDT Edge Sync\nMulti-Master · Vector Clocks"]
-        INTEROP["Tactical Interop Gateway\nCoT · GeoJSON · KML · USMTF"]
+    subgraph TIER1 ["4. Command Authority: Human-in-the-Loop"]
+        UI["Daylight Command UI (Next.js 15)\nCommander Review · Intent Dial · Signed Token Approval"]
     end
 
-    subgraph "DATA SOURCES"
-        DS1["Aircraft Status\nFMC/PMC · Turnaround"]
-        DS2["Crew Rosters\nDuty Hours · Rest Compliance"]
-        DS3["Munition Stocks\nInventory · Compatibility"]
-        DS4["Airbase Runways\nSlots · Weather Minima"]
-        DS5["Weather Intel\nIFR Minima · Visibility"]
-        DS6["Radar Tracks\nIFF · SAM Locations"]
-        DS7["Priority Requests\nTST · Target Value"]
+    subgraph TIER4 ["5. Tactical Distribution: Edge & Interop"]
+        EDGE["CRDT Edge Consensus (Vector Clocks)\nJoint C2 Interop (CoT 2.0 XML / USMTF / GeoJSON)"]
     end
 
-    UI <-->|"HTTP / SSE"| API
-    API --> FUSE
+    DS --> FUSE
     FUSE --> SPOOF
     SPOOF --> ALNS
-    ALNS <--> MILP
-    ALNS --> TERRAIN
-    ALNS --> VERIF
-    ALNS --> PARETO
-    API <--> CRDT
-    API --> INTEROP
-    DS1 & DS2 & DS3 & DS4 & DS5 & DS6 & DS7 --> FUSE
+    ALNS <-->|"Candidate Validation"| VERIF
+    ALNS -->|"Recommended Courses of Action"| UI
+    UI -->|"Approved Mission Plan"| EDGE
 ```
 
 ---
@@ -144,41 +128,36 @@ graph TB
 
 ```mermaid
 flowchart TD
-    START([Solve Request from API]) --> INIT
-    INIT["Initialize\nSeed PRNG · Build InitPlan\nConstraint Snapshot"] --> EVAL0
-    EVAL0["Evaluate Objective Z0\nPriority Coverage · Risk · Fuel"] --> LOOP
+    START([Solve Request from Fastify API]) --> INIT["1. Initialize\nSeed PRNG · Construct Baseline · Snapshot Constraints"]
+    INIT --> EVAL0["2. Initial Evaluation\nCompute Baseline Objective Z0"]
+    EVAL0 --> LOOP{{"3. ALNS Anytime Loop\nAdaptive Iterations (Hard ≤ 50 ms budget)"}}
 
-    LOOP{{"ALNS Main Loop\nt less than 50 ms deadline"}}
+    subgraph ADAPTIVE_STAGE ["Adaptive Operator Stage"]
+        direction TB
+        DESTROY["A. Destroy Selection (Roulette Wheel)\n• Worst-Cost (low Z)  • Shaw Relatedness\n• Random Diversity     • Cluster-Base Disruption"]
+        REPAIR["B. Repair Insertion (Adaptive Weights)\n• Regret-2 Insertion  • Greedy Priority Fit\n• Base Reassignment   • HiGHS-WASM Subproblem"]
+        DESTROY --> REPAIR
+    end
 
-    LOOP --> D1["Worst-Cost Destroy\nRemove lowest priority sorties"]
-    LOOP --> D2["Shaw Relatedness\nRemove clustered by target proximity"]
-    LOOP --> D3["Random Destroy\nUniform random removal"]
-    LOOP --> D4["Cluster-Base Destroy\nRemove same-base assignments"]
+    LOOP --> DESTROY
+    REPAIR --> VERIFY["4. Independent Verifier\n12 Hard Operational Constraint Checks"]
 
-    D1 & D2 & D3 & D4 --> REPAIR
-    REPAIR["Select Repair Operator\nRegret / Greedy / Base-Swap"]
-
-    REPAIR --> R1["Regret-2 Repair\nMax regret cost insertion"]
-    REPAIR --> R2["Greedy Priority Repair\nHighest priority first fit"]
-    REPAIR --> R3["Base Reassignment\nSwap home base if feasible"]
-
-    R1 & R2 & R3 --> VERIFY
-    VERIFY["Independent Verifier\n12-Constraint Compliance Check"]
-
-    VERIFY -- PASS --> SA
-    VERIFY -- FAIL --> REJECT["Reject Candidate\nLog violation code"]
+    VERIFY -- "Violation (FAIL)" --> REJECT["Log Violation Code & Penalize Operator"]
     REJECT --> LOOP
 
-    SA{"Simulated\nAnnealing\nAccept?"}
-    SA -- "Better always accept" --> UPDATE
-    SA -- "Worse Boltzmann" --> UPDATE
+    VERIFY -- "Feasible (PASS)" --> SA{"5. Simulated Annealing Gate\nAccept if ΔZ > 0 or p < exp(ΔZ / T)"}
 
-    UPDATE["Update Incumbent\nUpdate Operator Weights"] --> LOOP
+    SA -- "Accepted" --> UPDATE["Update Incumbent Plan & Operator Scores"]
+    SA -- "Rejected" --> LOOP
+    UPDATE --> LOOP
 
-    LOOP -- "Time Limit Reached" --> BEST
-    BEST["Return Best Incumbent Plan"] --> XAI
-    XAI["XAI Explainer\nReason Codes · Trade-off Cards\nSHAP-lite Attribution"] --> RESPONSE([Plan plus Rationale to API])
+    LOOP -- "Budget Exhausted (≤ 50 ms)" --> BEST["6. Best Incumbent Solution"]
+    BEST --> XAI["7. Explainable AI (XAI)\nReason Codes · Constraint Scores · Trade-Off Cards"]
+    XAI --> RESPONSE([Validated Plan Output + USMTF / CoT Interop])
 ```
+
+> **Formal Diagram Reference**: See [`diagrams/out/dark/04-generate-plan.svg`](file:///d:/PROGRAMMING/projects/SIH-2026/Air-Power/docs/diagrams/out/dark/04-generate-plan.svg) for the full Archify-generated ALNS execution lifecycle.
+
 
 ### ALNS Operator Registry
 
