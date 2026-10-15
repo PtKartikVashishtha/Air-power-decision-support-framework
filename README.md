@@ -145,41 +145,65 @@ pnpm run stop
 
 ---
 
-## 🏗️ Architecture & Operational Workflows
+## 🏗️ Architecture & Operational Workflows (All 11 Process Pipelines)
 
 > **Evaluator-Grade Architecture Models**: Formally generated and validated with [Archify](https://github.com/tt-a1i/archify) directly from active TypeScript/Node.js source code. Every node maps to an existing file in the monorepo with 0 errors and 0 warnings under `--quality showcase`.  
-> 📁 **Repository Location**: All high-resolution dark-theme diagrams are located under [`docs/diagrams/out/dark/`](docs/diagrams/out/dark/) in both vector SVG and 4K UHD PNG formats. (Per repository hygiene policy, only dark versions are tracked in git).  
-> 📖 **Complete 11-Diagram Catalog**: [docs/diagrams/index.md](docs/diagrams/index.md) (Full catalog, process flows, and codebase traceability notes).
+> All 11 tactical system diagrams are rendered directly below in high-resolution dark theme.
 
-### 1. Runtime System Topology & Component Model
-*What are AIR POWER's runtime parts and how do they connect under sovereign, air-gapped constraints?*  
-*Location: [`docs/diagrams/out/dark/01-system-architecture.svg`](docs/diagrams/out/dark/01-system-architecture.svg)*
+### 1. Sovereign Runtime System Topology & Component Model
+Sovereign 4-Tier air-gapped architecture connecting Presentation (Next.js 15), Processing / Ingestion Gateway (Fastify), Solver Core (ALNS + HiGHS-WASM), and CRDT Edge Distribution.
 
-![AIR POWER System Architecture](docs/diagrams/out/dark/01-system-architecture.svg)
+![01 - Sovereign Runtime System Topology](docs/diagrams/out/dark/01-system-architecture.png)
 
 ### 2. Multi-Source Ingestion & Kinematic Fusion Pipeline
-*How does AIR POWER fuse 7 disparate telemetry feeds and filter Mach 3.5 kinematic anomalies using Dempster-Shafer evidential reasoning?*  
-*Location: [`docs/diagrams/out/dark/02-data-flow.svg`](docs/diagrams/out/dark/02-data-flow.svg)*
+Ingestion of 7 disparate telemetry feeds, Mach 3.5 kinematic boundary filtering, Bayesian temporal decay, and Dempster-Shafer evidential sensor spoof detection.
 
-![Multi-Source Ingestion & Fusion Pipeline](docs/diagrams/out/dark/02-data-flow.svg)
+![02 - Multi-Source Ingestion & Kinematic Fusion Pipeline](docs/diagrams/out/dark/02-data-flow.png)
 
 ### 3. Closed-Loop Plan & Retask Decision Cycle
-*How does an operational disruption trigger impact analysis, anytime re-optimization, and human commander approval?*  
-*Location: [`docs/diagrams/out/dark/03-plan-retask-loop.svg`](docs/diagrams/out/dark/03-plan-retask-loop.svg)*
+End-to-end mission loop: telemetry trigger, impact analysis, anytime re-solve (< 50 ms), commander diff review, and cryptographic SHA-256 audit log authorization.
 
-![AIR POWER Plan and Retask Workflow](docs/diagrams/out/dark/03-plan-retask-loop.svg)
+![03 - Closed-Loop Plan & Retask Decision Cycle](docs/diagrams/out/dark/03-plan-retask-loop.png)
 
 ### 4. ALNS Optimization Engine Lifecycle
-*How does the Adaptive Large Neighborhood Search synthesize 86 sorties across 68 airframes in ≤ 50 ms under 12 hard physical rules?*  
-*Location: [`docs/diagrams/out/dark/04-generate-plan.svg`](docs/diagrams/out/dark/04-generate-plan.svg)*
+Anytime Adaptive Large Neighborhood Search synthesizing 86 sorties across 68 airframes in ≤ 50 ms under 12 hard physical rules and multi-objective Pareto trade-offs.
 
-![ALNS Optimization Engine Lifecycle](docs/diagrams/out/dark/04-generate-plan.svg)
+![04 - Anytime ALNS Master Planning Lifecycle](docs/diagrams/out/dark/04-generate-plan.png)
 
 ### 5. Dynamic Retasking & Frozen Horizon Execution
-*How does pop-up threat handling preserve the $\Delta t = 15\text{m}$ frozen horizon while guaranteeing $\ge 80\%$ operational stability?*  
-*Location: [`docs/diagrams/out/dark/05-dynamic-retasking.svg`](docs/diagrams/out/dark/05-dynamic-retasking.svg)*
+Sub-50ms replanning on mobile SAM pop-up or runway cratering while preserving the $\Delta t = 15\text{m}$ frozen horizon and $\ge 80\%$ plan stability.
 
-![Dynamic Retasking & Frozen Horizon Execution](docs/diagrams/out/dark/05-dynamic-retasking.svg)
+![05 - Dynamic Retasking & Frozen Horizon Execution](docs/diagrams/out/dark/05-dynamic-retasking.png)
+
+### 6. Individual Sortie Operational State Lifecycle
+Finite state machine covering dispatch, ingress, combat action, turn-around time (SGR), pilot duty rest, and post-flight BDA verification.
+
+![06 - Individual Sortie Operational State Lifecycle](docs/diagrams/out/dark/06-sortie-lifecycle.png)
+
+### 7. Degraded Link & Edge CRDT Vector Synchronization
+Multi-master state replication across forward bases during communications blackout with deterministic LWW vector clock merge.
+
+![07 - Degraded Link & Edge CRDT Vector Synchronization](docs/diagrams/out/dark/07-degraded-link-edge.png)
+
+### 8. Tactical AI Copilot NLP & Safety Pipeline
+Air-gapped regex tokenizer and military grammar engine extracting 18 tactical intents with 100% prompt injection isolation.
+
+![08 - Tactical AI Copilot NLP & Safety Pipeline](docs/diagrams/out/dark/08-copilot-pipeline.png)
+
+### 9. ALNS Internal Operator Registry & Verification
+Multi-armed bandit operator selection across 4 destroy and 3 repair operators paired with independent 12-rule constraint verification.
+
+![09 - ALNS Internal Operator Registry & Verification](docs/diagrams/out/dark/09-optimizer-internals.png)
+
+### 10. Sovereign Monorepo Codebase Package Topology
+Strict unidirectional boundaries separating apps, shared schemas, optimizer, wargame simulation, and benchmarks.
+
+![10 - Sovereign Monorepo Codebase Package Topology](docs/diagrams/out/dark/10-monorepo-dependencies.png)
+
+### 11. Automated CI Evidence & Claims Verification Pipeline
+Continuous integration pipeline verifying 291 unit/property tests, 100-seed benchmarks, layout overflow sweeps, and claims consistency.
+
+![11 - Automated CI Evidence & Claims Verification Pipeline](docs/diagrams/out/dark/11-evidence-pipeline.png)
 
 ```
 /
