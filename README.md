@@ -21,7 +21,7 @@
 > [!TIP]
 > ### 📁 Official SIH Evaluation Submission Drive (Demo Video & Architecture Deliverables)
 > **Access the official evaluation package, demo video recordings, and comprehensive architecture document:**  
-> 🔗 **[AIR POWER Official Google Drive Submission Folder](https://drive.google.com/drive/folders/YOUR_DRIVE_FOLDER_LINK_HERE)**  
+> 🔗 **[AIR POWER Official Google Drive Submission Folder](https://drive.google.com/drive/folders/1SeNJ1wTFLks3er4EoIjlekEqAZyVQ59i?usp=drive_link)**  
 > *(Contains: Full 1080p Master Demo Video • Architecture Document PDF • 6-Slide Official SIH Presentation Deck PDF • Offline Deployment Packages)*  
 > *Refer to this Drive link for high-definition video walkthroughs and formal PDF submissions.*
 
